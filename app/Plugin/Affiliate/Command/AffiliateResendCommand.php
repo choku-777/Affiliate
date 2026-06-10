@@ -3,6 +3,7 @@
 namespace Plugin\Affiliate\Command;
 
 use Plugin\Affiliate\Service\PostbackClient;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,10 +16,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  *
  * 数分おきの cron 実行を推奨（送信先の一時的な障害に備える）。
  */
+#[AsCommand(name: 'affiliate:resend', description: '送信失敗で残ったアフィリエイトイベントを再送します。')]
 class AffiliateResendCommand extends Command
 {
-    protected static $defaultName = 'affiliate:resend';
-
     private $postbackClient;
 
     public function __construct(PostbackClient $postbackClient)
