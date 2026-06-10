@@ -3,7 +3,7 @@
 namespace Plugin\Affiliate;
 
 use Eccube\Plugin\AbstractPluginManager;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * 本プラグインは計測（postback）専用で、独自テーブルや初期データを持たない。
