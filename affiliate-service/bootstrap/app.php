@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\EnsureAffiliateLoggedIn;
 use App\Http\Middleware\EnsureManager;
 use App\Http\Middleware\VerifyApiKey;
 use Illuminate\Foundation\Application;
@@ -19,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => EnsureAdmin::class,
             'manager' => EnsureManager::class,
             'apikey' => VerifyApiKey::class,
+            'affiliate' => EnsureAffiliateLoggedIn::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

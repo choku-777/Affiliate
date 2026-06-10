@@ -10,6 +10,17 @@
     <nav class="navbar navbar-dark bg-dark">
         <div class="container">
             <span class="navbar-brand">アフィリエイトプログラム</span>
+            <div>
+                @if (session('affiliate_authenticated'))
+                    <a class="text-light me-3 text-decoration-none" href="{{ route('affiliate.mypage') }}">マイページ</a>
+                    <form method="post" action="{{ route('affiliate.logout') }}" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-outline-light">ログアウト</button>
+                    </form>
+                @else
+                    <a class="btn btn-sm btn-outline-light" href="{{ route('affiliate.login') }}">ログイン</a>
+                @endif
+            </div>
         </div>
     </nav>
     <main class="container py-4" style="max-width: 720px;">

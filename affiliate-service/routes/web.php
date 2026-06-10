@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\RewardController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\AffiliateAuthController;
 use App\Http\Controllers\MyPageController;
 use App\Http\Controllers\RegistrationController;
 use Illuminate\Support\Facades\Route;
@@ -15,8 +16,16 @@ Route::get('/register', [RegistrationController::class, 'create'])->name('regist
 Route::post('/register', [RegistrationController::class, 'store'])->name('register.store');
 Route::get('/register/thanks', [RegistrationController::class, 'thanks'])->name('register.thanks');
 
-// 公開：本人マイページ（トークンURL）
-Route::get('/mypage/{token}', [MyPageController::class, 'show'])->name('mypage.show');
+// アフィリエイター：ログイン＆マイページ（ログイン必須に一本化）
+Route::prefix('affiliate')->name('affiliate.')->group(function () {
+    Route::get('login', [AffiliateAuthController::class, 'showLogin'])->name('login');
+    Route::post('login', [AffiliateAuthController::class, 'login'])->name('login.post');
+
+    Route::middleware('affiliate')->group(function () {
+        Route::get('mypage', [MyPageController::class, 'show'])->name('mypage');
+        Route::post('logout', [AffiliateAuthController::class, 'logout'])->name('logout');
+    });
+});
 
 // 管理画面
 Route::prefix('admin')->name('admin.')->group(function () {

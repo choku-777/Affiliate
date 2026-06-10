@@ -4,16 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Affiliate;
 use App\Models\Reward;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
- * アフィリエイター本人向けマイページ（トークンURLでアクセス・ログイン不要）。
+ * アフィリエイター本人向けマイページ（ログイン必須）。
+ * ログインセッションの affiliate_id から本人を特定する。
  */
 class MyPageController extends Controller
 {
-    public function show(string $token): View
+    public function show(Request $request): View
     {
-        $affiliate = Affiliate::where('mypage_token', $token)->firstOrFail();
+        $affiliate = Affiliate::findOrFail($request->session()->get('affiliate_id'));
 
         $rewards = $affiliate->rewards()
             ->orderByDesc('id')

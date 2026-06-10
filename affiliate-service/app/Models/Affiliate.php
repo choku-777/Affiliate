@@ -25,7 +25,20 @@ class Affiliate extends Model
 
     protected $fillable = [
         'name',
+        'last_name',
+        'first_name',
+        'last_name_kana',
+        'first_name_kana',
         'email',
+        'password',
+        'phone',
+        'birth_date',
+        'gender',
+        'postal_code',
+        'prefecture',
+        'city',
+        'address1',
+        'address2',
         'affiliate_code',
         'mypage_token',
         'bank_name',
@@ -38,9 +51,20 @@ class Affiliate extends Model
         'approved_at',
     ];
 
+    protected $hidden = [
+        'password',
+    ];
+
     protected $casts = [
         'commission_rate' => 'decimal:2',
         'approved_at' => 'datetime',
+        'birth_date' => 'date',
+        'password' => 'hashed',
+    ];
+
+    public static array $genderLabels = [
+        'male' => '男性',
+        'female' => '女性',
     ];
 
     public function rewards(): HasMany
@@ -76,11 +100,6 @@ class Affiliate extends Model
     public function affiliateUrl(): string
     {
         return config('affiliate.shop_url').'/?affiliate='.$this->affiliate_code;
-    }
-
-    public function mypageUrl(): string
-    {
-        return url('/mypage/'.$this->mypage_token);
     }
 
     /**

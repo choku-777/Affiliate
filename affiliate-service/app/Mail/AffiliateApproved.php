@@ -34,7 +34,7 @@ class AffiliateApproved extends Mailable
             with: [
                 'affiliate' => $this->affiliate,
                 'affiliateUrl' => $this->affiliate->affiliateUrl(),
-                'mypageUrl' => $this->affiliate->mypageUrl(),
+                'loginUrl' => route('affiliate.login'),
             ],
         );
     }

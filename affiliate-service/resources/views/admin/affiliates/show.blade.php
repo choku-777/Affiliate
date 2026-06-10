@@ -7,8 +7,15 @@
 <div class="card card-body mb-3">
     <table class="table mb-0">
         <tr><th style="width: 200px;">ID</th><td>{{ $affiliate->id }}</td></tr>
-        <tr><th>氏名</th><td>{{ $affiliate->name }}</td></tr>
+        <tr><th>氏名</th><td>{{ $affiliate->name }}
+            @if ($affiliate->last_name_kana || $affiliate->first_name_kana)
+                <span class="text-muted small">（{{ $affiliate->last_name_kana }} {{ $affiliate->first_name_kana }}）</span>
+            @endif
+        </td></tr>
         <tr><th>メール</th><td>{{ $affiliate->email }}</td></tr>
+        <tr><th>電話番号</th><td>{{ $affiliate->phone }}</td></tr>
+        <tr><th>生年月日</th><td>{{ optional($affiliate->birth_date)->format('Y-m-d') }}</td></tr>
+        <tr><th>性別</th><td>{{ \App\Models\Affiliate::$genderLabels[$affiliate->gender] ?? '' }}</td></tr>
         <tr><th>ステータス</th><td>{{ $affiliate->statusLabel() }}</td></tr>
         <tr><th>コード</th><td><code>{{ $affiliate->affiliate_code }}</code></td></tr>
         <tr>
@@ -21,7 +28,10 @@
                 @endif
             </td>
         </tr>
-        <tr><th>マイページURL</th><td><code class="user-select-all">{{ $affiliate->mypageUrl() }}</code></td></tr>
+        <tr><th>住所</th><td>
+            @if ($affiliate->postal_code)〒{{ $affiliate->postal_code }}<br>@endif
+            {{ $affiliate->prefecture }}{{ $affiliate->city }}{{ $affiliate->address1 }} {{ $affiliate->address2 }}
+        </td></tr>
         <tr><th>振込先</th><td>{{ $affiliate->bank_name }} {{ $affiliate->bank_branch }} {{ $affiliate->account_type }} {{ $affiliate->account_number }} {{ $affiliate->account_holder }}</td></tr>
         <tr><th>申請日</th><td>{{ $affiliate->created_at->format('Y-m-d H:i') }}</td></tr>
         <tr><th>承認日</th><td>{{ optional($affiliate->approved_at)->format('Y-m-d H:i') }}</td></tr>
