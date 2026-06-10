@@ -45,4 +45,24 @@
     </table>
 </div>
 <div class="mt-3">{{ $rewards->links() }}</div>
+
+<div class="card mt-4">
+    <div class="card-header">支払い履歴</div>
+    <table class="table mb-0">
+        <thead>
+            <tr><th>支払日</th><th class="text-end">金額</th><th class="text-end">件数</th></tr>
+        </thead>
+        <tbody>
+            @forelse ($payouts as $payout)
+                <tr>
+                    <td>{{ $payout->paid_at->format('Y-m-d') }}</td>
+                    <td class="text-end">{{ number_format($payout->amount) }} 円</td>
+                    <td class="text-end">{{ $payout->reward_count }}</td>
+                </tr>
+            @empty
+                <tr><td colspan="3" class="text-muted">まだお支払いはありません。</td></tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
 @endsection

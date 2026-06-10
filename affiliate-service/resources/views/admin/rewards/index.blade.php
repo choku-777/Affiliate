@@ -38,7 +38,7 @@
             <tr>
                 <th>ID</th><th>アフィリエイター</th><th>注文番号</th>
                 <th class="text-end">注文金額</th><th class="text-end">料率</th><th class="text-end">報酬額</th>
-                <th>状態</th><th>発生日</th><th></th>
+                <th>状態</th><th>発生日</th>
             </tr>
         </thead>
         <tbody>
@@ -56,17 +56,9 @@
                     <td class="text-end">{{ number_format($reward->reward_amount) }}</td>
                     <td>{{ $reward->statusLabel() }}</td>
                     <td>{{ optional($reward->converted_at)->format('Y-m-d') }}</td>
-                    <td>
-                        @if ($reward->status === \App\Models\Reward::STATUS_CONFIRMED)
-                            <form method="post" action="{{ route('admin.rewards.pay', $reward) }}" onsubmit="return confirm('支払済にしますか？');">
-                                @csrf
-                                <button class="btn btn-sm btn-outline-primary">支払済</button>
-                            </form>
-                        @endif
-                    </td>
                 </tr>
             @empty
-                <tr><td colspan="9" class="text-muted">該当なし</td></tr>
+                <tr><td colspan="8" class="text-muted">該当なし</td></tr>
             @endforelse
         </tbody>
     </table>

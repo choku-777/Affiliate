@@ -33,6 +33,7 @@ class Reward extends Model
         'converted_at',
         'confirmed_at',
         'paid_at',
+        'payout_id',
     ];
 
     protected $casts = [
@@ -48,6 +49,11 @@ class Reward extends Model
     public function affiliate(): BelongsTo
     {
         return $this->belongsTo(Affiliate::class);
+    }
+
+    public function payout(): BelongsTo
+    {
+        return $this->belongsTo(Payout::class);
     }
 
     public function statusLabel(): string

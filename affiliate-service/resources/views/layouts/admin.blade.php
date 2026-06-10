@@ -14,6 +14,7 @@
                 <a class="nav-link" href="{{ route('admin.dashboard') }}">ダッシュボード</a>
                 <a class="nav-link" href="{{ route('admin.affiliates.index') }}">アフィリエイター</a>
                 <a class="nav-link" href="{{ route('admin.rewards.index') }}">成果・報酬</a>
+                <a class="nav-link" href="{{ route('admin.payouts.index') }}">支払い</a>
                 @if (session('admin_role') === 'manager')
                     <a class="nav-link" href="{{ route('admin.settings.edit') }}">設定</a>
                 @endif
@@ -38,5 +39,6 @@
         @endforeach
         @yield('content')
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

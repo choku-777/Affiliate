@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AffiliateController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PayoutController;
 use App\Http\Controllers\Admin\RewardController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\AffiliateAuthController;
@@ -46,7 +47,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('affiliates/{affiliate}/suspend', [AffiliateController::class, 'suspend'])->name('affiliates.suspend');
 
         Route::get('rewards', [RewardController::class, 'index'])->name('rewards.index');
-        Route::post('rewards/{reward}/pay', [RewardController::class, 'pay'])->name('rewards.pay');
+
+        Route::get('payouts', [PayoutController::class, 'index'])->name('payouts.index');
+        Route::post('payouts/{affiliate}', [PayoutController::class, 'pay'])->name('payouts.pay');
 
         // 設定は「管理」ロール限定
         Route::middleware('manager')->group(function () {

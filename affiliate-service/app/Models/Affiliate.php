@@ -72,6 +72,21 @@ class Affiliate extends Model
         return $this->hasMany(Reward::class);
     }
 
+    public function payouts(): HasMany
+    {
+        return $this->hasMany(Payout::class);
+    }
+
+    /**
+     * 確定済み（未払い）報酬の合計額。
+     */
+    public function confirmedUnpaidTotal(): int
+    {
+        return (int) $this->rewards()
+            ->where('status', Reward::STATUS_CONFIRMED)
+            ->sum('reward_amount');
+    }
+
     public function isApproved(): bool
     {
         return $this->status === self::STATUS_APPROVED;

@@ -38,18 +38,4 @@ class RewardController extends Controller
             'filters' => $request->only('status', 'affiliate_id', 'start', 'end'),
         ]);
     }
-
-    public function pay(Reward $reward)
-    {
-        if ($reward->status !== Reward::STATUS_CONFIRMED) {
-            return back()->with('warning', '確定済みの報酬のみ支払済にできます。');
-        }
-
-        $reward->update([
-            'status' => Reward::STATUS_PAID,
-            'paid_at' => now(),
-        ]);
-
-        return back()->with('success', '支払済に更新しました。');
-    }
 }

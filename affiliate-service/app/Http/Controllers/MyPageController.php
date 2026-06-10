@@ -26,11 +26,14 @@ class MyPageController extends Controller
             ->groupBy('status')
             ->pluck('total', 'status');
 
+        $payouts = $affiliate->payouts()->orderByDesc('id')->limit(20)->get();
+
         return view('mypage', [
             'affiliate' => $affiliate,
             'rewards' => $rewards,
             'totals' => $totals,
             'statusLabels' => Reward::$statusLabels,
+            'payouts' => $payouts,
         ]);
     }
 }
