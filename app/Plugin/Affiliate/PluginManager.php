@@ -13,8 +13,12 @@ class PluginManager extends AbstractPluginManager
 {
     public function enable(array $meta, ContainerInterface $container)
     {
+        // enable() に渡る $container は ServiceLocator のため getParameter() は使えない。
+        // プロジェクトルートはこのファイルのパスから算出する（app/Plugin/Affiliate → ルート）。
+        $projectDir = dirname(__DIR__, 3);
+
         // 取りこぼし防止用アウトボックスのディレクトリを用意する
-        $dir = $container->getParameter('kernel.project_dir').'/var/affiliate_outbox';
+        $dir = $projectDir.'/var/affiliate_outbox';
         if (!is_dir($dir)) {
             @mkdir($dir, 0775, true);
         }
