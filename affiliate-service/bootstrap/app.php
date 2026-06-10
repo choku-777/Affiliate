@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\EnsureManager;
 use App\Http\Middleware\VerifyApiKey;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -16,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'admin' => EnsureAdmin::class,
+            'manager' => EnsureManager::class,
             'apikey' => VerifyApiKey::class,
         ]);
     })

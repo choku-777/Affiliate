@@ -4,7 +4,8 @@ EC-CUBE とは独立した、アフィリエイト管理用の Web アプリで�
 `affiliate.shizenha-inu.life`（Xserver サブドメイン）での稼働を想定しています。
 
 - **アフィリエイター登録**（公開）と **本人マイページ**（トークンURL）
-- **管理画面**（Googleアカウント認証・許可メールのホワイトリスト）
+- **管理画面**（Googleアカウント認証・許可メールのホワイトリスト・ロール2種）
+  - **管理**ロール＝全権（設定変更も可） / **運用**ロール＝設定変更以外（承認・成果・支払い操作は可）
   - 承認 / 成果集計 / 支払い管理 / 設定
 - **API**：EC-CUBE プラグインからの postback 受信（成果・注文ステータス・クリック）
 - **バッチ**：成果の確定・取消（日次）
@@ -51,7 +52,9 @@ php artisan serve
 2. 承認済みリダイレクトURIに
    `https://affiliate.shizenha-inu.life/admin/auth/google/callback` を登録
 3. クライアントID/シークレットを `.env`（`GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`）に設定
-4. `ADMIN_ALLOWED_EMAILS` にログインを許可するメールを列挙（カンマ区切り）
+4. ログインを許可するメールをロール別に設定（カンマ区切り）
+   - `ADMIN_MANAGER_EMAILS`＝管理（全権） / `ADMIN_OPERATOR_EMAILS`＝運用（設定変更以外）
+   - ログインしたGoogleアカウントのメールでロールを判定し、画面・操作を出し分けます
 
 ## EC-CUBE プラグインとの連携
 

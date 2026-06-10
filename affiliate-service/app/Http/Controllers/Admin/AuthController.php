@@ -33,9 +33,9 @@ class AuthController extends Controller
         }
 
         $email = strtolower((string) $googleUser->getEmail());
-        $allowed = (array) config('affiliate.admin_emails');
+        $roles = (array) config('affiliate.roles');
 
-        if (!in_array($email, $allowed, true)) {
+        if (!isset($roles[$email])) {
             return redirect()->route('admin.login')
                 ->with('error', 'このアカウントには管理画面へのアクセス権がありません。');
         }
@@ -44,13 +44,14 @@ class AuthController extends Controller
         $request->session()->put('admin_authenticated', true);
         $request->session()->put('admin_email', $email);
         $request->session()->put('admin_name', $googleUser->getName() ?: $email);
+        $request->session()->put('admin_role', $roles[$email]);
 
         return redirect()->route('admin.dashboard');
     }
 
     public function logout(Request $request)
     {
-        $request->session()->forget(['admin_authenticated', 'admin_email', 'admin_name']);
+        $request->session()->forget(['admin_authenticated', 'admin_email', 'admin_name', 'admin_role']);
         $request->session()->regenerate();
 
         return redirect()->route('admin.login');

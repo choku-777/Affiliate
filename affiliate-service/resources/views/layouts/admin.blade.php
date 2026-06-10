@@ -14,10 +14,15 @@
                 <a class="nav-link" href="{{ route('admin.dashboard') }}">ダッシュボード</a>
                 <a class="nav-link" href="{{ route('admin.affiliates.index') }}">アフィリエイター</a>
                 <a class="nav-link" href="{{ route('admin.rewards.index') }}">成果・報酬</a>
-                <a class="nav-link" href="{{ route('admin.settings.edit') }}">設定</a>
+                @if (session('admin_role') === 'manager')
+                    <a class="nav-link" href="{{ route('admin.settings.edit') }}">設定</a>
+                @endif
             </div>
             <div class="navbar-nav">
-                <span class="navbar-text me-3">{{ session('admin_name') }}</span>
+                <span class="navbar-text me-3">
+                    {{ session('admin_name') }}
+                    <span class="badge {{ session('admin_role') === 'manager' ? 'bg-primary' : 'bg-secondary' }}">{{ session('admin_role') === 'manager' ? '管理' : '運用' }}</span>
+                </span>
                 <form method="post" action="{{ route('admin.logout') }}">
                     @csrf
                     <button class="btn btn-sm btn-outline-light">ログアウト</button>

@@ -39,7 +39,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('rewards', [RewardController::class, 'index'])->name('rewards.index');
         Route::post('rewards/{reward}/pay', [RewardController::class, 'pay'])->name('rewards.pay');
 
-        Route::get('settings', [SettingController::class, 'edit'])->name('settings.edit');
-        Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
+        // 設定は「管理」ロール限定
+        Route::middleware('manager')->group(function () {
+            Route::get('settings', [SettingController::class, 'edit'])->name('settings.edit');
+            Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
+        });
     });
 });
