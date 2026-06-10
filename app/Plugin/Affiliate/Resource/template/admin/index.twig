@@ -1,0 +1,83 @@
+{#
+アフィリエイター一覧（管理）
+#}
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['affiliate', 'affiliate_list'] %}
+
+{% block title %}アフィリエイター{% endblock %}
+{% block sub_title %}アフィリエイト管理{% endblock %}
+
+{% set status_labels = {
+    (constant('Plugin\\Affiliate\\Entity\\Affiliate::STATUS_PENDING')): '申請中',
+    (constant('Plugin\\Affiliate\\Entity\\Affiliate::STATUS_APPROVED')): '承認済み',
+    (constant('Plugin\\Affiliate\\Entity\\Affiliate::STATUS_REJECTED')): '却下',
+    (constant('Plugin\\Affiliate\\Entity\\Affiliate::STATUS_SUSPENDED')): '停止'
+} %}
+
+{% block main %}
+<form method="get" action="{{ url('admin_affiliate') }}">
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            <div class="c-primaryCol">
+                <div class="card rounded border-0 mb-4">
+                    <div class="card-body p-0">
+                        <div class="row p-3">
+                            <div class="col-4">
+                                <input type="text" class="form-control" name="name" value="{{ searchData.name }}" placeholder="氏名">
+                            </div>
+                            <div class="col-4">
+                                <input type="text" class="form-control" name="email" value="{{ searchData.email }}" placeholder="メールアドレス">
+                            </div>
+                            <div class="col-3">
+                                <select class="form-control" name="status">
+                                    <option value="">すべてのステータス</option>
+                                    {% for value, label in status_labels %}
+                                        <option value="{{ value }}" {{ searchData.status == value ? 'selected' }}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-1">
+                                <button type="submit" class="btn btn-primary">検索</button>
+                            </div>
+                        </div>
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>氏名</th>
+                                    <th>メール</th>
+                                    <th>コード</th>
+                                    <th>ステータス</th>
+                                    <th>申請日</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for Affiliate in pagination %}
+                                <tr>
+                                    <td>{{ Affiliate.id }}</td>
+                                    <td>{{ Affiliate.name }}</td>
+                                    <td>{{ Affiliate.email }}</td>
+                                    <td>{{ Affiliate.affiliateCode }}</td>
+                                    <td>{{ status_labels[Affiliate.status] ?? Affiliate.status }}</td>
+                                    <td>{{ Affiliate.createDate ? Affiliate.createDate|date('Y-m-d') }}</td>
+                                    <td>
+                                        <a class="btn btn-outline-primary btn-sm" href="{{ url('admin_affiliate_show', {id: Affiliate.id}) }}">詳細</a>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr><td colspan="7">該当するアフィリエイターはいません。</td></tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {% include '@admin/pager.twig' with {'pages': pagination.paginationData} %}
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

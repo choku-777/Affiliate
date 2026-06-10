@@ -1,0 +1,12 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    Plugin\Affiliate\:
+        resource: '../../*'
+        exclude: '../../{Entity,Resource,Tests}'
+
+    Plugin\Affiliate\Controller\:
+        resource: '../../Controller'
+        tags: ['controller.service_arguments']

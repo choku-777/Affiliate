@@ -1,0 +1,26 @@
+{#
+アフィリエイター登録完了（フロント）
+#}
+{% extends 'default_frame.twig' %}
+
+{% block main %}
+<div class="ec-role">
+    <div class="ec-pageHeader">
+        <h1>登録を受け付けました</h1>
+    </div>
+    <div class="ec-reportRole">
+        <div class="ec-reportHeading">
+            <h2>お申し込みありがとうございます。</h2>
+        </div>
+        <p class="ec-reportDescription">
+            管理者の承認後、ご紹介用URLをメールでお送りします。<br>
+            今しばらくお待ちください。
+        </p>
+        <div class="ec-off4Grid">
+            <div class="ec-off4Grid__cell">
+                <a class="ec-blockBtn--cancel" href="{{ url('homepage') }}">トップへ戻る</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

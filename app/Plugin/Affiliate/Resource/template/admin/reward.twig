@@ -1,0 +1,96 @@
+{#
+成果・報酬一覧と支払い管理（管理）
+#}
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['affiliate', 'affiliate_reward'] %}
+
+{% block title %}成果・報酬{% endblock %}
+{% block sub_title %}アフィリエイト管理{% endblock %}
+
+{% set s_pending = constant('Plugin\\Affiliate\\Entity\\AffiliateReward::STATUS_PENDING') %}
+{% set s_confirmed = constant('Plugin\\Affiliate\\Entity\\AffiliateReward::STATUS_CONFIRMED') %}
+{% set s_cancelled = constant('Plugin\\Affiliate\\Entity\\AffiliateReward::STATUS_CANCELLED') %}
+{% set s_paid = constant('Plugin\\Affiliate\\Entity\\AffiliateReward::STATUS_PAID') %}
+{% set status_labels = {
+    (s_pending): '未確定',
+    (s_confirmed): '確定',
+    (s_cancelled): '取消',
+    (s_paid): '支払済'
+} %}
+
+{% block main %}
+<div class="c-contentsArea__cols">
+    <div class="c-contentsArea__primaryCol">
+        <div class="c-primaryCol">
+
+            <div class="row mb-3">
+                <div class="col"><div class="card border-0"><div class="card-body"><div class="text-muted">未確定</div><div class="h4">{{ (totals[s_pending] ?? 0)|number_format }} 円</div></div></div></div>
+                <div class="col"><div class="card border-0"><div class="card-body"><div class="text-muted">確定（未払い）</div><div class="h4">{{ (totals[s_confirmed] ?? 0)|number_format }} 円</div></div></div></div>
+                <div class="col"><div class="card border-0"><div class="card-body"><div class="text-muted">支払済</div><div class="h4">{{ (totals[s_paid] ?? 0)|number_format }} 円</div></div></div></div>
+                <div class="col"><div class="card border-0"><div class="card-body"><div class="text-muted">取消</div><div class="h4">{{ (totals[s_cancelled] ?? 0)|number_format }} 円</div></div></div></div>
+            </div>
+
+            <form method="get" action="{{ url('admin_affiliate_reward') }}">
+                <div class="card rounded border-0 mb-4">
+                    <div class="card-body p-0">
+                        <div class="row p-3">
+                            <div class="col-3">{{ form_widget(searchForm.affiliate_id, {attr: {placeholder: 'アフィリエイターID'}}) }}</div>
+                            <div class="col-3">{{ form_widget(searchForm.status) }}</div>
+                            <div class="col-2">{{ form_widget(searchForm.converted_date_start) }}</div>
+                            <div class="col-2">{{ form_widget(searchForm.converted_date_end) }}</div>
+                            <div class="col-2"><button type="submit" class="btn btn-primary">検索</button></div>
+                        </div>
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>アフィリエイター</th>
+                                    <th>注文番号</th>
+                                    <th class="text-right">注文金額</th>
+                                    <th class="text-right">料率</th>
+                                    <th class="text-right">報酬額</th>
+                                    <th>ステータス</th>
+                                    <th>発生日</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for Reward in pagination %}
+                                <tr>
+                                    <td>{{ Reward.id }}</td>
+                                    <td>
+                                        {% if Reward.Affiliate %}
+                                            #{{ Reward.Affiliate.id }} {{ Reward.Affiliate.name }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ Reward.Order ? Reward.Order.orderNo : '-' }}</td>
+                                    <td class="text-right">{{ Reward.orderTotal|number_format }}</td>
+                                    <td class="text-right">{{ Reward.rateApplied }}%</td>
+                                    <td class="text-right">{{ Reward.rewardAmount|number_format }}</td>
+                                    <td>{{ status_labels[Reward.status] ?? Reward.status }}</td>
+                                    <td>{{ Reward.convertedDate ? Reward.convertedDate|date('Y-m-d') }}</td>
+                                    <td>
+                                        {% if Reward.status == s_confirmed %}
+                                            <form method="post" action="{{ url('admin_affiliate_reward_pay', {id: Reward.id}) }}" onsubmit="return confirm('支払済にしますか？');">
+                                                <input type="hidden" name="{{ constant('Eccube\\Common\\Constant::TOKEN_NAME') }}" value="{{ csrf_token(constant('Eccube\\Common\\Constant::TOKEN_NAME')) }}">
+                                                <button type="submit" class="btn btn-outline-primary btn-sm">支払済にする</button>
+                                            </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr><td colspan="9">該当する成果はありません。</td></tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {% include '@admin/pager.twig' with {'pages': pagination.paginationData} %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

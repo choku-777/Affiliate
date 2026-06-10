@@ -1,0 +1,12 @@
+{
+    "name": "ec-cube/affiliate",
+    "version": "1.0.0",
+    "description": "自社運用型アフィリエイト（紹介報酬）プラグイン。アフィリエイター登録（承認制）・専用URLによる成果計測・報酬集計・支払い管理を提供します。",
+    "type": "eccube-plugin",
+    "require": {
+        "ec-cube/plugin-installer": "^2.0 || ^0.0.7"
+    },
+    "extra": {
+        "code": "Affiliate"
+    }
+}
