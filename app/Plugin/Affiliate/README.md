@@ -41,7 +41,7 @@
 
 ```dotenv
 # 管理サービスのベースURL
-AFFILIATE_API_URL=https://affiliate.shizenha-inu.life
+AFFILIATE_API_URL=https://affiliate.tairiku-tsusho.co.jp
 # 管理サービスと共有するAPIキー
 AFFILIATE_API_KEY=（管理サービスで発行した値）
 # クッキー有効期間（日）。未指定は30

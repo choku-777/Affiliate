@@ -1,7 +1,7 @@
 # アフィリエイト管理サービス（Laravel）
 
 EC-CUBE とは独立した、アフィリエイト管理用の Web アプリです。
-`affiliate.shizenha-inu.life`（Xserver サブドメイン）での稼働を想定しています。
+`affiliate.tairiku-tsusho.co.jp`（Xserver サブドメイン）での稼働を想定しています。
 
 - **アフィリエイター登録**（公開）と **本人マイページ**（トークンURL）
 - **管理画面**（Googleアカウント認証・許可メールのホワイトリスト・ロール2種）
@@ -50,7 +50,7 @@ php artisan serve
 
 1. Google Cloud Console で OAuth クライアント（ウェブ）を作成
 2. 承認済みリダイレクトURIに
-   `https://affiliate.shizenha-inu.life/admin/auth/google/callback` を登録
+   `https://affiliate.tairiku-tsusho.co.jp/admin/auth/google/callback` を登録
 3. クライアントID/シークレットを `.env`（`GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`）に設定
 4. ログインを許可するメールをロール別に設定（カンマ区切り）
    - `ADMIN_MANAGER_EMAILS`＝管理（全権） / `ADMIN_OPERATOR_EMAILS`＝運用（設定変更以外）
@@ -61,14 +61,14 @@ php artisan serve
 - `AFFILIATE_API_KEY` を **EC-CUBE 側（.env）と本アプリ（.env）で同じ値**にする
 - EC-CUBE 側 `.env`：
   ```
-  AFFILIATE_API_URL=https://affiliate.shizenha-inu.life
+  AFFILIATE_API_URL=https://affiliate.tairiku-tsusho.co.jp
   AFFILIATE_API_KEY=（同じ値）
   ```
 - 受信エンドポイント：`POST /api/affiliate/event`（ヘッダ `X-Api-Key`）
 
 ## Xserver へのデプロイ（概要）
 
-1. サブドメイン `affiliate.shizenha-inu.life` を作成
+1. サブドメイン `affiliate.tairiku-tsusho.co.jp` を作成
 2. ドキュメントルートを **`public/`** に向ける（Laravel標準）
 3. PHP 8.3 を選択、`composer install --no-dev`、`.env` 設定、`php artisan migrate`
 4. cron に確定バッチを登録：
