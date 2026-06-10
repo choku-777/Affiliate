@@ -2,6 +2,7 @@
 
 namespace Plugin\Affiliate\EventListener;
 
+use Plugin\Affiliate\Service\Config;
 use Plugin\Affiliate\Service\PostbackClient;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -23,10 +24,10 @@ class AffiliateCookieListener implements EventSubscriberInterface
     private $trackClicks;
     private $postbackClient;
 
-    public function __construct(int $cookieDays, bool $trackClicks, PostbackClient $postbackClient)
+    public function __construct(Config $config, PostbackClient $postbackClient)
     {
-        $this->cookieDays = $cookieDays > 0 ? $cookieDays : 30;
-        $this->trackClicks = $trackClicks;
+        $this->cookieDays = $config->cookieDays();
+        $this->trackClicks = $config->trackClicks();
         $this->postbackClient = $postbackClient;
     }
 

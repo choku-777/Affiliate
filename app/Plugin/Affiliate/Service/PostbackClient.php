@@ -18,10 +18,10 @@ class PostbackClient
     private $apiKey;
     private $outboxDir;
 
-    public function __construct(?string $apiUrl, ?string $apiKey, string $projectDir)
+    public function __construct(Config $config, string $projectDir)
     {
-        $this->apiUrl = $apiUrl ? rtrim($apiUrl, '/') : null;
-        $this->apiKey = $apiKey;
+        $this->apiUrl = $config->apiUrl();
+        $this->apiKey = $config->apiKey();
         $this->outboxDir = $projectDir.'/var/affiliate_outbox';
     }
 
