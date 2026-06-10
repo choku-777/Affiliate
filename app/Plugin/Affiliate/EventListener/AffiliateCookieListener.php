@@ -2,10 +2,7 @@
 
 namespace Plugin\Affiliate\EventListener;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Plugin\Affiliate\Entity\AffiliateClick;
-use Plugin\Affiliate\Repository\AffiliateConfigRepository;
-use Plugin\Affiliate\Repository\AffiliateRepository;
+use Plugin\Affiliate\Service\PostbackClient;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
@@ -13,7 +10,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * 任意のページに付与された ?affiliate=CODE を検知し、成果紐付け用クッキーを発行する。
- * 同時にクリックログを記録する。複数経由時はラストクリックで上書きされる。
+ * コードの正当性チェックは管理サービス側（postback受信時）で行うため、ここではDB参照しない。
  */
 class AffiliateCookieListener implements EventSubscriberInterface
 {
@@ -22,24 +19,20 @@ class AffiliateCookieListener implements EventSubscriberInterface
     /** クッキー名 */
     const COOKIE_NAME = 'affiliate_code';
 
-    private $affiliateRepository;
-    private $configRepository;
-    private $entityManager;
+    private $cookieDays;
+    private $trackClicks;
+    private $postbackClient;
 
-    public function __construct(
-        AffiliateRepository $affiliateRepository,
-        AffiliateConfigRepository $configRepository,
-        EntityManagerInterface $entityManager
-    ) {
-        $this->affiliateRepository = $affiliateRepository;
-        $this->configRepository = $configRepository;
-        $this->entityManager = $entityManager;
+    public function __construct(int $cookieDays, bool $trackClicks, PostbackClient $postbackClient)
+    {
+        $this->cookieDays = $cookieDays > 0 ? $cookieDays : 30;
+        $this->trackClicks = $trackClicks;
+        $this->postbackClient = $postbackClient;
     }
 
     public static function getSubscribedEvents()
     {
         return [
-            // 低優先度で動かし、本来のレスポンス生成を妨げない
             KernelEvents::RESPONSE => ['onKernelResponse', -10],
         ];
     }
@@ -52,19 +45,11 @@ class AffiliateCookieListener implements EventSubscriberInterface
 
         $request = $event->getRequest();
         $code = $request->query->get(self::QUERY_KEY);
-        if (!$code) {
+        if (!$code || !preg_match('/\A[A-Za-z0-9_-]{1,64}\z/', $code)) {
             return;
         }
 
-        $affiliate = $this->affiliateRepository->findApprovedByCode($code);
-        if (!$affiliate) {
-            return;
-        }
-
-        $config = $this->configRepository->get();
-        $expire = new \DateTime();
-        $expire->modify('+'.$config->getCookieLifetimeDays().' day');
-
+        $expire = new \DateTime('+'.$this->cookieDays.' day');
         $cookie = Cookie::create(
             self::COOKIE_NAME,
             $code,
@@ -72,25 +57,23 @@ class AffiliateCookieListener implements EventSubscriberInterface
             '/',
             null,
             $request->isSecure(),
-            true,          // httpOnly（サーバ側でのみ参照するため）
+            true,
             false,
             Cookie::SAMESITE_LAX
         );
         $event->getResponse()->headers->setCookie($cookie);
 
-        // クリックログ
-        $click = new AffiliateClick();
-        $click->setAffiliate($affiliate)
-            ->setIp($request->getClientIp())
-            ->setReferer($request->headers->get('referer'))
-            ->setLandingUrl($request->getPathInfo());
-        $this->entityManager->persist($click);
-        $this->entityManager->flush();
+        if ($this->trackClicks) {
+            $this->postbackClient->send('click', [
+                'affiliate_code' => $code,
+                'ip' => $request->getClientIp(),
+                'referer' => $request->headers->get('referer'),
+                'landing_url' => $request->getUri(),
+                'clicked_at' => (new \DateTime())->format(\DateTime::ATOM),
+            ]);
+        }
     }
 
-    /**
-     * Symfony のバージョン差異を吸収してメインリクエスト判定を行う。
-     */
     private function isMainRequest(ResponseEvent $event): bool
     {
         if (method_exists($event, 'isMainRequest')) {

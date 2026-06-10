@@ -1,12 +1,26 @@
+parameters:
+    # 送信先（別アフィリエイト管理サービスのベースURL）。例: https://affiliate.shizenha-inu.life
+    affiliate.api_url: '%env(default::AFFILIATE_API_URL)%'
+    # 管理サービスと共有するAPIキー
+    affiliate.api_key: '%env(default::AFFILIATE_API_KEY)%'
+    # クッキー有効期間（日）
+    affiliate.cookie_days_default: 30
+    affiliate.cookie_days: '%env(default:affiliate.cookie_days_default:int:AFFILIATE_COOKIE_DAYS)%'
+    # クリックも送信するか（既定OFF。ONにすると着地ページで1回HTTP送信が走る）
+    affiliate.track_clicks_default: false
+    affiliate.track_clicks: '%env(default:affiliate.track_clicks_default:bool:AFFILIATE_TRACK_CLICKS)%'
+
 services:
     _defaults:
         autowire: true
         autoconfigure: true
+        bind:
+            $apiUrl: '%affiliate.api_url%'
+            $apiKey: '%affiliate.api_key%'
+            $cookieDays: '%affiliate.cookie_days%'
+            $trackClicks: '%affiliate.track_clicks%'
+            $projectDir: '%kernel.project_dir%'
 
     Plugin\Affiliate\:
         resource: '../../*'
-        exclude: '../../{Entity,Resource,Tests}'
-
-    Plugin\Affiliate\Controller\:
-        resource: '../../Controller'
-        tags: ['controller.service_arguments']
+        exclude: '../../{Resource,Tests}'

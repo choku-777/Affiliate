@@ -1,7 +1,7 @@
 {
     "name": "ec-cube/affiliate",
-    "version": "1.0.0",
-    "description": "自社運用型アフィリエイト（紹介報酬）プラグイン。アフィリエイター登録（承認制）・専用URLによる成果計測・報酬集計・支払い管理を提供します。",
+    "version": "2.0.0",
+    "description": "アフィリエイト計測プラグイン（postback専用の薄い計測層）。?affiliate=CODE のクッキー計測と、注文完了/注文ステータス変更を外部のアフィリエイト管理サービスへ送信します。管理UIは別アプリ側にあります。",
     "type": "eccube-plugin",
     "require": {
         "ec-cube/plugin-installer": "^2.0 || ^0.0.7"
