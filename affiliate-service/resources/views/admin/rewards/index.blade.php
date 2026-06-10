@@ -1,0 +1,75 @@
+@extends('layouts.admin')
+@section('title', '成果・報酬')
+
+@section('content')
+<h1 class="h4 mb-3">成果・報酬</h1>
+
+<div class="row text-center mb-3">
+    @foreach (['pending', 'confirmed', 'paid', 'cancelled'] as $st)
+        <div class="col">
+            <div class="card card-body">
+                <div class="text-muted small">{{ $statusLabels[$st] }}</div>
+                <div class="h5 mb-0">{{ number_format($totals[$st] ?? 0) }} 円</div>
+            </div>
+        </div>
+    @endforeach
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <input type="number" name="affiliate_id" value="{{ $filters['affiliate_id'] ?? '' }}" class="form-control" placeholder="アフィリエイターID">
+    </div>
+    <div class="col-auto">
+        <select name="status" class="form-select">
+            <option value="">すべて</option>
+            @foreach ($statusLabels as $value => $label)
+                <option value="{{ $value }}" @selected(($filters['status'] ?? '') === $value)>{{ $label }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="col-auto"><input type="date" name="start" value="{{ $filters['start'] ?? '' }}" class="form-control"></div>
+    <div class="col-auto"><input type="date" name="end" value="{{ $filters['end'] ?? '' }}" class="form-control"></div>
+    <div class="col-auto"><button class="btn btn-primary">検索</button></div>
+</form>
+
+<div class="card">
+    <table class="table mb-0">
+        <thead>
+            <tr>
+                <th>ID</th><th>アフィリエイター</th><th>注文番号</th>
+                <th class="text-end">注文金額</th><th class="text-end">料率</th><th class="text-end">報酬額</th>
+                <th>状態</th><th>発生日</th><th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($rewards as $reward)
+                <tr>
+                    <td>{{ $reward->id }}</td>
+                    <td>
+                        @if ($reward->affiliate)
+                            #{{ $reward->affiliate->id }} {{ $reward->affiliate->name }}
+                        @endif
+                    </td>
+                    <td>{{ $reward->order_no }}</td>
+                    <td class="text-end">{{ number_format($reward->order_total) }}</td>
+                    <td class="text-end">{{ $reward->rate_applied }}%</td>
+                    <td class="text-end">{{ number_format($reward->reward_amount) }}</td>
+                    <td>{{ $reward->statusLabel() }}</td>
+                    <td>{{ optional($reward->converted_at)->format('Y-m-d') }}</td>
+                    <td>
+                        @if ($reward->status === \App\Models\Reward::STATUS_CONFIRMED)
+                            <form method="post" action="{{ route('admin.rewards.pay', $reward) }}" onsubmit="return confirm('支払済にしますか？');">
+                                @csrf
+                                <button class="btn btn-sm btn-outline-primary">支払済</button>
+                            </form>
+                        @endif
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="9" class="text-muted">該当なし</td></tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+<div class="mt-3">{{ $rewards->links() }}</div>
+@endsection
