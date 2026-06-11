@@ -50,10 +50,12 @@ EC-CUBE で運営するペット用品ショップ **自然派ぬ生活（https:
 | 管理画面の認証 | **Google OAuth**（Laravel Socialite）＋**許可メールのホワイトリスト** |
 | 管理画面のロール | **2ロール**。`manager`=全権 / `operator`=設定変更以外（承認・成果・支払い操作は可）。ログインしたGoogleアカウントのメールでロール判定 |
 | アフィリエイターとEC-CUBE会員 | **別管理**（メール突合なし）。成果紐付けはコード（クッキー）→注文番号のみ |
-| アフィリエイター本人マイページ | **トークンURL方式**（パスワードログインなし）。`/mypage/{token}` |
+| アフィリエイター登録項目 | 姓名・フリガナ・電話・生年月日・性別・住所（郵便番号→住所自動入力 zipcloud API）・**ログイン用メール＆パスワード**・振込先 |
+| アフィリエイター本人マイページ | **メール＋パスワードのログイン方式**（`/affiliate/login` → `/affiliate/mypage`）。承認済みのみログイン可。※当初トークンURL案だったがログイン方式に変更済み |
 | 報酬計算 | 料率方式（既定5%・設定可）。`floor(注文金額 × 料率 / 100)` |
 | 成果の確定 | 発生から N 日（既定30日）経過で自動確定（日次バッチ） |
 | キャンセル/返品 | EC-CUBE管理の注文編集時にプラグインがステータスをPOST → Laravel側で該当成果を取消 |
+| 報酬の支払い | アフィリエイター単位の**一括支払い(Payout)**。確定済み(confirmed)合計が最低支払額以上の人をまとめて`paid`化し、支払い履歴(payouts)を残す |
 
 ## 4. データの流れ（エンドツーエンド）
 
@@ -65,9 +67,9 @@ EC-CUBE で運営するペット用品ショップ **自然派ぬ生活（https:
 4. EC-CUBE管理で注文ステータス変更（キャンセル=3／返品=9 等）
    → プラグインが `order_status` をPOST → 管理アプリが該当成果を `cancelled` に
 5. 日次バッチ `affiliate:confirm-rewards`: `pending` かつ発生から確定日数経過かつ未キャンセル → `confirmed`
-6. 管理者が `confirmed` の成果を「支払済」操作 → `paid`
-7. アフィリエイター登録は管理アプリの公開フォームから。管理者がGoogleログインで承認すると、
-   承認通知メールで「紹介用URL」と「マイページURL」が送られる
+6. 管理者が「支払い」画面でアフィリエイター単位に**一括支払い** → 対象の確定報酬を `paid` 化し `payouts` 履歴を作成
+7. アフィリエイター登録は管理アプリの公開フォームから（メール＋パスワードも登録）。管理者がGoogleログインで承認すると、
+   承認通知メールで「紹介用URL」と「ログインURL」が送られる。本人はメール＋パスワードで `/affiliate/login` からマイページにログイン
 
 ## 5. コンポーネント① EC-CUBE プラグイン（`app/Plugin/Affiliate`）
 
@@ -128,25 +130,27 @@ AFFILIATE_TRACK_CLICKS=false                               # 任意（クリッ�
 ```
 affiliate-service/
 ├── app/
-│   ├── Models/                Affiliate, Reward, Setting, Click
+│   ├── Models/                Affiliate, Reward, Setting, Click, Payout
 │   ├── Services/RewardCalculator.php           # floor(total*rate/100)
 │   ├── Console/Commands/ConfirmRewards.php      # affiliate:confirm-rewards（確定/取消）
-│   ├── Mail/AffiliateApproved.php               # 承認通知メール
+│   ├── Mail/AffiliateApproved.php               # 承認通知メール（紹介URL＋ログインURL）
 │   └── Http/
 │       ├── Middleware/VerifyApiKey.php          # X-Api-Key検証
 │       ├── Middleware/EnsureAdmin.php           # 管理画面ログイン必須
 │       ├── Middleware/EnsureManager.php         # managerロール限定（設定）
+│       ├── Middleware/EnsureAffiliateLoggedIn.php # アフィリエイター本人ログイン必須（alias: affiliate）
 │       └── Controllers/
 │           ├── Api/EventController.php           # POST /api/affiliate/event 受信
-│           ├── RegistrationController.php        # 公開：登録
-│           ├── MyPageController.php              # 公開：トークンURLのマイページ
-│           └── Admin/AuthController.php, DashboardController.php,
-│                     AffiliateController.php, RewardController.php, SettingController.php
+│           ├── RegistrationController.php        # 公開：登録（拡張項目＋パスワード）
+│           ├── AffiliateAuthController.php       # 公開：本人ログイン/ログアウト（メール＋パスワード）
+│           ├── MyPageController.php              # 本人：マイページ（session affiliate_id で特定）
+│           └── Admin/AuthController.php, DashboardController.php, AffiliateController.php,
+│                     RewardController.php, PayoutController.php, SettingController.php
 ├── config/affiliate.php       # api_key, roles(email=>role), admin_emails, shop_url
 ├── config/services.php        # google（Socialite）ブロック追加済み
 ├── bootstrap/app.php          # ミドルウェアalias(admin/manager/apikey)・ルーティング
 ├── routes/web.php, api.php, console.php
-├── database/migrations/       # settings, affiliates, rewards, clicks
+├── database/migrations/       # settings, affiliates, rewards, clicks, +profile/auth拡張, payouts
 ├── resources/views/           # register, mypage, admin/*, emails（Bootstrap 5 CDN）
 ├── .env.example
 ├── README.md                  # 構築手順の概要
@@ -155,18 +159,24 @@ affiliate-service/
 
 ### データモデル
 - **settings**（単一行 id=1）: `commission_rate`, `confirm_after_days`, `min_payout_amount`, `cookie_lifetime_days`
-- **affiliates**: `name`, `email`(unique), `affiliate_code`(unique), `mypage_token`(unique),
-  銀行情報, `status`(pending/approved/rejected/suspended), `commission_rate`(nullable=個別料率上書き), `approved_at`
+- **affiliates**: `name`(姓名連結・互換用), `last_name`/`first_name`/`last_name_kana`/`first_name_kana`,
+  `email`(unique・ログインID), `password`(hashedキャスト), `phone`, `birth_date`, `gender`,
+  住所(`postal_code`/`prefecture`/`city`/`address1`/`address2`), `affiliate_code`(unique),
+  `mypage_token`(unique・現状はログイン方式のため未使用), 銀行情報,
+  `status`(pending/approved/rejected/suspended), `commission_rate`(nullable=個別料率上書き), `approved_at`
 - **rewards**: `affiliate_id`, `order_no`(unique), `order_total`, `rate_applied`, `reward_amount`,
-  `status`(pending/confirmed/cancelled/paid), `order_status_id`, `converted_at`/`confirmed_at`/`paid_at`
+  `status`(pending/confirmed/cancelled/paid), `order_status_id`, `converted_at`/`confirmed_at`/`paid_at`, `payout_id`(nullable)
+- **payouts**: `affiliate_id`, `amount`(支払合計), `reward_count`(まとめた件数), `paid_at`。1回の一括支払い＝1レコード
 - **clicks**: `affiliate_id`(nullable), `affiliate_code`, `ip`, `referer`, `landing_url`, `clicked_at`
 
 ### ルート概要
-- 公開: `GET /register`, `POST /register`, `GET /register/thanks`, `GET /mypage/{token}`
+- 公開: `GET /register`, `POST /register`, `GET /register/thanks`
+- アフィリエイター本人: `GET|POST /affiliate/login`, （middleware `affiliate`）`GET /affiliate/mypage`, `POST /affiliate/logout`
 - API: `POST /api/affiliate/event`（middleware `apikey`）
 - 管理: `GET /admin/login`, Google認証(`/admin/auth/google/redirect|callback`), `POST /admin/logout`
   - 認可領域(middleware `admin`): `/admin`（ダッシュボード）, `/admin/affiliates`（一覧/詳細/approve/reject/suspend）,
-    `/admin/rewards`（一覧/pay）, **`/admin/settings`（middleware `manager` でmanager限定）**
+    `/admin/rewards`（一覧）, `/admin/payouts`（一括支払い一覧／`POST /admin/payouts/{affiliate}` で支払い実行）,
+    **`/admin/settings`（middleware `manager` でmanager限定）**
 
 ### `.env` の要点
 ```dotenv
