@@ -17,6 +17,14 @@
 
 <form method="get" class="row g-2 mb-3">
     <div class="col-auto">
+        <select name="site_id" class="form-select">
+            <option value="">全サイト</option>
+            @foreach ($sites as $site)
+                <option value="{{ $site->id }}" @selected(($filters['site_id'] ?? '') == $site->id)>{{ $site->name }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="col-auto">
         <input type="number" name="affiliate_id" value="{{ $filters['affiliate_id'] ?? '' }}" class="form-control" placeholder="アフィリエイターID">
     </div>
     <div class="col-auto">
@@ -36,7 +44,7 @@
     <table class="table mb-0">
         <thead>
             <tr>
-                <th>ID</th><th>アフィリエイター</th><th>注文番号</th>
+                <th>ID</th><th>サイト</th><th>アフィリエイター</th><th>注文番号</th>
                 <th class="text-end">注文金額</th><th class="text-end">料率</th><th class="text-end">報酬額</th>
                 <th>状態</th><th>発生日</th>
             </tr>
@@ -45,6 +53,7 @@
             @forelse ($rewards as $reward)
                 <tr>
                     <td>{{ $reward->id }}</td>
+                    <td>{{ optional($reward->site)->name }}</td>
                     <td>
                         @if ($reward->affiliate)
                             #{{ $reward->affiliate->id }} {{ $reward->affiliate->name }}
@@ -58,7 +67,7 @@
                     <td>{{ optional($reward->converted_at)->format('Y-m-d') }}</td>
                 </tr>
             @empty
-                <tr><td colspan="8" class="text-muted">該当なし</td></tr>
+                <tr><td colspan="9" class="text-muted">該当なし</td></tr>
             @endforelse
         </tbody>
     </table>

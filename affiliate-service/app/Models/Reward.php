@@ -24,6 +24,7 @@ class Reward extends Model
 
     protected $fillable = [
         'affiliate_id',
+        'site_id',
         'order_no',
         'order_total',
         'rate_applied',
@@ -49,6 +50,11 @@ class Reward extends Model
     public function affiliate(): BelongsTo
     {
         return $this->belongsTo(Affiliate::class);
+    }
+
+    public function site(): BelongsTo
+    {
+        return $this->belongsTo(Site::class);
     }
 
     public function payout(): BelongsTo

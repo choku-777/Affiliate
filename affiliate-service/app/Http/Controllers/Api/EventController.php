@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Affiliate;
 use App\Models\Click;
 use App\Models\Reward;
+use App\Models\Site;
 use App\Services\RewardCalculator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -66,14 +67,16 @@ class EventController extends Controller
             return response()->json(['status' => 'ignored', 'reason' => 'affiliate not approved']);
         }
 
+        $site = Site::byCode($payload['site_code'] ?? null) ?? Site::default();
         $orderTotal = (float) ($payload['order_total'] ?? 0);
-        $rate = $affiliate->effectiveRate();
+        $rate = $affiliate->effectiveRate($site);
         $convertedAt = !empty($payload['order_date'])
             ? Carbon::parse($payload['order_date'])
             : now();
 
         Reward::create([
             'affiliate_id' => $affiliate->id,
+            'site_id' => $site?->id,
             'order_no' => $orderNo,
             'order_total' => $orderTotal,
             'rate_applied' => $rate,
@@ -126,9 +129,11 @@ class EventController extends Controller
         }
 
         $affiliate = Affiliate::where('affiliate_code', $code)->first();
+        $site = Site::byCode($payload['site_code'] ?? null) ?? Site::default();
 
         Click::create([
             'affiliate_id' => $affiliate?->id,
+            'site_id' => $site?->id,
             'affiliate_code' => $code,
             'ip' => $payload['ip'] ?? null,
             'referer' => isset($payload['referer']) ? mb_substr((string) $payload['referer'], 0, 1000) : null,

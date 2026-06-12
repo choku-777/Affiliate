@@ -6,8 +6,13 @@
 
 @if ($affiliate->isApproved())
     <div class="card card-body mb-3">
-        <label class="form-label small text-muted mb-1">あなたの紹介用URL</label>
-        <code class="user-select-all">{{ $affiliate->affiliateUrl() }}</code>
+        <label class="form-label small text-muted mb-2">あなたの紹介用URL（サイトごと）</label>
+        @foreach ($affiliate->affiliateUrls() as $row)
+            <div class="mb-2">
+                <div class="small fw-bold">{{ $row['site']->name }}</div>
+                <code class="user-select-all">{{ $row['url'] }}</code>
+            </div>
+        @endforeach
     </div>
 @else
     <div class="alert alert-info">現在のステータス：{{ $affiliate->statusLabel() }}（承認後にURLが有効になります）</div>

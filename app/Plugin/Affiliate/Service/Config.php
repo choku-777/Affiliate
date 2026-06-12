@@ -34,6 +34,14 @@ class Config
         return $value !== null && filter_var($value, FILTER_VALIDATE_BOOLEAN);
     }
 
+    /**
+     * このサイトの識別子（マルチサイト用）。例: shizenha-inu / baniku
+     */
+    public function siteCode(): ?string
+    {
+        return self::env('AFFILIATE_SITE_CODE');
+    }
+
     private static function env(string $key): ?string
     {
         if (array_key_exists($key, $_SERVER) && $_SERVER[$key] !== '') {

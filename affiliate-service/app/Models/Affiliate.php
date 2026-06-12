@@ -100,21 +100,37 @@ class Affiliate extends Model
     /**
      * 適用料率（個別設定があればそれ、なければ全体設定）。
      */
-    public function effectiveRate(): float
+    public function effectiveRate(?Site $site = null): float
     {
         if ($this->commission_rate !== null) {
             return (float) $this->commission_rate;
         }
 
-        return (float) Setting::current()->commission_rate;
+        $site = $site ?? Site::default();
+
+        return (float) ($site?->commission_rate ?? Setting::current()->commission_rate);
     }
 
     /**
-     * ショップURL + ?affiliate=CODE。
+     * 全サイトの紹介URL一覧（各要素 ['site' => Site, 'url' => string]）。
+     */
+    public function affiliateUrls(): array
+    {
+        return Site::query()->orderByDesc('is_default')->orderBy('id')->get()
+            ->map(fn (Site $s) => ['site' => $s, 'url' => $s->affiliateUrl($this->affiliate_code)])
+            ->all();
+    }
+
+    /**
+     * 既定サイトの紹介URL（後方互換）。
      */
     public function affiliateUrl(): string
     {
-        return config('affiliate.shop_url').'/?affiliate='.$this->affiliate_code;
+        $site = Site::default();
+
+        return $site
+            ? $site->affiliateUrl($this->affiliate_code)
+            : config('affiliate.shop_url').'/?affiliate='.$this->affiliate_code;
     }
 
     /**

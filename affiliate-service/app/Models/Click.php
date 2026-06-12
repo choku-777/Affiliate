@@ -12,6 +12,7 @@ class Click extends Model
 {
     protected $fillable = [
         'affiliate_id',
+        'site_id',
         'affiliate_code',
         'ip',
         'referer',
@@ -26,5 +27,10 @@ class Click extends Model
     public function affiliate(): BelongsTo
     {
         return $this->belongsTo(Affiliate::class);
+    }
+
+    public function site(): BelongsTo
+    {
+        return $this->belongsTo(Site::class);
     }
 }

@@ -22,12 +22,14 @@ class AffiliateCookieListener implements EventSubscriberInterface
 
     private $cookieDays;
     private $trackClicks;
+    private $siteCode;
     private $postbackClient;
 
     public function __construct(Config $config, PostbackClient $postbackClient)
     {
         $this->cookieDays = $config->cookieDays();
         $this->trackClicks = $config->trackClicks();
+        $this->siteCode = $config->siteCode();
         $this->postbackClient = $postbackClient;
     }
 
@@ -67,6 +69,7 @@ class AffiliateCookieListener implements EventSubscriberInterface
         if ($this->trackClicks) {
             $this->postbackClient->send('click', [
                 'affiliate_code' => $code,
+                'site_code' => $this->siteCode,
                 'ip' => $request->getClientIp(),
                 'referer' => $request->headers->get('referer'),
                 'landing_url' => $request->getUri(),

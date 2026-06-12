@@ -4,6 +4,7 @@ namespace Plugin\Affiliate\EventListener;
 
 use Eccube\Event\EccubeEvents;
 use Eccube\Event\EventArgs;
+use Plugin\Affiliate\Service\Config;
 use Plugin\Affiliate\Service\PostbackClient;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -14,10 +15,12 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class AdminOrderStatusListener implements EventSubscriberInterface
 {
     private $postbackClient;
+    private $config;
 
-    public function __construct(PostbackClient $postbackClient)
+    public function __construct(PostbackClient $postbackClient, Config $config)
     {
         $this->postbackClient = $postbackClient;
+        $this->config = $config;
     }
 
     public static function getSubscribedEvents()
@@ -43,6 +46,7 @@ class AdminOrderStatusListener implements EventSubscriberInterface
 
         $this->postbackClient->send('order_status', [
             'order_no' => $Order->getOrderNo(),
+            'site_code' => $this->config->siteCode(),
             'order_status_id' => $status ? $status->getId() : null,
             'order_status_name' => $status ? $status->getName() : null,
         ]);

@@ -4,6 +4,7 @@ namespace Plugin\Affiliate\EventListener;
 
 use Eccube\Event\EccubeEvents;
 use Eccube\Event\EventArgs;
+use Plugin\Affiliate\Service\Config;
 use Plugin\Affiliate\Service\PostbackClient;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -14,10 +15,12 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class ShoppingCompleteListener implements EventSubscriberInterface
 {
     private $postbackClient;
+    private $config;
 
-    public function __construct(PostbackClient $postbackClient)
+    public function __construct(PostbackClient $postbackClient, Config $config)
     {
         $this->postbackClient = $postbackClient;
+        $this->config = $config;
     }
 
     public static function getSubscribedEvents()
@@ -47,6 +50,7 @@ class ShoppingCompleteListener implements EventSubscriberInterface
 
         $this->postbackClient->send('conversion', [
             'affiliate_code' => $code,
+            'site_code' => $this->config->siteCode(),
             'order_no' => $Order->getOrderNo(),
             'order_total' => (string) $Order->getPaymentTotal(),
             'order_date' => $orderDate ? $orderDate->format(\DateTime::ATOM) : null,

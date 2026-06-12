@@ -63,11 +63,19 @@ class RegistrationController extends Controller
         // 既存コード（表示・検索）互換のため name は姓+名の連結を保持する
         $data['name'] = $data['last_name'].' '.$data['first_name'];
 
-        Affiliate::create($data + [
+        $affiliate = Affiliate::create($data + [
             'affiliate_code' => Affiliate::generateCode(),
             'mypage_token' => Affiliate::generateToken(),
             'status' => Affiliate::STATUS_PENDING,
         ]);
+
+        // 登録受付メール（送信失敗で登録自体は止めない）
+        try {
+            \Illuminate\Support\Facades\Mail::to($affiliate->email)
+                ->send(new \App\Mail\RegistrationReceived($affiliate));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('登録受付メール送信失敗: '.$e->getMessage());
+        }
 
         return redirect()->route('register.thanks');
     }
