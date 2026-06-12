@@ -43,4 +43,18 @@ class RewardController extends Controller
             'filters' => $request->only('status', 'affiliate_id', 'start', 'end', 'site_id'),
         ]);
     }
+
+    /**
+     * 報酬を任意で取り消す（管理者の手動操作）。未確定・確定のみ対象。
+     */
+    public function cancel(Reward $reward)
+    {
+        if (! in_array($reward->status, [Reward::STATUS_PENDING, Reward::STATUS_CONFIRMED], true)) {
+            return back()->with('warning', 'この報酬は取り消せません（支払済または取消済です）。');
+        }
+
+        $reward->update(['status' => Reward::STATUS_CANCELLED]);
+
+        return back()->with('success', "報酬（注文番号 {$reward->order_no}）を取り消しました。");
+    }
 }

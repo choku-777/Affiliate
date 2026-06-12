@@ -39,10 +39,12 @@ class RegistrationController extends Controller
             'account_type' => ['nullable', 'in:普通,当座'],
             'account_number' => ['nullable', 'string', 'max:32'],
             'account_holder' => ['nullable', 'string', 'max:255'],
+            'agree' => ['accepted'],
         ], [
             'phone.regex' => '電話番号はハイフン無しの数字10〜11桁で入力してください。',
             'last_name_kana.regex' => '姓（フリガナ）はカタカナで入力してください。',
             'first_name_kana.regex' => '名（フリガナ）はカタカナで入力してください。',
+            'agree.accepted' => '利用規約への同意が必要です。',
         ], [
             'last_name' => '姓',
             'first_name' => '名',
@@ -59,6 +61,9 @@ class RegistrationController extends Controller
             'address1' => '番地',
             'address2' => '建物名',
         ]);
+
+        // 同意チェックは登録データには保存しない
+        unset($data['agree']);
 
         // 既存コード（表示・検索）互換のため name は姓+名の連結を保持する
         $data['name'] = $data['last_name'].' '.$data['first_name'];

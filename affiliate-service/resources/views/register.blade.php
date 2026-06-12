@@ -134,6 +134,18 @@
         </div>
     </div>
 
+    <h2 class="h6 text-muted border-bottom pb-2 mb-3 mt-2">利用規約</h2>
+    <p class="text-muted small mb-2">下記の規約を最後までご確認のうえ、同意してお進みください。</p>
+    <div class="border rounded p-3 mb-3 bg-light" style="max-height: 240px; overflow-y: auto;">
+        @include('partials.affiliate-terms')
+    </div>
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" name="agree" id="agree" value="1" @checked(old('agree')) required>
+        <label class="form-check-label" for="agree">
+            上記の利用規約をすべて確認し、同意します <span class="text-danger">*</span>
+        </label>
+    </div>
+
     <div>
         <button type="submit" class="btn btn-primary">登録する</button>
     </div>

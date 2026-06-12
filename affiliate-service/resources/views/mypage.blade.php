@@ -4,6 +4,10 @@
 @section('content')
 <h1 class="h4 mb-3">{{ $affiliate->name }} 様のマイページ</h1>
 
+<div class="mb-3">
+    <a href="{{ route('affiliate.inquiry.create') }}" class="btn btn-outline-primary btn-sm">お問い合わせ</a>
+</div>
+
 @if ($affiliate->isApproved())
     <div class="card card-body mb-3">
         <label class="form-label small text-muted mb-2">あなたの紹介用URL（サイトごと）</label>

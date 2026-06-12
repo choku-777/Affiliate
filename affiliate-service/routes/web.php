@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\PayoutController;
 use App\Http\Controllers\Admin\RewardController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\AffiliateAuthController;
+use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\MyPageController;
 use App\Http\Controllers\RegistrationController;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +25,8 @@ Route::prefix('affiliate')->name('affiliate.')->group(function () {
 
     Route::middleware('affiliate')->group(function () {
         Route::get('mypage', [MyPageController::class, 'show'])->name('mypage');
+        Route::get('inquiry', [InquiryController::class, 'create'])->name('inquiry.create');
+        Route::post('inquiry', [InquiryController::class, 'store'])->name('inquiry.store');
         Route::post('logout', [AffiliateAuthController::class, 'logout'])->name('logout');
     });
 });
@@ -47,6 +50,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('affiliates/{affiliate}/suspend', [AffiliateController::class, 'suspend'])->name('affiliates.suspend');
 
         Route::get('rewards', [RewardController::class, 'index'])->name('rewards.index');
+        Route::post('rewards/{reward}/cancel', [RewardController::class, 'cancel'])->name('rewards.cancel');
 
         Route::get('payouts', [PayoutController::class, 'index'])->name('payouts.index');
         Route::post('payouts/{affiliate}', [PayoutController::class, 'pay'])->name('payouts.pay');

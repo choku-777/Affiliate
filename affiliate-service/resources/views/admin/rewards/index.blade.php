@@ -46,7 +46,7 @@
             <tr>
                 <th>ID</th><th>サイト</th><th>アフィリエイター</th><th>注文番号</th>
                 <th class="text-end">注文金額</th><th class="text-end">料率</th><th class="text-end">報酬額</th>
-                <th>状態</th><th>発生日</th>
+                <th>状態</th><th>発生日</th><th>操作</th>
             </tr>
         </thead>
         <tbody>
@@ -65,9 +65,19 @@
                     <td class="text-end">{{ number_format($reward->reward_amount) }}</td>
                     <td>{{ $reward->statusLabel() }}</td>
                     <td>{{ optional($reward->converted_at)->format('Y-m-d') }}</td>
+                    <td>
+                        @if (in_array($reward->status, ['pending', 'confirmed']))
+                            <form method="post" action="{{ route('admin.rewards.cancel', $reward) }}" onsubmit="return confirm('本当に取り消ししますか？');" class="d-inline">
+                                @csrf
+                                <button class="btn btn-sm btn-outline-danger">取り消し</button>
+                            </form>
+                        @else
+                            <span class="text-muted">—</span>
+                        @endif
+                    </td>
                 </tr>
             @empty
-                <tr><td colspan="9" class="text-muted">該当なし</td></tr>
+                <tr><td colspan="10" class="text-muted">該当なし</td></tr>
             @endforelse
         </tbody>
     </table>
