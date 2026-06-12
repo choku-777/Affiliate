@@ -19,6 +19,7 @@
                         <button type="submit" class="btn btn-sm btn-outline-light">ログアウト</button>
                     </form>
                 @else
+                    <a class="btn btn-sm btn-outline-light" href="{{ route('inquiry.create') }}">お問い合わせ</a>
                     <a class="btn btn-sm btn-outline-light" href="{{ route('affiliate.login') }}">ログイン</a>
                 @endif
             </div>
