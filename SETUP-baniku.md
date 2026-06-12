@@ -15,8 +15,8 @@
 
 - 馬肉特急のEC-CUBEが **4.x系**であること（自然派と同じ4.3系なら、プラグインはそのまま動きます）
   - 確認方法：EC-CUBE管理画面の最下部、または `composer.json` 内の `ec-cube/ec-cube` のバージョン表記
-- PHPは **8.3以上**で動いていること（自然派サーバーと同じ。EC-CUBE 4.3はPHP8.3前提）
-  - サーバーのコマンドは `php` ではなく `php8.3` を使う場合があります（自然派サーバーがそうでした）
+- **PHP 8.2.31**（馬肉特急のシステム情報で確認済み）。プラグインはPHP 8.0相当の書き方しか使っておらず（8.3固有の構文なし）、`composer.json`にもPHPバージョン制約がないため、**無変更で8.2でも問題なく動作します**
+  - **コマンドの注意**：この手順書のコマンドは `php8.2` と表記しています（＝PHP 8.2系を呼ぶコマンドの意味）。馬肉特急のサーバー（さくら）では、まず `php -v` を実行して **8.2.x** と表示されるコマンドを使ってください（多くの場合 `php` で大丈夫です）
 - 管理システム（affiliate.tairiku-tsusho.co.jp）側の準備は**完了済み**です
   - `sites`テーブルに馬肉特急（コード=`baniku`、料率10%）を登録済み。あとは馬肉特急サーバー側の作業だけです。
 
@@ -63,21 +63,21 @@ AFFILIATE_SITE_CODE=baniku
 - **AFFILIATE_TRACK_CLICKS=true**：クリック数も記録する設定。
 
 > 馬肉特急のEC-CUBEが本番モード（`APP_ENV=prod`）で `.env.local.php` というファイルを使っている場合は、
-> 追記後に `php8.3 composer dump-env prod` を実行して設定を反映してください。
+> 追記後に `php8.2 composer dump-env prod` を実行して設定を反映してください。
 > （自然派サーバーには `.env.local.php` は無く、`.env` を直接読む構成でした。同じ構成なら不要です）
 
 ---
 
 ## 3. プラグインを有効化する
 
-EC-CUBEルートで、以下のコマンドを順に実行します（`php` で動かない場合は `php8.3`）。
+EC-CUBEルートで、以下のコマンドを順に実行します（`php8.2` は前述のとおりPHP 8.2系を呼ぶコマンド＝多くは `php`）。
 
 ```bash
 # プラグインをEC-CUBEに登録
-php8.3 bin/console eccube:plugin:install --code=Affiliate
+php8.2 bin/console eccube:plugin:install --code=Affiliate
 
 # 有効化
-php8.3 bin/console eccube:plugin:enable --code=Affiliate
+php8.2 bin/console eccube:plugin:enable --code=Affiliate
 ```
 
 > 自然派サーバーではこの方法で有効化しています。もし `eccube:plugin:install` でエラーが出る場合は、
@@ -90,7 +90,7 @@ php8.3 bin/console eccube:plugin:enable --code=Affiliate
 設定とプラグインを反映するため、キャッシュを作り直します。
 
 ```bash
-php8.3 bin/console cache:clear
+php8.2 bin/console cache:clear
 ```
 
 `[OK] Cache for the "prod" environment ... was successfully cleared.` と出れば成功です。
@@ -119,7 +119,7 @@ php8.3 bin/console cache:clear
 
 ## まとめ（チェックリスト）
 
-- [ ] EC-CUBEが4.x系・PHP8.3以上であることを確認
+- [ ] EC-CUBE 4.3.0・PHP 8.2.31 を確認（`php -v` で8.2系のコマンドを確認）
 - [ ] `app/Plugin/Affiliate/` を配置
 - [ ] `.env` に5行追記（特に `AFFILIATE_SITE_CODE=baniku`）
 - [ ] `eccube:plugin:install` → `eccube:plugin:enable`
