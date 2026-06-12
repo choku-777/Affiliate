@@ -5,8 +5,9 @@
 <h1 class="h4 mb-3">アフィリエイター詳細</h1>
 
 <div class="card card-body mb-3">
+    <div class="table-responsive">
     <table class="table mb-0">
-        <tr><th style="width: 200px;">ID</th><td>{{ $affiliate->id }}</td></tr>
+        <tr><th style="min-width: 110px;">ID</th><td>{{ $affiliate->id }}</td></tr>
         <tr><th>氏名</th><td>{{ $affiliate->name }}
             @if ($affiliate->last_name_kana || $affiliate->first_name_kana)
                 <span class="text-muted small">（{{ $affiliate->last_name_kana }} {{ $affiliate->first_name_kana }}）</span>
@@ -36,9 +37,10 @@
         <tr><th>申請日</th><td>{{ $affiliate->created_at->format('Y-m-d H:i') }}</td></tr>
         <tr><th>承認日</th><td>{{ optional($affiliate->approved_at)->format('Y-m-d H:i') }}</td></tr>
     </table>
+    </div>
 </div>
 
-<div class="d-flex gap-2">
+<div class="d-flex gap-2 flex-wrap">
     @if (!$affiliate->isApproved())
         <form method="post" action="{{ route('admin.affiliates.approve', $affiliate) }}">
             @csrf

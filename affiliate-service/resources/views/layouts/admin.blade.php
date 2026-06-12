@@ -3,31 +3,36 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', '管理') | アフィリエイト管理</title>
+    <title>@yield('title', '管理') | 馬肉特急・自然派いぬ生活 アフィリエイト管理</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ route('admin.dashboard') }}">アフィリエイト管理</a>
-            <div class="navbar-nav me-auto">
-                <a class="nav-link" href="{{ route('admin.dashboard') }}">ダッシュボード</a>
-                <a class="nav-link" href="{{ route('admin.affiliates.index') }}">アフィリエイター</a>
-                <a class="nav-link" href="{{ route('admin.rewards.index') }}">成果・報酬</a>
-                <a class="nav-link" href="{{ route('admin.payouts.index') }}">支払い</a>
-                @if (session('admin_role') === 'manager')
-                    <a class="nav-link" href="{{ route('admin.settings.edit') }}">設定</a>
-                @endif
-            </div>
-            <div class="navbar-nav">
-                <span class="navbar-text me-3">
-                    {{ session('admin_name') }}
-                    <span class="badge {{ session('admin_role') === 'manager' ? 'bg-primary' : 'bg-secondary' }}">{{ session('admin_role') === 'manager' ? '管理' : '運用' }}</span>
-                </span>
-                <form method="post" action="{{ route('admin.logout') }}">
-                    @csrf
-                    <button class="btn btn-sm btn-outline-light">ログアウト</button>
-                </form>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav" aria-controls="adminNav" aria-expanded="false" aria-label="メニュー切替">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminNav">
+                <div class="navbar-nav me-auto">
+                    <a class="nav-link" href="{{ route('admin.dashboard') }}">ダッシュボード</a>
+                    <a class="nav-link" href="{{ route('admin.affiliates.index') }}">アフィリエイター</a>
+                    <a class="nav-link" href="{{ route('admin.rewards.index') }}">成果・報酬</a>
+                    <a class="nav-link" href="{{ route('admin.payouts.index') }}">支払い</a>
+                    @if (session('admin_role') === 'manager')
+                        <a class="nav-link" href="{{ route('admin.settings.edit') }}">設定</a>
+                    @endif
+                </div>
+                <div class="navbar-nav align-items-lg-center">
+                    <span class="navbar-text me-lg-3">
+                        {{ session('admin_name') }}
+                        <span class="badge {{ session('admin_role') === 'manager' ? 'bg-primary' : 'bg-secondary' }}">{{ session('admin_role') === 'manager' ? '管理' : '運用' }}</span>
+                    </span>
+                    <form method="post" action="{{ route('admin.logout') }}" class="mt-2 mt-lg-0">
+                        @csrf
+                        <button class="btn btn-sm btn-outline-light">ログアウト</button>
+                    </form>
+                </div>
             </div>
         </div>
     </nav>

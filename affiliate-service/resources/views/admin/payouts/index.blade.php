@@ -7,6 +7,7 @@
 
 <div class="card mb-4">
     <div class="card-header">支払い対象（確定報酬・未払い）</div>
+    <div class="table-responsive">
     <table class="table mb-0 align-middle">
         <thead>
             <tr>
@@ -35,6 +36,7 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 </div>
 
 @foreach ($targets as $affiliate)
@@ -76,6 +78,7 @@
 
 <div class="card">
     <div class="card-header">支払い履歴</div>
+    <div class="table-responsive">
     <table class="table mb-0">
         <thead>
             <tr>
@@ -98,5 +101,6 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 </div>
 @endsection

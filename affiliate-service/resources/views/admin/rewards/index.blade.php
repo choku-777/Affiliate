@@ -4,9 +4,9 @@
 @section('content')
 <h1 class="h4 mb-3">成果・報酬</h1>
 
-<div class="row text-center mb-3">
+<div class="row text-center mb-3 g-2">
     @foreach (['pending', 'confirmed', 'paid', 'cancelled'] as $st)
-        <div class="col">
+        <div class="col-6 col-md">
             <div class="card card-body">
                 <div class="text-muted small">{{ $statusLabels[$st] }}</div>
                 <div class="h5 mb-0">{{ number_format($totals[$st] ?? 0) }} 円</div>
@@ -16,7 +16,7 @@
 </div>
 
 <form method="get" class="row g-2 mb-3">
-    <div class="col-auto">
+    <div class="col-12 col-sm-auto">
         <select name="site_id" class="form-select">
             <option value="">全サイト</option>
             @foreach ($sites as $site)
@@ -24,10 +24,10 @@
             @endforeach
         </select>
     </div>
-    <div class="col-auto">
+    <div class="col-12 col-sm-auto">
         <input type="number" name="affiliate_id" value="{{ $filters['affiliate_id'] ?? '' }}" class="form-control" placeholder="アフィリエイターID">
     </div>
-    <div class="col-auto">
+    <div class="col-12 col-sm-auto">
         <select name="status" class="form-select">
             <option value="">すべて</option>
             @foreach ($statusLabels as $value => $label)
@@ -35,12 +35,13 @@
             @endforeach
         </select>
     </div>
-    <div class="col-auto"><input type="date" name="start" value="{{ $filters['start'] ?? '' }}" class="form-control"></div>
-    <div class="col-auto"><input type="date" name="end" value="{{ $filters['end'] ?? '' }}" class="form-control"></div>
-    <div class="col-auto"><button class="btn btn-primary">検索</button></div>
+    <div class="col-12 col-sm-auto"><input type="date" name="start" value="{{ $filters['start'] ?? '' }}" class="form-control"></div>
+    <div class="col-12 col-sm-auto"><input type="date" name="end" value="{{ $filters['end'] ?? '' }}" class="form-control"></div>
+    <div class="col-12 col-sm-auto"><button class="btn btn-primary">検索</button></div>
 </form>
 
 <div class="card">
+    <div class="table-responsive">
     <table class="table mb-0">
         <thead>
             <tr>
@@ -81,6 +82,7 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 </div>
 <div class="mt-3">{{ $rewards->links() }}</div>
 @endsection

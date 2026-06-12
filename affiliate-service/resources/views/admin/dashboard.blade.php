@@ -52,7 +52,7 @@
 <h2 class="h6">報酬サマリー <span class="text-muted small fw-normal">(全期間)</span></h2>
 <div class="row g-3">
     @foreach (['pending', 'confirmed', 'paid', 'cancelled'] as $st)
-        <div class="col">
+        <div class="col-6 col-md">
             <div class="card card-body">
                 <div class="text-muted small">{{ $statusLabels[$st] }}</div>
                 <div class="h5 mb-0">{{ number_format(optional($totals->get($st))->total ?? 0) }} 円</div>
