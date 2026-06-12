@@ -18,6 +18,10 @@ Route::get('/register', [RegistrationController::class, 'create'])->name('regist
 Route::post('/register', [RegistrationController::class, 'store'])->name('register.store');
 Route::get('/register/thanks', [RegistrationController::class, 'thanks'])->name('register.thanks');
 
+// 公開：お問い合わせ（未ログインでも可。ログイン中は名前・メールを自動入力）
+Route::get('/inquiry', [InquiryController::class, 'create'])->name('inquiry.create');
+Route::post('/inquiry', [InquiryController::class, 'store'])->name('inquiry.store');
+
 // アフィリエイター：ログイン＆マイページ（ログイン必須に一本化）
 Route::prefix('affiliate')->name('affiliate.')->group(function () {
     Route::get('login', [AffiliateAuthController::class, 'showLogin'])->name('login');
@@ -25,8 +29,6 @@ Route::prefix('affiliate')->name('affiliate.')->group(function () {
 
     Route::middleware('affiliate')->group(function () {
         Route::get('mypage', [MyPageController::class, 'show'])->name('mypage');
-        Route::get('inquiry', [InquiryController::class, 'create'])->name('inquiry.create');
-        Route::post('inquiry', [InquiryController::class, 'store'])->name('inquiry.store');
         Route::post('logout', [AffiliateAuthController::class, 'logout'])->name('logout');
     });
 });

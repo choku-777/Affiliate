@@ -13,7 +13,7 @@
             <div>
                 @if (session('affiliate_authenticated'))
                     <a class="text-light me-3 text-decoration-none" href="{{ route('affiliate.mypage') }}">マイページ</a>
-                    <a class="text-light me-3 text-decoration-none" href="{{ route('affiliate.inquiry.create') }}">お問い合わせ</a>
+                    <a class="text-light me-3 text-decoration-none" href="{{ route('inquiry.create') }}">お問い合わせ</a>
                     <form method="post" action="{{ route('affiliate.logout') }}" class="d-inline">
                         @csrf
                         <button type="submit" class="btn btn-sm btn-outline-light">ログアウト</button>

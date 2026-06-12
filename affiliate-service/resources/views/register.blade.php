@@ -3,6 +3,11 @@
 
 @section('content')
 <h1 class="h4 mb-3">アフィリエイト登録</h1>
+
+<div class="mb-3">
+    <a href="{{ route('inquiry.create') }}" class="btn btn-outline-secondary btn-sm">お問い合わせ</a>
+</div>
+
 <p class="text-muted">お申し込み後、管理者の承認をもってご紹介用URLをメールでお送りします。登録したメールアドレスとパスワードでマイページにログインできます。</p>
 
 @if ($errors->any())

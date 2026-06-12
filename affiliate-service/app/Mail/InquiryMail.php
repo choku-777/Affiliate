@@ -11,17 +11,20 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * アフィリエイターからの問い合わせを管理者へ届けるメール。
- * 返信先(Reply-To)を本人のメールにして、管理者がそのまま返信できるようにする。
+ * 問い合わせを管理者へ届けるメール。
+ * 登録前（未ログイン）・登録済み（ログイン）どちらの問い合わせにも対応する。
+ * 返信先(Reply-To)を問い合わせ者のメールにして、管理者がそのまま返信できるようにする。
  */
 class InquiryMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public function __construct(
-        public Affiliate $affiliate,
+        public string $senderName,
+        public string $senderEmail,
         public string $subjectLine,
         public string $body,
+        public ?Affiliate $affiliate = null,
     ) {
     }
 
@@ -29,7 +32,7 @@ class InquiryMail extends Mailable
     {
         return new Envelope(
             subject: '【アフィリエイト問い合わせ】'.$this->subjectLine,
-            replyTo: [new Address($this->affiliate->email, $this->affiliate->name)],
+            replyTo: [new Address($this->senderEmail, $this->senderName)],
         );
     }
 
