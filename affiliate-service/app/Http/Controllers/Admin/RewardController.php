@@ -55,6 +55,8 @@ class RewardController extends Controller
 
         $reward->update(['status' => Reward::STATUS_CANCELLED]);
 
+        app(\App\Services\DiscordNotifier::class)->rewardCancelled($reward, '管理者による手動取消');
+
         return back()->with('success', "報酬（注文番号 {$reward->order_no}）を取り消しました。");
     }
 }

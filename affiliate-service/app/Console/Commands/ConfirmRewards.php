@@ -48,6 +48,19 @@ class ConfirmRewards extends Command
 
         $this->info(sprintf('確定: %d件 / 取消: %d件', $confirmed, $cancelled));
 
+        // 支払い対象（確定報酬が最低支払額以上）がいればDiscordでリマインド
+        $minPayout = (int) Setting::current()->min_payout_amount;
+        $targets = \App\Models\Affiliate::query()
+            ->withSum(['rewards as confirmed_total' => fn ($q) => $q->where('status', Reward::STATUS_CONFIRMED)], 'reward_amount')
+            ->get()
+            ->filter(fn ($a) => (int) $a->confirmed_total >= $minPayout);
+        if ($targets->isNotEmpty()) {
+            app(\App\Services\DiscordNotifier::class)->paymentPending(
+                $targets->count(),
+                (int) $targets->sum('confirmed_total')
+            );
+        }
+
         return self::SUCCESS;
     }
 }

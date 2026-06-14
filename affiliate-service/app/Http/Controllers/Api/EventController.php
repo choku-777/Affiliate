@@ -22,8 +22,10 @@ class EventController extends Controller
     const ORDER_STATUS_CANCEL = 3;
     const ORDER_STATUS_RETURNED = 9;
 
-    public function __construct(private RewardCalculator $calculator)
-    {
+    public function __construct(
+        private RewardCalculator $calculator,
+        private \App\Services\DiscordNotifier $discord,
+    ) {
     }
 
     public function store(Request $request): JsonResponse
@@ -74,7 +76,7 @@ class EventController extends Controller
             ? Carbon::parse($payload['order_date'])
             : now();
 
-        Reward::create([
+        $reward = Reward::create([
             'affiliate_id' => $affiliate->id,
             'site_id' => $site?->id,
             'order_no' => $orderNo,
@@ -84,6 +86,8 @@ class EventController extends Controller
             'status' => Reward::STATUS_PENDING,
             'converted_at' => $convertedAt,
         ]);
+
+        $this->discord->conversionOccurred($reward);
 
         return response()->json(['status' => 'ok']);
     }
@@ -105,6 +109,7 @@ class EventController extends Controller
         $reward->order_status_id = $statusId;
 
         $isCancelled = in_array($statusId, [self::ORDER_STATUS_CANCEL, self::ORDER_STATUS_RETURNED], true);
+        $wasCancelled = $reward->status === Reward::STATUS_CANCELLED;
 
         // 支払済はそのまま（実支払い後の取消は手動対応）
         if ($reward->status !== Reward::STATUS_PAID) {
@@ -117,6 +122,11 @@ class EventController extends Controller
         }
 
         $reward->save();
+
+        // 新たに取消になった場合のみ通知
+        if ($isCancelled && ! $wasCancelled && $reward->status === Reward::STATUS_CANCELLED) {
+            $this->discord->rewardCancelled($reward, 'EC-CUBEでキャンセル／返品');
+        }
 
         return response()->json(['status' => 'ok']);
     }

@@ -54,7 +54,8 @@ class PayoutController extends Controller
             return back()->with('warning', '最低支払額（'.number_format($minPayout).'円）に達していません。');
         }
 
-        DB::transaction(function () use ($affiliate, $rewards, $amount) {
+        $payout = null;
+        DB::transaction(function () use ($affiliate, $rewards, $amount, &$payout) {
             $payout = Payout::create([
                 'affiliate_id' => $affiliate->id,
                 'amount' => $amount,
@@ -68,6 +69,8 @@ class PayoutController extends Controller
                 'payout_id' => $payout->id,
             ]);
         });
+
+        app(\App\Services\DiscordNotifier::class)->paymentExecuted($payout);
 
         return back()->with('success', $affiliate->name.' さんに '.number_format($amount).'円 を支払い済みにしました（'.$rewards->count().'件）。');
     }

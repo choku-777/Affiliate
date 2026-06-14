@@ -82,6 +82,9 @@ class RegistrationController extends Controller
             \Illuminate\Support\Facades\Log::warning('登録受付メール送信失敗: '.$e->getMessage());
         }
 
+        // Discord通知（新規登録・承認待ち）
+        app(\App\Services\DiscordNotifier::class)->affiliateRegistered($affiliate);
+
         return redirect()->route('register.thanks');
     }
 
