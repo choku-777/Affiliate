@@ -22,11 +22,16 @@
         <tr>
             <th>発行URL</th>
             <td>
-                @if ($affiliate->isApproved())
-                    <code class="user-select-all">{{ $affiliate->affiliateUrl() }}</code>
-                @else
-                    <span class="text-muted">承認後に有効（{{ $affiliate->affiliateUrl() }}）</span>
-                @endif
+                @foreach ($affiliate->affiliateUrls() as $row)
+                    <div class="mb-1">
+                        <span class="small text-muted">{{ $row['site']->name }}：</span>
+                        @if ($affiliate->isApproved())
+                            <code class="user-select-all" style="word-break: break-all;">{{ $row['url'] }}</code>
+                        @else
+                            <span class="text-muted small">承認後に有効（<code style="word-break: break-all;">{{ $row['url'] }}</code>）</span>
+                        @endif
+                    </div>
+                @endforeach
             </td>
         </tr>
         <tr><th>住所</th><td>

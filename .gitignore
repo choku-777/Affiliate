@@ -3,3 +3,7 @@
 *.zip
 
 .DS_Store
+
+# SSH秘密鍵（コミット禁止）
+id_ecdsa.pem
+*.pem

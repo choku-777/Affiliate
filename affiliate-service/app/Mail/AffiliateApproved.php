@@ -33,7 +33,7 @@ class AffiliateApproved extends Mailable
             view: 'emails.affiliate-approved',
             with: [
                 'affiliate' => $this->affiliate,
-                'affiliateUrl' => $this->affiliate->affiliateUrl(),
+                'affiliateUrls' => $this->affiliate->affiliateUrls(),
                 'loginUrl' => route('affiliate.login'),
             ],
         );
