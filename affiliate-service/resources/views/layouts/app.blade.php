@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'トップ') | 馬肉特急・自然派いぬ生活 アフィリエイト</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* ヘッダーのサイト名：長いのでスマホでは小さく＆折り返して見切れ防止 */
+        .navbar-brand { white-space: normal; line-height: 1.2; }
+        @media (max-width: 575.98px) {
+            .navbar-brand { font-size: 1rem; }
+        }
+    </style>
 </head>
 <body class="bg-light">
     <nav class="navbar navbar-dark bg-dark">
