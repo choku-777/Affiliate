@@ -55,7 +55,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('rewards/{reward}/cancel', [RewardController::class, 'cancel'])->name('rewards.cancel');
 
         Route::get('payouts', [PayoutController::class, 'index'])->name('payouts.index');
-        Route::post('payouts/{affiliate}', [PayoutController::class, 'pay'])->name('payouts.pay');
+        Route::get('payouts/csv/{month}', [PayoutController::class, 'downloadCsv'])->name('payouts.csv');
+        Route::post('payouts/{payout}/paid', [PayoutController::class, 'markPaid'])->name('payouts.paid');
 
         // 設定は「管理」ロール限定
         Route::middleware('manager')->group(function () {

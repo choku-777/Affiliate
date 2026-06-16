@@ -3,75 +3,107 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Affiliate;
 use App\Models\Payout;
 use App\Models\Reward;
-use App\Models\Setting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 /**
- * 報酬の一括支払い（アフィリエイター単位）。
- * 確定済(confirmed)報酬の合計が最低支払額(min_payout_amount)以上のアフィリエイターをまとめて支払う。
+ * 月次締め支払い。
+ * 毎月1日のバッチ(affiliate:monthly-payout)が確定報酬を締めて payouts に登録する。
+ * 管理画面ではその月次リストを確認し、CSVダウンロード→振込→入金済みマークの順で進める。
  */
 class PayoutController extends Controller
 {
     public function index(): View
     {
-        $minPayout = (int) Setting::current()->min_payout_amount;
+        $payouts = Payout::with('affiliate')
+            ->orderByDesc('closing_month')
+            ->orderByDesc('id')
+            ->paginate(50);
 
-        // 確定済み（未払い）報酬を持つアフィリエイターを集計
-        $targets = Affiliate::query()
-            ->withSum(['rewards as confirmed_total' => fn ($q) => $q->where('status', Reward::STATUS_CONFIRMED)], 'reward_amount')
-            ->withCount(['rewards as confirmed_count' => fn ($q) => $q->where('status', Reward::STATUS_CONFIRMED)])
-            ->get()
-            ->filter(fn ($a) => (int) $a->confirmed_total > 0)
-            ->sortByDesc('confirmed_total')
-            ->values();
-
-        $payouts = Payout::with('affiliate')->orderByDesc('id')->limit(50)->get();
+        // 締め月ごとのまとめ（CSVダウンロード・進捗表示用）
+        $months = Payout::query()
+            ->select(
+                'closing_month',
+                DB::raw('COUNT(*) AS cnt'),
+                DB::raw('SUM(amount) AS total'),
+                DB::raw('SUM(paid_at IS NOT NULL) AS paid_cnt')
+            )
+            ->groupBy('closing_month')
+            ->orderByDesc('closing_month')
+            ->get();
 
         return view('admin.payouts.index', [
-            'targets' => $targets,
-            'minPayout' => $minPayout,
             'payouts' => $payouts,
+            'months' => $months,
         ]);
     }
 
-    public function pay(Affiliate $affiliate)
+    /**
+     * 指定した締め月の支払いリストをCSVでダウンロード（Excel向けBOM付きUTF-8）。
+     * ダウンロード時に csv_downloaded_at を記録する（①フラグ）。
+     */
+    public function downloadCsv(string $month)
     {
-        $minPayout = (int) Setting::current()->min_payout_amount;
-
-        $rewards = $affiliate->rewards()
-            ->where('status', Reward::STATUS_CONFIRMED)
+        $payouts = Payout::with('affiliate')
+            ->where('closing_month', $month)
+            ->orderBy('id')
             ->get();
-        $amount = (int) $rewards->sum('reward_amount');
 
-        if ($amount <= 0) {
-            return back()->with('warning', '支払い対象の確定報酬がありません。');
-        }
-        if ($amount < $minPayout) {
-            return back()->with('warning', '最低支払額（'.number_format($minPayout).'円）に達していません。');
+        if ($payouts->isEmpty()) {
+            return back()->with('warning', 'その締め月の支払いデータがありません。');
         }
 
-        $payout = null;
-        DB::transaction(function () use ($affiliate, $rewards, $amount, &$payout) {
-            $payout = Payout::create([
-                'affiliate_id' => $affiliate->id,
-                'amount' => $amount,
-                'reward_count' => $rewards->count(),
-                'paid_at' => now(),
-            ]);
+        $rows = [['締め月', '氏名', '銀行名', '支店名', '口座種別', '口座番号', '口座名義', '金額']];
+        foreach ($payouts as $p) {
+            $a = $p->affiliate;
+            $rows[] = [
+                $p->closing_month,
+                $a?->name ?? '',
+                $a?->bank_name ?? '',
+                $a?->bank_branch ?? '',
+                $a?->account_type ?? '',
+                $a?->account_number ?? '',
+                $a?->account_holder ?? '',
+                (string) $p->amount,
+            ];
+        }
 
-            Reward::whereIn('id', $rewards->pluck('id'))->update([
+        $handle = fopen('php://temp', 'r+');
+        foreach ($rows as $row) {
+            fputcsv($handle, $row);
+        }
+        rewind($handle);
+        $csv = "\xEF\xBB\xBF".stream_get_contents($handle); // ExcelでUTF-8を正しく開くためBOM付与
+        fclose($handle);
+
+        // ①ダウンロード済みフラグを記録
+        Payout::where('closing_month', $month)->update(['csv_downloaded_at' => now()]);
+
+        return response($csv, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="payout_'.$month.'.csv"',
+        ]);
+    }
+
+    /**
+     * 入金済みにする（②フラグ）。対象の報酬を支払済に更新する。
+     */
+    public function markPaid(Payout $payout)
+    {
+        if ($payout->isPaid()) {
+            return back()->with('warning', 'すでに入金済みです。');
+        }
+
+        DB::transaction(function () use ($payout) {
+            $payout->update(['paid_at' => now()]);
+            Reward::where('payout_id', $payout->id)->update([
                 'status' => Reward::STATUS_PAID,
                 'paid_at' => now(),
-                'payout_id' => $payout->id,
             ]);
         });
 
-        app(\App\Services\DiscordNotifier::class)->paymentExecuted($payout);
-
-        return back()->with('success', $affiliate->name.' さんに '.number_format($amount).'円 を支払い済みにしました（'.$rewards->count().'件）。');
+        return back()->with('success', optional($payout->affiliate)->name.' さんへの入金を記録しました（'.number_format($payout->amount).'円）。');
     }
 }

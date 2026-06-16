@@ -68,13 +68,14 @@ class DiscordNotifier
         ]);
     }
 
-    /** 支払い未処理リマインド（支払い対象がいるのに未払い） */
-    public function paymentPending(int $count, int $total): void
+    /** 月次支払いリスト作成（毎月1日のピックアップ） */
+    public function monthlyPayoutCreated(string $month, int $count, int $total): void
     {
-        $this->send('🔔 支払い待ちのお知らせ', self::COLOR_REMIND, [
+        $this->send('📋 月次支払いリスト作成', self::COLOR_REMIND, [
+            ['name' => '締め月', 'value' => $month, 'inline' => true],
             ['name' => '対象人数', 'value' => $count.'名', 'inline' => true],
-            ['name' => '確定報酬合計', 'value' => number_format($total).'円', 'inline' => true],
-        ], '支払い画面から振込手続きをお願いします。');
+            ['name' => '合計', 'value' => number_format($total).'円', 'inline' => true],
+        ], '管理画面からCSVをダウンロードして振込してください（翌月10日まで）。');
     }
 
     /**
