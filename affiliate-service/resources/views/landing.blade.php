@@ -20,10 +20,7 @@
   ul{list-style:none;margin:0;padding:0;}
   a{-webkit-tap-highlight-color:transparent;}
   /* ホバー（デザインの style-hover を CSS 化） */
-  .lp-navlink{transition:background .2s ease;}
-  .lp-navlink:hover{background:rgba(255,255,255,0.08);}
-  .lp-loginbtn{transition:transform .2s ease;}
-  .lp-loginbtn:hover{transform:translateY(-1px);}
+  /* ヘッダーのホバーは partials/site-header.blade.php に集約 */
   .lp-cta{transition:transform .25s ease, box-shadow .25s ease;}
   .lp-cta:hover{transform:translateY(-2px);box-shadow:0 22px 46px -10px rgba(193,120,76,0.78);}
   .lp-card{transition:transform .25s ease, box-shadow .25s ease;}
@@ -45,18 +42,7 @@
 <div style="font-family:'Zen Kaku Gothic New',sans-serif;color:#2c2820;background:#f4eee1;">
 
   <!-- ================= HEADER ================= -->
-  <header style="position:sticky;top:0;z-index:60;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);background:rgba(72,84,56,0.72);border-bottom:1px solid rgba(255,255,255,0.10);">
-    <div style="max-width:1180px;margin:0 auto;padding:13px clamp(18px,5vw,56px);display:flex;align-items:center;justify-content:space-between;gap:16px;">
-      <div style="display:flex;align-items:center;gap:11px;">
-        <span style="flex:none;width:34px;height:34px;border-radius:50%;border:1px solid rgba(230,181,102,0.55);display:flex;align-items:center;justify-content:center;font-family:'Shippori Mincho',serif;font-weight:700;font-size:16px;color:#e6b566;">馬</span>
-        <span style="font-family:'Shippori Mincho',serif;font-weight:600;font-size:clamp(13px,1.5vw,16px);letter-spacing:0.04em;color:#f4eee1;">馬肉特急 <span style="opacity:0.45;margin:0 2px;">·</span> 自然派いぬ生活</span>
-      </div>
-      <nav style="display:flex;align-items:center;gap:8px;">
-        <a href="{{ route('inquiry.create') }}" class="lp-navlink" style="font-size:13px;color:rgba(244,238,225,0.82);text-decoration:none;padding:9px 14px;border-radius:999px;">お問い合わせ</a>
-        <a href="{{ route('affiliate.login') }}" class="lp-loginbtn" style="font-size:13px;font-weight:700;color:#4e5c3c;background:#f4eee1;text-decoration:none;padding:9px 18px;border-radius:999px;">ログイン</a>
-      </nav>
-    </div>
-  </header>
+  @include('partials.site-header')
 
   <!-- ================= HERO ================= -->
   <section style="position:relative;overflow:hidden;background:#56653f;color:#f7f3e8;">
