@@ -223,17 +223,60 @@ Google Cloud Console → 認証情報 → OAuthクライアント（ウェブ）
 
 ---
 
-## 更新デプロイ（2回目以降）
+## 更新デプロイ（2回目以降）＝ 手動アップロード方式
+
+> ⚠️ **重要**：サーバーの `laravel/` は **git管理ではない**（STEP4で `cp` で重ねたため）。
+> したがって「`git pull`」は使えない。**ローカルから変更ファイルを rsync で上げる**のが正しい。
+> 現行の実値: account=`xs812447` / server=`sv16737` / 鍵=`~/.ssh/afferissh.key` / ポート=`10022`
+> Laravel本体=`/home/{account}/tairiku-tsusho.co.jp/laravel/` / 公開=`.../public_html/affiliate/`
+
+> ⚠️ **`rsync --delete` を公開フォルダに使わないこと。** 公開フォルダの `index.php` は STEP7 で
+> `../../laravel/` を指すよう書き換えた**独自版**。`--delete` で同期すると上書き／削除され、500になる。
+
+### 手順（すべてローカル端末から実行）
 
 ```bash
-cd /home/{account}/tairiku-tsusho.co.jp/laravel
-# リポジトリから affiliate-service/ の変更を取り込む（git管理にしている場合）
-git pull
-php ../composer.phar install --no-dev
-php artisan migrate --force
-cp -r public/. ../public_html/affiliate/   # public配下を更新した場合のみ
-php artisan config:cache && php artisan route:cache
+# 0) GitHubにも反映（任意・コード履歴用。本番はgit連動ではない）
+git add -A && git commit -m "..." && git push origin <branch>
+
+# 1) 本番の現行ファイルをバックアップ（戻せるように）
+ssh -i ~/.ssh/afferissh.key -p 10022 xs812447@sv16737.xserver.jp \
+  'cd ~/tairiku-tsusho.co.jp/laravel && for f in routes/web.php resources/views/landing.blade.php app/Http/Controllers/LandingController.php; do [ -f "$f" ] && cp -a "$f" "$f.bak-lp"; done'
+
+# 2) 変更ファイルをアップロード（-R で階層維持・--delete は付けない）
+cd affiliate-service
+rsync -avzR -e "ssh -i ~/.ssh/afferissh.key -p 10022" \
+  app/Http/Controllers/LandingController.php \
+  resources/views/landing.blade.php \
+  routes/web.php \
+  public/images/landing/ \
+  xs812447@sv16737.xserver.jp:/home/xs812447/tairiku-tsusho.co.jp/laravel/
+
+# 3) サーバー側：キャッシュ更新 ＋ 画像を公開フォルダへコピー
+ssh -i ~/.ssh/afferissh.key -p 10022 xs812447@sv16737.xserver.jp \
+  'cd ~/tairiku-tsusho.co.jp/laravel && \
+   ~/bin/php artisan view:clear && ~/bin/php artisan route:clear && ~/bin/php artisan config:clear && \
+   mkdir -p ../public_html/affiliate/images/landing && \
+   cp -f public/images/landing/*.jpg ../public_html/affiliate/images/landing/'
+# ※ DB変更を含む場合のみ: ~/bin/php artisan migrate --force
+# ※ 本番最適化を使う場合は最後に config:cache / route:cache（クロージャrouteが無いこと）
+
+# 4) 確認
+curl -s -o /dev/null -w "%{http_code}\n" https://affiliate.tairiku-tsusho.co.jp/
 ```
+
+> メモ: サーバーの PHP CLI は `~/bin/php`（8.3）。画像はWeb用に最適化してから上げる
+> （例: `sips -s format jpeg -s formatOptions 80 --resampleHeightWidthMax 1600 in.jpg --out out.jpg`）。
+
+### ロールバック
+```bash
+ssh -i ~/.ssh/afferissh.key -p 10022 xs812447@sv16737.xserver.jp \
+  'cd ~/tairiku-tsusho.co.jp/laravel && for f in routes/web.php resources/views/landing.blade.php app/Http/Controllers/LandingController.php; do [ -f "$f.bak-lp" ] && cp -a "$f.bak-lp" "$f"; done && ~/bin/php artisan view:clear'
+```
+
+### 将来 git pull 方式にしたい場合（任意）
+`laravel/` を git 管理にするには、別途リポジトリ構成の見直しが必要
+（本リポジトリは `affiliate-service/` がサブ階層のため、そのままでは `laravel/` 直下に pull できない）。
 
 ## トラブル時
 
