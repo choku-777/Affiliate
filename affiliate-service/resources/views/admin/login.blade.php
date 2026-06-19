@@ -3,13 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>管理ログイン | 馬肉特急・自然派いぬ生活 アフィリエイト管理</title>
+    <title>管理ログイン | 馬肉特急・自然派いぬ生活 アンバサダー管理</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 <div class="container" style="max-width: 420px;">
     <div class="card card-body mt-5 text-center">
-        <h1 class="h5 mb-4">アフィリエイト管理画面</h1>
+        <h1 class="h5 mb-4">アンバサダー管理画面</h1>
         @if (session('error'))
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif

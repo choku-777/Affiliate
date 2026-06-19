@@ -4,7 +4,7 @@
 <body style="font-family: sans-serif; line-height: 1.8; color: #333;">
     <p>{{ $affiliate->name }} 様</p>
 
-    <p>このたびは「自然派いぬ生活」アフィリエイトプログラムへのご登録ありがとうございます。<br>
+    <p>このたびは「自然派いぬ生活」アンバサダープログラムへのご登録ありがとうございます。<br>
        下記の内容でお申し込みを受け付けました。</p>
 
     <table style="border-collapse: collapse; margin: 8px 0;">
@@ -19,7 +19,7 @@
     <hr style="border:none; border-top:1px solid #eee; margin:20px 0;">
     <p style="color:#999; font-size: 12px;">
         本メールにお心当たりのない場合は、お手数ですが破棄してください。<br>
-        自然派いぬ生活 アフィリエイトプログラム
+        自然派いぬ生活 アンバサダープログラム
     </p>
 </body>
 </html>

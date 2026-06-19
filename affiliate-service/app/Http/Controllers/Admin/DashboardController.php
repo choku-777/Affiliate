@@ -20,7 +20,7 @@ class DashboardController extends Controller
         $now = now();
         $since = $now->copy()->subMonths(11)->startOfMonth();
 
-        // アフィリエイト経由の売上（注文金額・取消を除く）を月別集計
+        // アンバサダー経由の売上（注文金額・取消を除く）を月別集計
         $salesByMonth = Reward::where('status', '!=', Reward::STATUS_CANCELLED)
             ->where('converted_at', '>=', $since)
             ->selectRaw("DATE_FORMAT(converted_at, '%Y-%m') AS ym, SUM(order_total) AS total")

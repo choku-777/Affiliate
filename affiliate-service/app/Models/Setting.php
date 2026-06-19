@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * アフィリエイトの全体設定（単一レコード id=1）。
+ * アンバサダーの全体設定（単一レコード id=1）。
  */
 class Setting extends Model
 {

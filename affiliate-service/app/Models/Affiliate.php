@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 /**
- * アフィリエイター。
+ * アンバサダー。
  */
 class Affiliate extends Model
 {

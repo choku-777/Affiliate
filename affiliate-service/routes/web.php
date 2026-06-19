@@ -12,8 +12,10 @@ use App\Http\Controllers\MyPageController;
 use App\Http\Controllers\RegistrationController;
 use Illuminate\Support\Facades\Route;
 
+// 公開：トップ（アフィリエイター募集LP）
+Route::get('/', fn () => view('landing'))->name('home');
+
 // 公開：アフィリエイター登録
-Route::get('/', fn () => redirect()->route('register.create'));
 Route::get('/register', [RegistrationController::class, 'create'])->name('register.create');
 Route::post('/register', [RegistrationController::class, 'store'])->name('register.store');
 Route::get('/register/thanks', [RegistrationController::class, 'thanks'])->name('register.thanks');

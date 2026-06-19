@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * アフィリエイター本人のログインを必須化する。
+ * アンバサダー本人のログインを必須化する。
  * 管理画面の EnsureAdmin と同じセッション方式。
  */
 class EnsureAffiliateLoggedIn

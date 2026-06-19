@@ -25,7 +25,7 @@
         </select>
     </div>
     <div class="col-12 col-sm-auto">
-        <input type="number" name="affiliate_id" value="{{ $filters['affiliate_id'] ?? '' }}" class="form-control" placeholder="アフィリエイターID">
+        <input type="number" name="affiliate_id" value="{{ $filters['affiliate_id'] ?? '' }}" class="form-control" placeholder="アンバサダーID">
     </div>
     <div class="col-12 col-sm-auto">
         <select name="status" class="form-select">
@@ -45,7 +45,7 @@
     <table class="table mb-0">
         <thead>
             <tr>
-                <th>ID</th><th>サイト</th><th>アフィリエイター</th><th>注文番号</th>
+                <th>ID</th><th>サイト</th><th>アンバサダー</th><th>注文番号</th>
                 <th class="text-end">注文金額</th><th class="text-end">料率</th><th class="text-end">報酬額</th>
                 <th>状態</th><th>発生日</th><th>操作</th>
             </tr>

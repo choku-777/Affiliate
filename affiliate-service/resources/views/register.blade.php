@@ -1,8 +1,8 @@
 @extends('layouts.app')
-@section('title', 'アフィリエイト登録')
+@section('title', 'アンバサダー登録')
 
 @section('content')
-<h1 class="h4 mb-3">アフィリエイト登録</h1>
+<h1 class="h4 mb-3">アンバサダー登録</h1>
 <p class="text-muted">お申し込み後、管理者の承認をもってご紹介用URLをメールでお送りします。登録したメールアドレスとパスワードでマイページにログインできます。</p>
 
 @if ($errors->any())

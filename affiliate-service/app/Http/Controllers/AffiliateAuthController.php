@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 /**
- * アフィリエイター本人のログイン（メールアドレス＋パスワード）。
+ * アンバサダー本人のログイン（メールアドレス＋パスワード）。
  * 管理画面の Admin\AuthController と同じセッション方式。
  */
 class AffiliateAuthController extends Controller

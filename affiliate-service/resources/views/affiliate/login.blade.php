@@ -1,8 +1,8 @@
 @extends('layouts.app')
-@section('title', 'アフィリエイター ログイン')
+@section('title', 'アンバサダー ログイン')
 
 @section('content')
-<h1 class="h4 mb-3">アフィリエイター ログイン</h1>
+<h1 class="h4 mb-3">アンバサダー ログイン</h1>
 
 @if ($errors->any())
     <div class="alert alert-danger">

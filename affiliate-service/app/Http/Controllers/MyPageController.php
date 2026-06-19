@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
- * アフィリエイター本人向けマイページ（ログイン必須）。
+ * アンバサダー本人向けマイページ（ログイン必須）。
  * ログインセッションの affiliate_id から本人を特定する。
  */
 class MyPageController extends Controller

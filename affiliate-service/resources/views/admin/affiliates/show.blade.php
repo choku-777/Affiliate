@@ -1,8 +1,8 @@
 @extends('layouts.admin')
-@section('title', 'アフィリエイター詳細')
+@section('title', 'アンバサダー詳細')
 
 @section('content')
-<h1 class="h4 mb-3">アフィリエイター詳細</h1>
+<h1 class="h4 mb-3">アンバサダー詳細</h1>
 
 <div class="card card-body mb-3">
     <div class="table-responsive">

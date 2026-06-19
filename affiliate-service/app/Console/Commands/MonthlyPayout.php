@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * 月次の支払いピックアップ（毎月1日想定）。
- * 締め月末までに「確定」した未払い報酬をアフィリエイター別に集計し、
+ * 締め月末までに「確定」した未払い報酬をアンバサダー別に集計し、
  * 規定額（最低支払額）以上の人を支払いリスト（payouts）に登録する。
  */
 class MonthlyPayout extends Command

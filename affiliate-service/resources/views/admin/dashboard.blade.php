@@ -14,13 +14,13 @@
     </div>
     <div class="col-md-3 col-6">
         <div class="card card-body h-100">
-            <div class="text-muted small">承認済みアフィリエイター</div>
+            <div class="text-muted small">承認済みアンバサダー</div>
             <div class="h3 mb-0">{{ $approvedAffiliates }}</div>
         </div>
     </div>
     <div class="col-md-3 col-6">
         <div class="card card-body h-100">
-            <div class="text-muted small">当月の売上 <span class="fw-normal">(アフィリエイト経由)</span></div>
+            <div class="text-muted small">当月の売上 <span class="fw-normal">(アンバサダー経由)</span></div>
             <div class="h3 mb-0">{{ number_format($salesThisMonth) }} <small class="fs-6">円</small></div>
             <div class="small text-muted">前月：{{ number_format($salesLastMonth) }} 円</div>
         </div>
@@ -37,7 +37,7 @@
 <div class="row mb-4 g-3">
     <div class="col-lg-6">
         <div class="card card-body">
-            <h2 class="h6 mb-3">売上推移 <span class="text-muted small fw-normal">(直近12ヶ月・アフィリエイト経由)</span></h2>
+            <h2 class="h6 mb-3">売上推移 <span class="text-muted small fw-normal">(直近12ヶ月・アンバサダー経由)</span></h2>
             <canvas id="salesChart" height="140"></canvas>
         </div>
     </div>

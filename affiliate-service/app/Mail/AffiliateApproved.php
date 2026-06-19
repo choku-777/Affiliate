@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * アフィリエイター承認通知メール。
+ * アンバサダー承認通知メール。
  */
 class AffiliateApproved extends Mailable
 {
@@ -23,7 +23,7 @@ class AffiliateApproved extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'アフィリエイト登録が承認されました',
+            subject: 'アンバサダー登録が承認されました',
         );
     }
 

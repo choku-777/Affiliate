@@ -25,7 +25,7 @@
         <table class="table mb-0 align-middle">
             <thead>
                 <tr>
-                    <th>締め月</th><th>アフィリエイター</th><th class="text-end">金額</th><th class="text-end">件数</th>
+                    <th>締め月</th><th>アンバサダー</th><th class="text-end">金額</th><th class="text-end">件数</th>
                     <th>CSV</th><th>入金</th><th></th>
                 </tr>
             </thead>

@@ -19,7 +19,7 @@ class ConfirmRewards extends Command
 
     protected $signature = 'affiliate:confirm-rewards';
 
-    protected $description = '未確定のアフィリエイト成果を確定・取消します。';
+    protected $description = '未確定のアンバサダー成果を確定・取消します。';
 
     public function handle(): int
     {

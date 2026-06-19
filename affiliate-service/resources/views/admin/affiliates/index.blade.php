@@ -1,8 +1,8 @@
 @extends('layouts.admin')
-@section('title', 'アフィリエイター')
+@section('title', 'アンバサダー')
 
 @section('content')
-<h1 class="h4 mb-3">アフィリエイター</h1>
+<h1 class="h4 mb-3">アンバサダー</h1>
 
 <form method="get" class="row g-2 mb-3">
     <div class="col-12 col-sm-auto">

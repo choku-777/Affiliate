@@ -3,7 +3,7 @@
 <head><meta charset="utf-8"></head>
 <body style="font-family: sans-serif; line-height: 1.7;">
     <p>{{ $affiliate->name }} 様</p>
-    <p>アフィリエイトのお申し込みが承認されました。<br>
+    <p>アンバサダーのお申し込みが承認されました。<br>
        以下のURLからのご紹介が成果対象になります（サイトごと）。</p>
     @foreach ($affiliateUrls as $row)
         <p style="margin: 6px 0;">

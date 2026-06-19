@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * アフィリエイト対象サイト（自然派いぬ生活・馬肉特急 など）。
+ * アンバサダー対象サイト（自然派いぬ生活・馬肉特急 など）。
  */
 class Site extends Model
 {

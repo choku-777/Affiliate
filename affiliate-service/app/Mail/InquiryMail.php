@@ -31,7 +31,7 @@ class InquiryMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '【アフィリエイト問い合わせ】'.$this->subjectLine,
+            subject: '【アンバサダー問い合わせ】'.$this->subjectLine,
             replyTo: [new Address($this->senderEmail, $this->senderName)],
         );
     }

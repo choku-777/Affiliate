@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
- * アフィリエイター登録（公開）。申請として受け付け、承認は管理画面で行う。
+ * アンバサダー登録（公開）。申請として受け付け、承認は管理画面で行う。
  * メールアドレスがログインID、パスワードは hashed キャストで自動ハッシュ化される。
  */
 class RegistrationController extends Controller
