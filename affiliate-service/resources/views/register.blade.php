@@ -61,6 +61,24 @@
         <input type="tel" name="phone" value="{{ old('phone') }}" class="form-control" placeholder="09012345678（ハイフン無し）" required>
     </div>
 
+    <h2 class="h6 text-muted border-bottom pb-2 mb-3 mt-2">活動について</h2>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">主に使うSNS <span class="text-danger">*</span></label>
+            @php $snsList = ['X（旧Twitter）', 'Instagram', 'TikTok', 'YouTube', 'Facebook', 'ブログ・ウェブサイト', 'その他']; @endphp
+            <select name="sns" class="form-select" required>
+                <option value="">選択してください</option>
+                @foreach ($snsList as $snsName)
+                    <option value="{{ $snsName }}" @selected(old('sns') === $snsName)>{{ $snsName }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">アカウント名 <span class="text-danger">*</span></label>
+            <input type="text" name="sns_account" value="{{ old('sns_account') }}" class="form-control" placeholder="@your_account など" required>
+        </div>
+    </div>
+
     <h2 class="h6 text-muted border-bottom pb-2 mb-3 mt-2">ログイン情報</h2>
     <div class="mb-3">
         <label class="form-label">メールアドレス <span class="text-danger">*</span></label>

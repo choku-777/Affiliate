@@ -32,6 +32,8 @@ class Affiliate extends Model
         'email',
         'password',
         'phone',
+        'sns',
+        'sns_account',
         'birth_date',
         'gender',
         'postal_code',

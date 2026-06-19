@@ -15,6 +15,7 @@
         </td></tr>
         <tr><th>メール</th><td>{{ $affiliate->email }}</td></tr>
         <tr><th>電話番号</th><td>{{ $affiliate->phone }}</td></tr>
+        <tr><th>主なSNS</th><td>{{ $affiliate->sns }}@if ($affiliate->sns_account)（{{ $affiliate->sns_account }}）@endif</td></tr>
         <tr><th>生年月日</th><td>{{ optional($affiliate->birth_date)->format('Y-m-d') }}</td></tr>
         <tr><th>性別</th><td>{{ \App\Models\Affiliate::$genderLabels[$affiliate->gender] ?? '' }}</td></tr>
         <tr><th>ステータス</th><td>{{ $affiliate->statusLabel() }}</td></tr>
