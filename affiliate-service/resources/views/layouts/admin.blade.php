@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', '管理') | 馬肉特急・自然派いぬ生活 アンバサダー管理</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    @include('partials.theme-head')
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
