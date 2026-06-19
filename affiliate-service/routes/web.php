@@ -8,12 +8,13 @@ use App\Http\Controllers\Admin\RewardController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\AffiliateAuthController;
 use App\Http\Controllers\InquiryController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\MyPageController;
 use App\Http\Controllers\RegistrationController;
 use Illuminate\Support\Facades\Route;
 
-// 公開：トップ（アフィリエイター募集LP）
-Route::get('/', fn () => view('landing'))->name('home');
+// 公開：トップ（アンバサダー募集LP）
+Route::get('/', [LandingController::class, 'index'])->name('home');
 
 // 公開：アフィリエイター登録
 Route::get('/register', [RegistrationController::class, 'create'])->name('register.create');

@@ -7,3 +7,10 @@
 # SSH秘密鍵（コミット禁止）
 id_ecdsa.pem
 *.pem
+
+# ローカルのBlade描画プレビュー（ローカル専用ツール。デプロイ不要）
+.preview/
+
+# 画像の作業用フォルダ（元画像・中間ファイル。本番は public/images/ を使う）
+/img/
+/affiliate-service/img/
