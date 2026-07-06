@@ -1,7 +1,7 @@
 # Xserver デプロイ手順（アフィリエイト管理アプリ / Laravel 11）
 
 対象ドメイン: **affiliate.tairiku-tsusho.co.jp**（`tairiku-tsusho.co.jp` のサブドメイン）
-同一 Xserver 上で稼働。ショップ本体（EC-CUBE / shizenha-inu.life）とは独立。
+同一 Xserver 上で稼働。ショップ本体（EC-CUBE / umashippo.jp）とは独立。
 
 > 表記ルール（自分の環境に置き換えて読む）
 > - `{account}` … Xserver のサーバーID（例 `xs123456`）
@@ -114,7 +114,7 @@ ADMIN_MANAGER_EMAILS=ec@tairiku-tsusho.co.jp
 ADMIN_OPERATOR_EMAILS=（運用担当のGoogleアカウント）
 
 # 発行URLに使うショップ本体（変更しない）
-SHOP_BASE_URL=https://shizenha-inu.life
+SHOP_BASE_URL=https://umashippo.jp
 
 # Google OAuth
 GOOGLE_CLIENT_ID=（Google Cloud Consoleで発行）

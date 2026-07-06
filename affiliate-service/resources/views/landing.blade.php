@@ -8,7 +8,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>アンバサダー募集 | 馬肉特急 · 自然派いぬ生活</title>
+<title>アンバサダー募集 | 馬肉特急 · うましっぽ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
@@ -55,7 +55,7 @@
           <span style="font-size:11.5px;letter-spacing:0.22em;text-transform:uppercase;color:#cdb89a;font-weight:600;">馬肉を愛する人のアンバサダー</span>
         </div>
         <h1 style="font-family:'Shippori Mincho',serif;font-weight:700;font-size:clamp(1.85rem,3.9vw,3.05rem);line-height:1.42;letter-spacing:0.01em;word-break:keep-all;overflow-wrap:break-word;margin:0 0 26px;">“馬肉”を紹介して、<br><span style="color:#e6b566;">報酬</span>を受け取る。</h1>
-        <p style="font-size:clamp(14px,1.5vw,16px);line-height:2.05;color:rgba(244,238,225,0.82);max-width:31em;margin:0 0 38px;">人が食べる新鮮な馬刺し「馬肉特急」と、愛犬のための自然派フード「自然派いぬ生活」。どちらも“馬肉”がテーマの2ブランドを紹介して、報酬を受け取れるアンバサダープログラムです。</p>
+        <p style="font-size:clamp(14px,1.5vw,16px);line-height:2.05;color:rgba(244,238,225,0.82);max-width:31em;margin:0 0 38px;">人が食べる新鮮な馬刺し「馬肉特急」と、愛犬のための自然派フード「うましっぽ」。どちらも“馬肉”がテーマの2ブランドを紹介して、報酬を受け取れるアンバサダープログラムです。</p>
         <div style="display:flex;flex-wrap:wrap;align-items:center;gap:22px;">
           <a href="{{ route('register.create') }}" class="lp-cta" style="display:inline-flex;align-items:center;gap:10px;background:#c1784c;color:#fff;font-weight:700;font-size:clamp(15px,1.6vw,17px);padding:17px 34px;border-radius:999px;text-decoration:none;box-shadow:0 14px 34px -10px rgba(193,120,76,0.65);">無料ではじめる <span style="font-size:18px;">→</span></a>
           <span style="font-size:13px;color:rgba(244,238,225,0.72);">すでに登録済みの方は <a href="{{ route('affiliate.login') }}" style="color:#e6b566;text-decoration:underline;text-underline-offset:3px;">こちらからログイン</a></span>
@@ -87,7 +87,7 @@
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:clamp(18px,2.5vw,28px);margin-top:clamp(38px,5vw,56px);">
         <div style="position:relative;overflow:hidden;background:linear-gradient(158deg,#69794c,#566640);color:#f7f3e8;border-radius:24px;padding:clamp(30px,3.5vw,42px);border:1px solid rgba(255,255,255,0.06);box-shadow:0 26px 54px -26px rgba(86,102,64,0.5);">
           <span style="position:absolute;top:22px;right:22px;font-size:11px;font-weight:700;letter-spacing:0.08em;background:rgba(230,181,102,0.92);color:#3a2f1a;padding:6px 12px;border-radius:999px;">高還元</span>
-          <div style="font-weight:700;font-size:19px;">自然派いぬ生活</div>
+          <div style="font-weight:700;font-size:19px;">うましっぽ</div>
           <div style="font-size:12.5px;color:rgba(244,238,225,0.68);margin-top:5px;">愛犬のための自然派フード</div>
           <div style="display:flex;align-items:baseline;gap:5px;margin:22px 0 12px;">
             <span style="font-family:'Shippori Mincho',serif;font-weight:700;font-size:clamp(3.6rem,8vw,5.2rem);line-height:0.9;">{{ $inuRateLabel }}</span>
@@ -197,15 +197,15 @@
         <div style="flex:1 1 320px;min-width:260px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           <div style="grid-column:1 / -1;aspect-ratio:16/10;border-radius:18px;overflow:hidden;box-shadow:0 18px 38px -22px rgba(44,40,32,0.4);">
             {{-- 画像：public/images/landing/inu-main.jpg（横長 16:10 推奨） --}}
-            <img src="{{ asset('images/landing/inu-main.jpg') }}" alt="自然派いぬ生活 商品" style="width:100%;height:100%;object-fit:cover;display:block;">
+            <img src="{{ asset('images/landing/inu-main.jpg') }}" alt="うましっぽ 商品" style="width:100%;height:100%;object-fit:cover;display:block;">
           </div>
           <div style="aspect-ratio:1/1;border-radius:16px;overflow:hidden;box-shadow:0 14px 30px -20px rgba(44,40,32,0.38);">
             {{-- 画像：public/images/landing/inu-1.jpg（正方形 1:1 推奨） --}}
-            <img src="{{ asset('images/landing/inu-1.jpg') }}" alt="自然派いぬ生活 サブ1" style="width:100%;height:100%;object-fit:cover;display:block;">
+            <img src="{{ asset('images/landing/inu-1.jpg') }}" alt="うましっぽ サブ1" style="width:100%;height:100%;object-fit:cover;display:block;">
           </div>
           <div style="aspect-ratio:1/1;border-radius:16px;overflow:hidden;box-shadow:0 14px 30px -20px rgba(44,40,32,0.38);">
             {{-- 画像：public/images/landing/inu-2.jpg（正方形 1:1 推奨） --}}
-            <img src="{{ asset('images/landing/inu-2.jpg') }}" alt="自然派いぬ生活 サブ2" style="width:100%;height:100%;object-fit:cover;display:block;">
+            <img src="{{ asset('images/landing/inu-2.jpg') }}" alt="うましっぽ サブ2" style="width:100%;height:100%;object-fit:cover;display:block;">
           </div>
         </div>
         <div style="flex:1 1 320px;min-width:260px;">
@@ -213,7 +213,7 @@
             <span style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;letter-spacing:0.06em;color:#5b6b41;">For Dogs</span>
             <span style="font-size:11px;letter-spacing:0.16em;color:#9a9079;border-left:1px solid rgba(44,40,32,0.18);padding-left:10px;">ペットフード</span>
           </div>
-          <h3 style="font-family:'Shippori Mincho',serif;font-weight:700;font-size:clamp(1.5rem,2.8vw,2rem);margin:0 0 14px;">自然派いぬ生活</h3>
+          <h3 style="font-family:'Shippori Mincho',serif;font-weight:700;font-size:clamp(1.5rem,2.8vw,2rem);margin:0 0 14px;">うましっぽ</h3>
           <p style="font-size:14px;line-height:1.95;color:#5a5348;margin:0 0 22px;">愛犬の健康を考えた、自然派の馬肉フードとケア用品。毎日の食といたわりを届けるブランドです。</p>
           <ul>
             <li style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;font-size:14px;line-height:1.7;color:#4a443a;"><span style="flex:none;width:7px;height:7px;border-radius:50%;background:#5b6b41;margin-top:7px;"></span>国産・自然派にこだわった犬用の馬肉フード</li>
@@ -266,7 +266,7 @@
       <div>
         <div style="display:flex;flex-wrap:wrap;gap:6px 28px;padding:22px 0;border-top:1px solid rgba(44,40,32,0.12);">
           <div style="flex:0 0 150px;font-family:'Shippori Mincho',serif;font-weight:600;font-size:16px;color:#2c2820;">報酬料率</div>
-          <div style="flex:1 1 320px;font-size:14px;line-height:1.9;color:#5a5348;">自然派いぬ生活 {{ $inuRateLabel }}%／馬肉特急 {{ $umaRateLabel }}%（期間限定の特別料率）。例：自然派いぬ生活で{{ $exampleOrder }}円のご注文 → <strong style="color:#a85f38;">{{ $exampleReward }}円</strong></div>
+          <div style="flex:1 1 320px;font-size:14px;line-height:1.9;color:#5a5348;">うましっぽ {{ $inuRateLabel }}%／馬肉特急 {{ $umaRateLabel }}%（期間限定の特別料率）。例：うましっぽで{{ $exampleOrder }}円のご注文 → <strong style="color:#a85f38;">{{ $exampleReward }}円</strong></div>
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:6px 28px;padding:22px 0;border-top:1px solid rgba(44,40,32,0.12);">
           <div style="flex:0 0 150px;font-family:'Shippori Mincho',serif;font-weight:600;font-size:16px;color:#2c2820;">報酬の確定</div>
@@ -298,7 +298,7 @@
       </details>
       <details style="background:#fffdf7;border:1px solid rgba(44,40,32,0.08);border-radius:14px;margin-bottom:12px;overflow:hidden;box-shadow:0 10px 26px -18px rgba(44,40,32,0.2);">
         <summary style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 24px;font-family:'Zen Kaku Gothic New',sans-serif;font-weight:600;font-size:clamp(14px,1.6vw,16px);color:#2c2820;">報酬率はどのくらいですか？<span class="lp-faq-plus">＋</span></summary>
-        <div class="lp-faq-a"><div style="padding:0 24px 22px;font-size:14px;line-height:1.95;color:#6f685c;">期間限定で、自然派いぬ生活が{{ $inuRateLabel }}%、馬肉特急が{{ $umaRateLabel }}%の特別料率です。</div></div>
+        <div class="lp-faq-a"><div style="padding:0 24px 22px;font-size:14px;line-height:1.95;color:#6f685c;">期間限定で、うましっぽが{{ $inuRateLabel }}%、馬肉特急が{{ $umaRateLabel }}%の特別料率です。</div></div>
       </details>
       <details style="background:#fffdf7;border:1px solid rgba(44,40,32,0.08);border-radius:14px;margin-bottom:12px;overflow:hidden;box-shadow:0 10px 26px -18px rgba(44,40,32,0.2);">
         <summary style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 24px;font-family:'Zen Kaku Gothic New',sans-serif;font-weight:600;font-size:clamp(14px,1.6vw,16px);color:#2c2820;">審査はありますか？<span class="lp-faq-plus">＋</span></summary>
@@ -331,7 +331,7 @@
     <div style="max-width:1120px;margin:0 auto;padding:36px clamp(20px,5vw,56px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;">
       <div style="display:flex;align-items:center;gap:11px;">
         <span style="flex:none;width:30px;height:30px;border-radius:50%;border:1px solid rgba(230,181,102,0.5);display:flex;align-items:center;justify-content:center;font-family:'Shippori Mincho',serif;font-weight:700;font-size:14px;color:#e6b566;">馬</span>
-        <span style="font-family:'Shippori Mincho',serif;font-size:14px;color:#f4eee1;">馬肉特急 · 自然派いぬ生活 アンバサダー</span>
+        <span style="font-family:'Shippori Mincho',serif;font-size:14px;color:#f4eee1;">馬肉特急 · うましっぽ アンバサダー</span>
       </div>
       <div style="display:flex;gap:20px;font-size:12.5px;">
         <a href="#" style="color:rgba(244,238,225,0.7);text-decoration:none;">特定商取引法</a>
@@ -339,7 +339,7 @@
         <a href="{{ route('inquiry.create') }}" style="color:rgba(244,238,225,0.7);text-decoration:none;">お問い合わせ</a>
       </div>
     </div>
-    <div style="border-top:1px solid rgba(255,255,255,0.07);padding:16px clamp(20px,5vw,56px);text-align:center;font-size:11.5px;color:rgba(244,238,225,0.45);">© 2026 馬肉特急 / 自然派いぬ生活 Ambassador Program.</div>
+    <div style="border-top:1px solid rgba(255,255,255,0.07);padding:16px clamp(20px,5vw,56px);text-align:center;font-size:11.5px;color:rgba(244,238,225,0.45);">© 2026 馬肉特急 / うましっぽ Ambassador Program.</div>
   </footer>
 
 </div>

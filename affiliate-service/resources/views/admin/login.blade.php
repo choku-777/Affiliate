@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>管理ログイン | 馬肉特急・自然派いぬ生活 アンバサダー管理</title>
+    <title>管理ログイン | 馬肉特急・うましっぽ アンバサダー管理</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     @include('partials.theme-head')
 </head>

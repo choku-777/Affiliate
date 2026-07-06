@@ -33,5 +33,5 @@ return [
     'admin_emails' => array_keys($roles),
 
     // ショップのベースURL（発行URL組み立て用）
-    'shop_url' => rtrim((string) env('SHOP_BASE_URL', 'https://shizenha-inu.life'), '/'),
+    'shop_url' => rtrim((string) env('SHOP_BASE_URL', 'https://umashippo.jp'), '/'),
 ];

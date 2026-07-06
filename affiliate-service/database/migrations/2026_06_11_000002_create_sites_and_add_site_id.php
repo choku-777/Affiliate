@@ -34,7 +34,7 @@ return new class extends Migration
         $rate = (float) (DB::table('settings')->value('commission_rate') ?? 5);
         $now = now();
         DB::table('sites')->insert([
-            ['code' => 'shizenha-inu', 'name' => '自然派いぬ生活', 'shop_url' => 'https://shizenha-inu.life', 'commission_rate' => $rate, 'is_default' => 1, 'created_at' => $now, 'updated_at' => $now],
+            ['code' => 'umashippo', 'name' => 'うましっぽ', 'shop_url' => 'https://umashippo.jp', 'commission_rate' => $rate, 'is_default' => 1, 'created_at' => $now, 'updated_at' => $now],
             ['code' => 'baniku', 'name' => '馬肉特急', 'shop_url' => 'https://www.829109.jp', 'commission_rate' => $rate, 'is_default' => 0, 'created_at' => $now, 'updated_at' => $now],
         ]);
 

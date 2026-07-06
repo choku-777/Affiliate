@@ -14,3 +14,5 @@ id_ecdsa.pem
 # 画像の作業用フォルダ（元画像・中間ファイル。本番は public/images/ を使う）
 /img/
 /affiliate-service/img/
+
+affiliate-service/.env

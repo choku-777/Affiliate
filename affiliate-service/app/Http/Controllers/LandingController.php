@@ -15,7 +15,7 @@ class LandingController extends Controller
     {
         $setting = Setting::current();
 
-        $inu = Site::byCode('shizenha-inu');
+        $inu = Site::byCode('umashippo');
         $uma = Site::byCode('baniku');
 
         // サイト個別料率がnullなら全体設定の料率にフォールバック
@@ -30,7 +30,7 @@ class LandingController extends Controller
         $exampleReward = (int) floor($exampleOrder * $inuRate / 100);
 
         return view('landing', [
-            'inuName'       => $inu->name ?? '自然派いぬ生活',
+            'inuName'       => $inu->name ?? 'うましっぽ',
             'umaName'       => $uma->name ?? '馬肉特急',
             'inuRateLabel'  => $fmtRate($inuRate),
             'umaRateLabel'  => $fmtRate($umaRate),
