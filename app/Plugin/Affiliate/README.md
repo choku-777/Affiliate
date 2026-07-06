@@ -71,5 +71,5 @@ cron（再送。数分おき推奨）:
 管理サービスで発行されたコードを、ショップの任意URLに付与して使います。
 
 ```
-https://shizenha-inu.life/?affiliate={コード}
+https://umashippo.jp/?affiliate={コード}
 ```

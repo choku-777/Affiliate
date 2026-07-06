@@ -11,7 +11,7 @@
 
 ## 1. これは何か（目的）
 
-EC-CUBE で運営するペット用品ショップ **自然派ぬ生活（https://shizenha-inu.life）** に、
+EC-CUBE で運営するペット用品ショップ **うましっぽ（https://umashippo.jp）** に、
 **アフィリエイト（紹介報酬）機能**を導入するプロジェクト。
 
 - 紹介者（アフィリエイター）が自分専用URLで集客 → 購入が発生したら報酬を付与
@@ -24,7 +24,7 @@ EC-CUBE で運営するペット用品ショップ **自然派ぬ生活（https:
 ```
 ┌─────────────────────────────────────┐        ┌──────────────────────────────────────────┐
 │ ① EC-CUBE プラグイン（計測専用の薄い層）  │        │ ② Laravel 管理アプリ（管理機能ぜんぶ）        │
-│   サイト: shizenha-inu.life            │        │   サイト: affiliate.tairiku-tsusho.co.jp    │
+│   サイト: umashippo.jp            │        │   サイト: affiliate.tairiku-tsusho.co.jp    │
 │   パス: app/Plugin/Affiliate           │        │   パス: affiliate-service/                  │
 │                                       │        │                                            │
 │ ・?affiliate=CODE でクッキー付与         │ HTTP   │ ・アフィリエイター登録／承認                   │
@@ -59,7 +59,7 @@ EC-CUBE で運営するペット用品ショップ **自然派ぬ生活（https:
 
 ## 4. データの流れ（エンドツーエンド）
 
-1. 訪問者が `https://shizenha-inu.life/?affiliate=CODE` にアクセス
+1. 訪問者が `https://umashippo.jp/?affiliate=CODE` にアクセス
    → プラグインが `affiliate_code` クッキーを付与（既定30日・httponly・SameSite=Lax）
 2. その訪問者が商品を購入し注文完了
    → プラグインがクッキーを読み、成果(`conversion`)を管理アプリへPOST
@@ -185,7 +185,7 @@ DB_CONNECTION=mysql / DB_HOST=（Xserverのホスト名）/ DB_DATABASE / DB_USE
 AFFILIATE_API_KEY=（EC-CUBE側と同じ値にする）
 ADMIN_MANAGER_EMAILS=ec@tairiku-tsusho.co.jp        # 全権
 ADMIN_OPERATOR_EMAILS=（運用担当のGoogleアカウント）  # 設定以外
-SHOP_BASE_URL=https://shizenha-inu.life             # 発行URL生成用（変更しない）
+SHOP_BASE_URL=https://umashippo.jp             # 発行URL生成用（変更しない）
 GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET / GOOGLE_REDIRECT_URI=.../admin/auth/google/callback
 MAIL_*（承認通知メール用）
 ```
@@ -238,7 +238,7 @@ MAIL_*（承認通知メール用）
 ## 9. 整合性で必ず守ること
 
 - **`AFFILIATE_API_KEY` は EC-CUBE側 `.env` と Laravel側 `.env` で同一値**にする
-- `SHOP_BASE_URL=https://shizenha-inu.life`（発行URL `https://shizenha-inu.life/?affiliate=コード` を生成）
+- `SHOP_BASE_URL=https://umashippo.jp`（発行URL `https://umashippo.jp/?affiliate=コード` を生成）
 - API エンドポイントは `{AFFILIATE_API_URL}/api/affiliate/event`
 - EC-CUBE の OrderStatus: キャンセル=3 / 返品=9（取消判定に使用）
 
