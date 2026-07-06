@@ -32,23 +32,28 @@ class AdminOrderStatusListener implements EventSubscriberInterface
 
     public function onOrderEditComplete(EventArgs $event)
     {
-        $Order = null;
-        if ($event->hasArgument('Order')) {
-            $Order = $event->getArgument('Order');
-        } elseif ($event->hasArgument('TargetOrder')) {
-            $Order = $event->getArgument('TargetOrder');
-        }
-        if (!$Order) {
-            return;
-        }
+        // 計測の失敗で管理画面の注文編集を絶対に止めない（保険）
+        try {
+            $Order = null;
+            if ($event->hasArgument('Order')) {
+                $Order = $event->getArgument('Order');
+            } elseif ($event->hasArgument('TargetOrder')) {
+                $Order = $event->getArgument('TargetOrder');
+            }
+            if (!$Order) {
+                return;
+            }
 
-        $status = $Order->getOrderStatus();
+            $status = $Order->getOrderStatus();
 
-        $this->postbackClient->send('order_status', [
-            'order_no' => $Order->getOrderNo(),
-            'site_code' => $this->config->siteCode(),
-            'order_status_id' => $status ? $status->getId() : null,
-            'order_status_name' => $status ? $status->getName() : null,
-        ]);
+            $this->postbackClient->send('order_status', [
+                'order_no' => $Order->getOrderNo(),
+                'site_code' => $this->config->siteCode(),
+                'order_status_id' => $status ? $status->getId() : null,
+                'order_status_name' => $status ? $status->getName() : null,
+            ]);
+        } catch (\Throwable $e) {
+            // 送信失敗はPostbackClient内でログ済み。管理操作を止めないための保険
+        }
     }
 }

@@ -42,39 +42,44 @@ class AffiliateCookieListener implements EventSubscriberInterface
 
     public function onKernelResponse(ResponseEvent $event)
     {
-        if (!$this->isMainRequest($event)) {
-            return;
-        }
+        // クッキー付与・クリック計測の失敗でページ表示を絶対に止めない（保険）
+        try {
+            if (!$this->isMainRequest($event)) {
+                return;
+            }
 
-        $request = $event->getRequest();
-        $code = $request->query->get(self::QUERY_KEY);
-        if (!$code || !preg_match('/\A[A-Za-z0-9_-]{1,64}\z/', $code)) {
-            return;
-        }
+            $request = $event->getRequest();
+            $code = $request->query->get(self::QUERY_KEY);
+            if (!$code || !preg_match('/\A[A-Za-z0-9_-]{1,64}\z/', $code)) {
+                return;
+            }
 
-        $expire = new \DateTime('+'.$this->cookieDays.' day');
-        $cookie = Cookie::create(
-            self::COOKIE_NAME,
-            $code,
-            $expire,
-            '/',
-            null,
-            $request->isSecure(),
-            true,
-            false,
-            Cookie::SAMESITE_LAX
-        );
-        $event->getResponse()->headers->setCookie($cookie);
+            $expire = new \DateTime('+'.$this->cookieDays.' day');
+            $cookie = Cookie::create(
+                self::COOKIE_NAME,
+                $code,
+                $expire,
+                '/',
+                null,
+                $request->isSecure(),
+                true,
+                false,
+                Cookie::SAMESITE_LAX
+            );
+            $event->getResponse()->headers->setCookie($cookie);
 
-        if ($this->trackClicks) {
-            $this->postbackClient->send('click', [
-                'affiliate_code' => $code,
-                'site_code' => $this->siteCode,
-                'ip' => $request->getClientIp(),
-                'referer' => $request->headers->get('referer'),
-                'landing_url' => $request->getUri(),
-                'clicked_at' => (new \DateTime())->format(\DateTime::ATOM),
-            ]);
+            if ($this->trackClicks) {
+                $this->postbackClient->send('click', [
+                    'affiliate_code' => $code,
+                    'site_code' => $this->siteCode,
+                    'ip' => $request->getClientIp(),
+                    'referer' => $request->headers->get('referer'),
+                    'landing_url' => $request->getUri(),
+                    'clicked_at' => (new \DateTime())->format(\DateTime::ATOM),
+                ]);
+            }
+        } catch (\Throwable $e) {
+            // 計測は本体機能ではないため、例外はここで握りつぶす
         }
     }
 
