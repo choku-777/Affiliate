@@ -99,6 +99,7 @@ APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://affiliate.tairiku-tsusho.co.jp
 APP_TIMEZONE=Asia/Tokyo      # ← 必須。未設定だとUTCになり月次集計・締めが9時間ずれる
+LOG_LEVEL=warning            # ← error だとメール送信失敗などの警告ログが残らない
 
 DB_CONNECTION=mysql
 DB_HOST=localhost            # ← STEP2で控えたMySQLホスト名
