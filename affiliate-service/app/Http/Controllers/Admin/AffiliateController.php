@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Mail\AffiliateApproved;
 use App\Models\Affiliate;
+use App\Models\AffiliateNote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
@@ -24,11 +25,18 @@ class AffiliateController extends Controller
                     ->orWhere('email', 'like', "%{$keyword}%");
             });
         }
+        if ($sample = $request->query('sample')) {
+            if ($sample === 'sent') {
+                $query->whereNotNull('sample_sent_at');
+            } elseif ($sample === 'unsent') {
+                $query->whereNull('sample_sent_at');
+            }
+        }
 
         return view('admin.affiliates.index', [
             'affiliates' => $query->paginate(20)->withQueryString(),
             'statusLabels' => Affiliate::$statusLabels,
-            'filters' => $request->only('status', 'keyword'),
+            'filters' => $request->only('status', 'keyword', 'sample'),
         ]);
     }
 
@@ -36,6 +44,7 @@ class AffiliateController extends Controller
     {
         return view('admin.affiliates.show', [
             'affiliate' => $affiliate,
+            'notes' => $affiliate->notes()->get(),
         ]);
     }
 
@@ -69,5 +78,82 @@ class AffiliateController extends Controller
         $affiliate->update(['status' => Affiliate::STATUS_SUSPENDED]);
 
         return back()->with('success', '停止しました。');
+    }
+
+    /**
+     * サンプルを送付済みにする。
+     */
+    public function markSampleSent(Request $request, Affiliate $affiliate)
+    {
+        $affiliate->update([
+            'sample_sent_at' => now(),
+            'sample_sent_by' => $this->adminLabel($request),
+        ]);
+
+        return back()->with('success', 'サンプルを送付済みにしました。');
+    }
+
+    /**
+     * サンプル送付の記録を取り消す。
+     */
+    public function unmarkSampleSent(Affiliate $affiliate)
+    {
+        $affiliate->update([
+            'sample_sent_at' => null,
+            'sample_sent_by' => null,
+        ]);
+
+        return back()->with('success', 'サンプル送付の記録を取り消しました。');
+    }
+
+    /**
+     * メモを追加する。
+     */
+    public function storeNote(Request $request, Affiliate $affiliate)
+    {
+        $validated = $request->validate([
+            'body' => ['required', 'string', 'max:2000'],
+        ], [
+            'body.required' => 'メモを入力してください。',
+            'body.max' => 'メモは2000文字以内で入力してください。',
+        ], ['body' => 'メモ']);
+
+        $affiliate->notes()->create([
+            'body' => $validated['body'],
+            'created_by' => $request->session()->get('admin_email'),
+            'created_by_name' => $request->session()->get('admin_name'),
+        ]);
+
+        return back()->with('success', 'メモを追加しました。');
+    }
+
+    /**
+     * メモを削除する。
+     */
+    public function destroyNote(Affiliate $affiliate, AffiliateNote $note)
+    {
+        // 他のアンバサダーのメモを消せないようにする
+        if ($note->affiliate_id !== $affiliate->id) {
+            abort(404);
+        }
+
+        $note->delete();
+
+        return back()->with('success', 'メモを削除しました。');
+    }
+
+    /**
+     * 操作した管理者の表示名（「名前（メール）」形式）。
+     */
+    private function adminLabel(Request $request): string
+    {
+        $name = $request->session()->get('admin_name');
+        $email = $request->session()->get('admin_email');
+
+        if ($name && $email) {
+            return "{$name}（{$email}）";
+        }
+
+        return (string) ($name ?: $email);
     }
 }

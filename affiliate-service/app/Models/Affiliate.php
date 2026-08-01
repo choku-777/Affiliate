@@ -51,6 +51,8 @@ class Affiliate extends Model
         'status',
         'commission_rate',
         'approved_at',
+        'sample_sent_at',
+        'sample_sent_by',
     ];
 
     protected $hidden = [
@@ -60,6 +62,7 @@ class Affiliate extends Model
     protected $casts = [
         'commission_rate' => 'decimal:2',
         'approved_at' => 'datetime',
+        'sample_sent_at' => 'datetime',
         'birth_date' => 'date',
         'password' => 'hashed',
     ];
@@ -80,6 +83,14 @@ class Affiliate extends Model
     }
 
     /**
+     * メモ（備考）。新しい順。
+     */
+    public function notes(): HasMany
+    {
+        return $this->hasMany(AffiliateNote::class)->latest();
+    }
+
+    /**
      * 確定済み（未払い）報酬の合計額。
      */
     public function confirmedUnpaidTotal(): int
@@ -97,6 +108,14 @@ class Affiliate extends Model
     public function statusLabel(): string
     {
         return self::$statusLabels[$this->status] ?? $this->status;
+    }
+
+    /**
+     * サンプル送付済みか。
+     */
+    public function hasSampleSent(): bool
+    {
+        return $this->sample_sent_at !== null;
     }
 
     /**

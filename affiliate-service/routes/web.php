@@ -53,6 +53,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('affiliates/{affiliate}/approve', [AffiliateController::class, 'approve'])->name('affiliates.approve');
         Route::post('affiliates/{affiliate}/reject', [AffiliateController::class, 'reject'])->name('affiliates.reject');
         Route::post('affiliates/{affiliate}/suspend', [AffiliateController::class, 'suspend'])->name('affiliates.suspend');
+        Route::post('affiliates/{affiliate}/sample-sent', [AffiliateController::class, 'markSampleSent'])->name('affiliates.sample.mark');
+        Route::post('affiliates/{affiliate}/sample-unsent', [AffiliateController::class, 'unmarkSampleSent'])->name('affiliates.sample.unmark');
+        Route::post('affiliates/{affiliate}/notes', [AffiliateController::class, 'storeNote'])->name('affiliates.notes.store');
+        Route::delete('affiliates/{affiliate}/notes/{note}', [AffiliateController::class, 'destroyNote'])->name('affiliates.notes.destroy');
 
         Route::get('rewards', [RewardController::class, 'index'])->name('rewards.index');
         Route::post('rewards/{reward}/cancel', [RewardController::class, 'cancel'])->name('rewards.cancel');

@@ -16,6 +16,13 @@
             @endforeach
         </select>
     </div>
+    <div class="col-12 col-sm-auto">
+        <select name="sample" class="form-select">
+            <option value="">サンプル：すべて</option>
+            <option value="sent" @selected(($filters['sample'] ?? '') === 'sent')>サンプル送付済み</option>
+            <option value="unsent" @selected(($filters['sample'] ?? '') === 'unsent')>サンプル未送付</option>
+        </select>
+    </div>
     <div class="col-12 col-sm-auto"><button class="btn btn-primary">検索</button></div>
 </form>
 
@@ -23,7 +30,7 @@
     <div class="table-responsive">
     <table class="table mb-0">
         <thead>
-            <tr><th>ID</th><th>氏名</th><th>メール</th><th>コード</th><th>ステータス</th><th>申請日</th><th></th></tr>
+            <tr><th>ID</th><th>氏名</th><th>メール</th><th>コード</th><th>ステータス</th><th>サンプル</th><th>申請日</th><th></th></tr>
         </thead>
         <tbody>
             @forelse ($affiliates as $affiliate)
@@ -33,11 +40,19 @@
                     <td>{{ $affiliate->email }}</td>
                     <td><code>{{ $affiliate->affiliate_code }}</code></td>
                     <td>{{ $affiliate->statusLabel() }}</td>
+                    <td>
+                        @if ($affiliate->hasSampleSent())
+                            <span class="badge bg-success">送付済</span>
+                            <span class="text-muted small d-block">{{ $affiliate->sample_sent_at->format('Y-m-d') }}</span>
+                        @else
+                            <span class="badge bg-secondary">未送付</span>
+                        @endif
+                    </td>
                     <td>{{ $affiliate->created_at->format('Y-m-d') }}</td>
                     <td><a href="{{ route('admin.affiliates.show', $affiliate) }}" class="btn btn-sm btn-outline-primary">詳細</a></td>
                 </tr>
             @empty
-                <tr><td colspan="7" class="text-muted">該当なし</td></tr>
+                <tr><td colspan="8" class="text-muted">該当なし</td></tr>
             @endforelse
         </tbody>
     </table>
