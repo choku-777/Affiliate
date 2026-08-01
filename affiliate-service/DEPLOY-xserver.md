@@ -100,6 +100,8 @@ APP_DEBUG=false
 APP_URL=https://affiliate.tairiku-tsusho.co.jp
 APP_TIMEZONE=Asia/Tokyo      # ← 必須。未設定だとUTCになり月次集計・締めが9時間ずれる
 LOG_LEVEL=warning            # ← error だとメール送信失敗などの警告ログが残らない
+LOG_CHANNEL=daily            # ← 日別ファイル。single は1ファイルに際限なく増える
+LOG_DAILY_DAYS=90            # ← 90日より古いログファイルは自動削除
 
 DB_CONNECTION=mysql
 DB_HOST=localhost            # ← STEP2で控えたMySQLホスト名
