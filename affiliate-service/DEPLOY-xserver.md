@@ -98,6 +98,7 @@ APP_NAME="Affiliate"
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://affiliate.tairiku-tsusho.co.jp
+APP_TIMEZONE=Asia/Tokyo      # ← 必須。未設定だとUTCになり月次集計・締めが9時間ずれる
 
 DB_CONNECTION=mysql
 DB_HOST=localhost            # ← STEP2で控えたMySQLホスト名
@@ -129,6 +130,25 @@ MAIL_USERNAME=
 MAIL_PASSWORD=
 MAIL_FROM_ADDRESS="no-reply@tairiku-tsusho.co.jp"
 ```
+
+### `config/app.php` のタイムゾーンを env 参照にする（必須）
+
+素のLaravel（13系で確認）の `config/app.php` は `'timezone' => 'UTC',` と**直書き**されており、
+`.env` の `APP_TIMEZONE` を見ない。そのままだと月次集計・締め・日付絞り込みが9時間ずれるため、
+env 参照に直す:
+
+```bash
+cd /home/{account}/tairiku-tsusho.co.jp/laravel
+cp -a config/app.php config/app.php.bak-tz
+sed -i "s|'timezone' => 'UTC',|'timezone' => env('APP_TIMEZONE', 'UTC'),|" config/app.php
+php artisan config:clear
+
+# 確認（Asia/Tokyo と日本時間の現在時刻が出ればOK）
+php artisan tinker --execute='echo config("app.timezone")." / now=".now();'
+```
+
+> `config/app.php` はフレームワーク標準ファイルのため本リポジトリには含めていない。
+> サーバーを作り直したときは、この手順を忘れずに実施すること。
 
 ## STEP 6. マイグレーション（テーブル作成）
 

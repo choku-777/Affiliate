@@ -18,7 +18,9 @@ class DashboardController extends Controller
 
         // 直近12ヶ月の月次集計
         $now = now();
-        $since = $now->copy()->subMonths(11)->startOfMonth();
+        // 月初を基準にして引く（月末日から引くと存在しない日付になり翌月へ繰り上がるため）
+        $monthStart = $now->copy()->startOfMonth();
+        $since = $monthStart->copy()->subMonths(11);
 
         // アンバサダー経由の売上（注文金額・取消を除く）を月別集計
         $salesByMonth = Reward::where('status', '!=', Reward::STATUS_CANCELLED)
@@ -36,7 +38,7 @@ class DashboardController extends Controller
         // 直近12ヶ月の系列に整形（データの無い月は0埋め）
         $labels = $salesSeries = $regSeries = [];
         for ($i = 11; $i >= 0; $i--) {
-            $month = $now->copy()->subMonths($i);
+            $month = $monthStart->copy()->subMonths($i);
             $key = $month->format('Y-m');
             $labels[] = $month->format('Y/n');
             $salesSeries[] = (int) ($salesByMonth[$key] ?? 0);
