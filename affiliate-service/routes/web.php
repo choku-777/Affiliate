@@ -7,12 +7,14 @@ use App\Http\Controllers\Admin\PayoutController;
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\RewardController;
 use App\Http\Controllers\Admin\SampleRequestController as AdminSampleRequestController;
+use App\Http\Controllers\Admin\SnsPostController as AdminSnsPostController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\AffiliateAuthController;
 use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\MyPageController;
 use App\Http\Controllers\SampleRequestController;
+use App\Http\Controllers\SnsPostController;
 use App\Http\Controllers\RegistrationController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,6 +41,10 @@ Route::prefix('affiliate')->name('affiliate.')->group(function () {
         // サンプル商品の申し込み（1人1回）
         Route::get('sample', [SampleRequestController::class, 'create'])->name('sample.create');
         Route::post('sample', [SampleRequestController::class, 'store'])->name('sample.store');
+
+        // SNS投稿URLの申告（サンプル申込者のみ）
+        Route::get('sns-posts', [SnsPostController::class, 'index'])->name('sns-posts.index');
+        Route::post('sns-posts', [SnsPostController::class, 'store'])->name('sns-posts.store');
         Route::post('logout', [AffiliateAuthController::class, 'logout'])->name('logout');
     });
 });
@@ -80,6 +86,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('sample-requests/{sampleRequest}/tracking', [AdminSampleRequestController::class, 'storeTracking'])->name('sample-requests.tracking');
         Route::post('sample-requests/{sampleRequest}/ship', [AdminSampleRequestController::class, 'ship'])->name('sample-requests.ship');
         Route::post('sample-requests/{sampleRequest}/cancel', [AdminSampleRequestController::class, 'cancel'])->name('sample-requests.cancel');
+
+        // SNS投稿の確認・承認
+        Route::get('sns-posts', [AdminSnsPostController::class, 'index'])->name('sns-posts.index');
+        Route::get('sns-posts/{snsPost}', [AdminSnsPostController::class, 'show'])->name('sns-posts.show');
+        Route::post('sns-posts/{snsPost}/pr-check', [AdminSnsPostController::class, 'prCheck'])->name('sns-posts.pr-check');
+        Route::post('sns-posts/{snsPost}/check', [AdminSnsPostController::class, 'check'])->name('sns-posts.check');
+        Route::post('sns-posts/{snsPost}/approve', [AdminSnsPostController::class, 'approve'])->name('sns-posts.approve');
+        Route::post('sns-posts/{snsPost}/reject', [AdminSnsPostController::class, 'reject'])->name('sns-posts.reject');
+        Route::post('sns-posts/{snsPost}/hide', [AdminSnsPostController::class, 'hide'])->name('sns-posts.hide');
+        Route::post('sns-posts/{snsPost}/sort', [AdminSnsPostController::class, 'sort'])->name('sns-posts.sort');
 
         Route::get('rewards', [RewardController::class, 'index'])->name('rewards.index');
         Route::post('rewards/{reward}/cancel', [RewardController::class, 'cancel'])->name('rewards.cancel');

@@ -22,6 +22,7 @@
                     <a class="nav-link" href="{{ route('admin.payouts.index') }}">支払い</a>
                     <a class="nav-link" href="{{ route('admin.sample-requests.index') }}">サンプル発送</a>
                     <a class="nav-link" href="{{ route('admin.announcements.index') }}">お知らせ</a>
+                    <a class="nav-link" href="{{ route('admin.sns-posts.index') }}">SNS投稿</a>
                     @if (session('admin_role') === 'manager')
                         <a class="nav-link" href="{{ route('admin.settings.edit') }}">設定</a>
                     @endif

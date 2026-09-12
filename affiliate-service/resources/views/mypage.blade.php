@@ -59,6 +59,31 @@
                         お申し込みを受け付けました。発送までもうしばらくお待ちください。
                     </div>
                 @endif
+
+                {{-- SNS投稿のお願い（投稿はサンプルの条件） --}}
+                @php
+                    $snsLatest = $sampleRequest->snsPosts->first();
+                    $snsDeadline = $sampleRequest->snsDeadline((int) $setting->sns_post_deadline_days);
+                @endphp
+                <hr>
+                @include('partials.sns-post-rules', ['setting' => $setting, 'deadline' => $snsDeadline])
+                <div class="mt-3 d-flex flex-wrap gap-2 align-items-center">
+                    <a href="{{ route('affiliate.sns-posts.index') }}" class="btn btn-outline-primary">投稿したURLを申告する</a>
+                    @if ($snsLatest)
+                        <span class="small">
+                            最新の申告：{{ $snsLatest->platformLabel() }}
+                            @if ($snsLatest->status === \App\Models\SnsPost::STATUS_APPROVED)
+                                <span class="badge bg-success">掲載中</span>
+                            @elseif ($snsLatest->status === \App\Models\SnsPost::STATUS_PENDING)
+                                <span class="badge bg-info text-dark">確認中</span>
+                            @elseif ($snsLatest->status === \App\Models\SnsPost::STATUS_CHECKED)
+                                <span class="badge bg-primary">確認済み</span>
+                            @else
+                                <span class="badge bg-secondary">非掲載</span>
+                            @endif
+                        </span>
+                    @endif
+                </div>
             @elseif (! $setting->sample_request_enabled)
                 <div class="alert alert-secondary mb-0">
                     現在、サンプルのお申し込みを停止しています。再開までお待ちください。

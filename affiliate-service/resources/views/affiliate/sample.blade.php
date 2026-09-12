@@ -82,6 +82,27 @@
         <textarea name="note" rows="3" class="form-control">{{ old('note') }}</textarea>
     </div>
 
+    <h2 class="h6 text-muted border-bottom pb-2 mb-3 mt-4">SNS投稿について</h2>
+    <p class="small">
+        サンプルは、SNSでご感想を投稿していただくことを条件にお送りしています。<br>
+        投稿は「うましっぽ」公式サイトなどで紹介させていただきます。
+    </p>
+    <div class="mb-3">
+        @include('partials.sns-post-rules', ['setting' => $setting, 'deadline' => null])
+    </div>
+    <div class="form-check mb-2">
+        <input type="checkbox" name="sns_post_agree" value="1" id="sns_post_agree" class="form-check-input" {{ old('sns_post_agree') ? 'checked' : '' }} required>
+        <label class="form-check-label" for="sns_post_agree">
+            サンプル到着後、X・Instagram・TikTok のいずれかにご感想を投稿します <span class="text-danger">*</span>
+        </label>
+    </div>
+    <div class="form-check mb-4">
+        <input type="checkbox" name="sns_quote_agree" value="1" id="sns_quote_agree" class="form-check-input" {{ old('sns_quote_agree') ? 'checked' : '' }} required>
+        <label class="form-check-label" for="sns_quote_agree">
+            投稿を「うましっぽ」公式サイト・公式SNSで紹介することに同意します <span class="text-danger">*</span>
+        </label>
+    </div>
+
     <div class="d-flex gap-2">
         <button type="submit" class="btn btn-primary">この内容で申し込む</button>
         <a href="{{ route('affiliate.mypage') }}" class="btn btn-outline-secondary">戻る</a>

@@ -7,6 +7,7 @@ use App\Models\Payout;
 use App\Models\Reward;
 use App\Models\SampleRequest;
 use App\Models\Setting;
+use App\Models\SnsPost;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -99,6 +100,23 @@ class DiscordNotifier
             ['name' => '商品', 'value' => (string) $sampleRequest->product_name, 'inline' => true],
             ['name' => '送付先', 'value' => (string) $sampleRequest->prefecture, 'inline' => true],
         ], '詳しい送付先は管理画面でご確認ください', $url);
+    }
+
+    /**
+     * SNS投稿の申告があったとき（サンプル用のWebhookへ）。
+     */
+    public function snsPostSubmitted(SnsPost $post): void
+    {
+        $url = Setting::current()->discord_sample_webhook_url;
+        if (!$url) {
+            return;
+        }
+
+        $this->send('📣 SNS投稿の申告', 0x1ABC9C, [
+            ['name' => 'アンバサダー', 'value' => (string) $post->affiliate?->name, 'inline' => true],
+            ['name' => 'SNS', 'value' => $post->platformLabel(), 'inline' => true],
+            ['name' => 'URL', 'value' => $post->normalized_url, 'inline' => false],
+        ], '管理画面「SNS投稿」で #PR を確認のうえ承認してください', $url);
     }
 
     private function send(string $title, int $color, array $fields, ?string $footer = null, ?string $webhookUrl = null): void

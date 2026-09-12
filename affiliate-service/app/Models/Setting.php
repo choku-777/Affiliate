@@ -19,6 +19,11 @@ class Setting extends Model
         'sample_invoice_item_name',
         'sample_request_enabled',
         'discord_sample_webhook_url',
+        'sns_hashtag',
+        'sns_account_x',
+        'sns_account_instagram',
+        'sns_account_tiktok',
+        'sns_post_deadline_days',
     ];
 
     protected $casts = [
@@ -27,6 +32,7 @@ class Setting extends Model
         'min_payout_amount' => 'integer',
         'cookie_lifetime_days' => 'integer',
         'sample_request_enabled' => 'boolean',
+        'sns_post_deadline_days' => 'integer',
     ];
 
     /**
@@ -43,6 +49,8 @@ class Setting extends Model
             'sample_product_url' => 'https://umashippo.jp/user_data/trial',
             'sample_invoice_item_name' => 'ペットフードトライアルセット',
             'sample_request_enabled' => true,
+            'sns_hashtag' => '#うましっぽ',
+            'sns_post_deadline_days' => 14,
         ]);
     }
 }

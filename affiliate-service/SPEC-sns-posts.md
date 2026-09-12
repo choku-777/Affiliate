@@ -4,7 +4,7 @@
 
 - 対象: `affiliate-service`（Laravel）＋ うましっぽEC-CUBE（掲載ページのみ）
 - 作成日: 2026-09-12
-- ステータス: **仕様確定（段階1の実装待ち）**
+- ステータス: **段階1 実装・本番反映済み（2026-09-12）／動作確認済み**。段階2（公開API・掲載ページ）は未着手
 
 ---
 
@@ -80,7 +80,8 @@
 | 一覧 | 初期表示は「確認中」。絞り込み：確認中／掲載中／却下／非表示／すべて |
 | プレビュー | 行を開くと**実際の投稿を埋め込み表示**（承認前に実物を確認できる） |
 | #PR確認 | チェック欄。**チェックしないと承認ボタンが押せない** |
-| 承認 | 状態 → 掲載中。承認者・日時を記録 |
+| 確認済みにする | 状態 → **確認済み（掲載は保留）**。「見てOKだったがまだ載せない」を記録する。#PR確認が条件 |
+| 掲載する | 状態 → 掲載中。承認者・日時を記録。#PR確認が条件 |
 | 却下 | 理由を入力（#PRなし／非公開／内容不適切 など）。アンバサダーには理由を見せない |
 | 掲載停止 | 掲載中 → 非表示（削除された投稿・取り下げ依頼に対応） |
 | 表示順 | 数字で指定。未指定は承認日の新しい順 |
@@ -118,7 +119,7 @@
 | SNS | 形式 |
 |---|---|
 | X | `<blockquote class="twitter-tweet"><a href="URL"></a></blockquote>` ＋ `platform.twitter.com/widgets.js` |
-| Instagram | `<blockquote class="instagram-media" data-instgrm-permalink="URL" data-instgrm-version="14"></blockquote>` ＋ `instagram.com/embed.js` |
+| Instagram | `<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="URL" data-instgrm-version="14"></blockquote>` ＋ `instagram.com/embed.js`<br>※ `data-instgrm-captioned` が無いと本文（キャプション）が出ず #PR を確認できない |
 | TikTok | `<blockquote class="tiktok-embed" cite="URL" data-video-id="ID"></blockquote>` ＋ `tiktok.com/embed.js` |
 
 ---
@@ -136,7 +137,7 @@
 | post_url | varchar(500) | 申告されたURL（原文） |
 | normalized_url | varchar(500) unique | 正規化後URL（重複判定用） |
 | post_id | varchar(64) | 投稿ID（埋め込み用） |
-| status | varchar(16) | `pending` / `approved` / `rejected` / `hidden` |
+| status | varchar(16) | `pending`（確認中）/ `checked`（確認済み・掲載保留）/ `approved`（掲載中）/ `rejected` / `hidden` |
 | note | text null | アンバサダーのひとこと |
 | pr_checked_at / pr_checked_by | | #PR確認の記録 |
 | approved_at / approved_by | | 承認の記録 |

@@ -74,6 +74,36 @@
         </div>
     </div>
 
+    <h2 class="h6 text-muted border-bottom pb-2 mb-3 mt-4">SNS投稿</h2>
+
+    <div class="mb-3">
+        <label class="form-label">ハッシュタグ</label>
+        <input type="text" name="sns_hashtag" value="{{ old('sns_hashtag', $setting->sns_hashtag) }}" class="form-control" style="max-width: 320px;">
+        <div class="form-text">「#PR」はこれとは別に自動で案内されます。</div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label class="form-label">X の公式アカウント</label>
+            <input type="text" name="sns_account_x" value="{{ old('sns_account_x', $setting->sns_account_x) }}" class="form-control" placeholder="@umashippo">
+        </div>
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Instagram の公式アカウント</label>
+            <input type="text" name="sns_account_instagram" value="{{ old('sns_account_instagram', $setting->sns_account_instagram) }}" class="form-control" placeholder="@umashippo">
+        </div>
+        <div class="col-md-4 mb-3">
+            <label class="form-label">TikTok の公式アカウント</label>
+            <input type="text" name="sns_account_tiktok" value="{{ old('sns_account_tiktok', $setting->sns_account_tiktok) }}" class="form-control" placeholder="@umashippo">
+        </div>
+    </div>
+    <div class="form-text mb-3">公式アカウントは空のままでも大丈夫です。入力すると「投稿のお願い」にメンション先として表示されます。</div>
+
+    <div class="mb-3">
+        <label class="form-label">投稿期限（発送から何日以内）</label>
+        <input type="number" name="sns_post_deadline_days" value="{{ old('sns_post_deadline_days', $setting->sns_post_deadline_days) }}" class="form-control" style="max-width: 160px;" min="1" max="90">
+        <div class="form-text">この日数を過ぎても申告がない人は、サンプル発送画面で「期限切れ」と表示されます。</div>
+    </div>
+
     <div><button class="btn btn-primary">保存</button></div>
 </form>
 @endsection

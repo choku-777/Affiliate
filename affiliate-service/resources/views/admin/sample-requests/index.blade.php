@@ -74,6 +74,7 @@
                     <th style="width: 170px;">アンバサダー</th>
                     <th>送付先</th>
                     <th style="width: 96px;">状態</th>
+                    <th style="width: 96px;">投稿</th>
                     <th style="width: 136px;">伝票番号</th>
                     <th style="width: 210px;">操作</th>
                 </tr>
@@ -106,6 +107,18 @@
                                 <span class="badge bg-warning text-dark">未発送</span>
                             @endif
                         </td>
+                        <td class="text-nowrap">
+                            @php $snsLatest = $r->snsPosts->first(); @endphp
+                            @switch($r->snsStatus($snsDays))
+                                @case('approved') <a href="{{ route('admin.sns-posts.show', $snsLatest) }}" class="badge bg-success text-decoration-none">掲載中</a> @break
+                                @case('checked') <a href="{{ route('admin.sns-posts.show', $snsLatest) }}" class="badge bg-primary text-decoration-none">確認済み</a> @break
+                                @case('pending') <a href="{{ route('admin.sns-posts.show', $snsLatest) }}" class="badge bg-info text-dark text-decoration-none" title="クリックで確認・承認へ">確認中 →</a> @break
+                                @case('rejected') <a href="{{ route('admin.sns-posts.show', $snsLatest) }}" class="badge bg-secondary text-decoration-none">要再投稿</a> @break
+                                @case('overdue') <span class="badge bg-danger">期限切れ</span> @break
+                                @case('unposted') <span class="badge bg-warning text-dark">未申告</span> @break
+                                @default <span class="text-muted">—</span>
+                            @endswitch
+                        </td>
                         <td class="small text-nowrap">
                             @if ($r->tracking_number)
                                 {{ $r->formattedTrackingNumber() }}
@@ -131,7 +144,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="text-muted">該当する申し込みはありません。</td></tr>
+                    <tr><td colspan="7" class="text-muted">該当する申し込みはありません。</td></tr>
                 @endforelse
             </tbody>
         </table>

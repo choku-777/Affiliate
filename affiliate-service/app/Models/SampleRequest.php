@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * サンプル商品の申し込み（1件＝1申込）。
@@ -44,6 +46,7 @@ class SampleRequest extends Model
         'shipped_at',
         'shipped_mail_sent_at',
         'shipped_by',
+        'sns_consent_at',
     ];
 
     protected $casts = [
@@ -51,11 +54,52 @@ class SampleRequest extends Model
         'csv_downloaded_at' => 'datetime',
         'shipped_at' => 'datetime',
         'shipped_mail_sent_at' => 'datetime',
+        'sns_consent_at' => 'datetime',
     ];
 
     public function affiliate(): BelongsTo
     {
         return $this->belongsTo(Affiliate::class);
+    }
+
+    /**
+     * この申込に対するSNS投稿の申告。新しい順。
+     */
+    public function snsPosts(): HasMany
+    {
+        return $this->hasMany(SnsPost::class)->latest('id');
+    }
+
+    /**
+     * SNS投稿の期限（発送日＋設定日数）。未発送なら null。
+     */
+    public function snsDeadline(int $days): ?Carbon
+    {
+        return $this->shipped_at ? $this->shipped_at->copy()->addDays($days)->endOfDay() : null;
+    }
+
+    /**
+     * SNS投稿の状況。管理画面の「投稿」列とマイページの案内に使う。
+     * none=未発送 / unposted=未申告 / overdue=期限切れ / pending / approved / rejected
+     */
+    public function snsStatus(int $days): string
+    {
+        $latest = $this->snsPosts->first();
+        if ($latest) {
+            return match ($latest->status) {
+                SnsPost::STATUS_APPROVED => 'approved',
+                SnsPost::STATUS_CHECKED => 'checked',
+                SnsPost::STATUS_PENDING => 'pending',
+                SnsPost::STATUS_HIDDEN => 'approved',
+                default => 'rejected',
+            };
+        }
+        if ($this->status !== self::STATUS_SHIPPED) {
+            return 'none';
+        }
+        $deadline = $this->snsDeadline($days);
+
+        return ($deadline && now()->greaterThan($deadline)) ? 'overdue' : 'unposted';
     }
 
     /**

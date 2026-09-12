@@ -99,6 +99,14 @@ class Affiliate extends Model
     }
 
     /**
+     * SNS投稿の申告。新しい順。
+     */
+    public function snsPosts(): HasMany
+    {
+        return $this->hasMany(SnsPost::class)->latest('id');
+    }
+
+    /**
      * 確定済み（未払い）報酬の合計額。
      */
     public function confirmedUnpaidTotal(): int

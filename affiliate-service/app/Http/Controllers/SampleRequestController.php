@@ -49,9 +49,13 @@ class SampleRequestController extends Controller
             'address2' => ['nullable', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:20', 'regex:/\A[0-9\-]+\z/'],
             'note' => ['nullable', 'string', 'max:1000'],
+            'sns_post_agree' => ['accepted'],
+            'sns_quote_agree' => ['accepted'],
         ], [
             'postal_code.regex' => '郵便番号は数字7桁で入力してください。',
             'phone.regex' => '電話番号は数字とハイフンで入力してください。',
+            'sns_post_agree.accepted' => 'SNSへの投稿に同意してください。',
+            'sns_quote_agree.accepted' => '公式サイトでの紹介に同意してください。',
         ], [
             'recipient_name' => 'お名前',
             'postal_code' => '郵便番号',
@@ -63,7 +67,11 @@ class SampleRequestController extends Controller
             'note' => 'ご要望',
         ]);
 
+        // 同意のチェック自体は保存せず、同意した日時を記録する
+        unset($data['sns_post_agree'], $data['sns_quote_agree']);
+
         $sampleRequest = SampleRequest::create($data + [
+            'sns_consent_at' => now(),
             'affiliate_id' => $affiliate->id,
             'product_name' => $setting->sample_product_name,
             'status' => SampleRequest::STATUS_REQUESTED,

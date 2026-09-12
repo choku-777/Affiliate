@@ -31,7 +31,7 @@ class SampleRequestController extends Controller
     {
         $status = (string) $request->query('status', SampleRequest::STATUS_REQUESTED);
 
-        $query = SampleRequest::with('affiliate')->orderByDesc('id');
+        $query = SampleRequest::with(['affiliate', 'snsPosts'])->orderByDesc('id');
         if ($status !== 'all' && array_key_exists($status, SampleRequest::$statusLabels)) {
             $query->where('status', $status);
         }
@@ -41,6 +41,7 @@ class SampleRequestController extends Controller
             'status' => $status,
             'statusLabels' => SampleRequest::$statusLabels,
             'counts' => SampleRequest::selectRaw('status, COUNT(*) AS c')->groupBy('status')->pluck('c', 'status'),
+            'snsDays' => (int) Setting::current()->sns_post_deadline_days,
         ]);
     }
 

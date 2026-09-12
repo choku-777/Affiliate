@@ -183,6 +183,46 @@
     </div>
   </section>
 
+  <!-- ================= PERKS ================= -->
+  <section style="background:#faf6ec;border-top:1px solid rgba(44,40,32,0.06);">
+    <div style="max-width:1120px;margin:0 auto;padding:clamp(64px,9vw,118px) clamp(20px,5vw,56px);">
+      <div style="text-align:center;margin-bottom:clamp(38px,5vw,56px);">
+        <div style="font-size:11px;letter-spacing:0.22em;color:#a3843f;font-weight:600;margin-bottom:14px;">Ambassador benefits</div>
+        <h2 style="font-family:'Shippori Mincho',serif;font-weight:700;font-size:clamp(1.7rem,3.6vw,2.5rem);line-height:1.4;letter-spacing:0.02em;margin:0;">アンバサダーだけの、2つの特典。</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:clamp(20px,3vw,36px);">
+
+        <div class="lp-card" style="background:#fff;border-radius:18px;overflow:hidden;border:1px solid rgba(44,40,32,0.08);box-shadow:0 10px 30px rgba(44,40,32,0.06);">
+          <div style="aspect-ratio:16/10;overflow:hidden;">
+            {{-- 画像：public/images/landing/benefit-photos.jpg（横長 16:10） --}}
+            <img src="{{ asset('images/landing/benefit-photos.jpg') }}" alt="公式の商品写真を自由に使える" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy">
+          </div>
+          <div style="padding:clamp(22px,3vw,30px);">
+            <div style="font-size:11px;letter-spacing:0.2em;color:#a3843f;font-weight:600;margin-bottom:10px;">BENEFIT 01</div>
+            <div style="font-family:'Shippori Mincho',serif;font-weight:600;font-size:clamp(1.15rem,2vw,1.35rem);line-height:1.45;margin-bottom:12px;">公式の商品写真を、自由に使える。</div>
+            <p style="font-size:13.5px;line-height:1.9;color:#6f685c;margin:0 0 12px;">「馬肉特急」「うましっぽ」公式サイトの写真を、紹介用としてそのままお使いいただけます。文字入れや切り抜きもOK。素材づくりの手間なく、今日から紹介をはじめられます。</p>
+            <p style="font-size:11.5px;line-height:1.7;color:#9a9284;margin:0;">※効果を保証する表現など、いくつかのお願いがあります。詳しくはマイページでご案内します。</p>
+          </div>
+        </div>
+
+        <div class="lp-card" style="background:#fff;border-radius:18px;overflow:hidden;border:1px solid rgba(44,40,32,0.08);box-shadow:0 10px 30px rgba(44,40,32,0.06);">
+          <div style="aspect-ratio:16/10;overflow:hidden;">
+            {{-- 画像：public/images/landing/benefit-sample.jpg（横長） --}}
+            <img src="{{ asset('images/landing/benefit-sample.jpg') }}" alt="商品を無料でお試し" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy">
+          </div>
+          <div style="padding:clamp(22px,3vw,30px);">
+            <div style="font-size:11px;letter-spacing:0.2em;color:#a3843f;font-weight:600;margin-bottom:10px;">BENEFIT 02</div>
+            <div style="font-family:'Shippori Mincho',serif;font-weight:600;font-size:clamp(1.15rem,2vw,1.35rem);line-height:1.45;margin-bottom:12px;">商品を、無料でお試し。</div>
+            <p style="font-size:13.5px;line-height:1.9;color:#6f685c;margin:0 0 12px;">「うましっぽ」の初回限定トライアル（ペットフード）を、お一人さま1回、無料でお届けします。実際に試したからこそ書ける感想が、紹介の説得力になります。</p>
+            <p style="font-size:11.5px;line-height:1.7;color:#9a9284;margin:0;">※SNSでのご感想投稿（#PR付き）をお願いしています。ネコポスでポストにお届けします。</p>
+          </div>
+        </div>
+
+      </div>
+      <p style="text-align:center;font-size:13px;line-height:1.8;color:#6f685c;margin:clamp(26px,4vw,36px) 0 0;">どちらも、登録・承認後にマイページからご利用いただけます。</p>
+    </div>
+  </section>
+
   <!-- ================= BRANDS ================= -->
   <section style="background:#f4eee1;">
     <div style="max-width:1120px;margin:0 auto;padding:clamp(64px,9vw,118px) clamp(20px,5vw,56px);">
