@@ -91,6 +91,14 @@ class Affiliate extends Model
     }
 
     /**
+     * サンプル申し込み。新しい順。
+     */
+    public function sampleRequests(): HasMany
+    {
+        return $this->hasMany(SampleRequest::class)->latest('id');
+    }
+
+    /**
      * 確定済み（未払い）報酬の合計額。
      */
     public function confirmedUnpaidTotal(): int
@@ -116,6 +124,17 @@ class Affiliate extends Model
     public function hasSampleSent(): bool
     {
         return $this->sample_sent_at !== null;
+    }
+
+    /**
+     * 有効なサンプル申し込み（取消以外）。1人1回のため最新の1件だけを見る。
+     * これが存在する間は再申し込みできない。
+     */
+    public function activeSampleRequest(): ?SampleRequest
+    {
+        return $this->sampleRequests()
+            ->where('status', '!=', SampleRequest::STATUS_CANCELLED)
+            ->first();
     }
 
     /**

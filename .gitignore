@@ -16,3 +16,7 @@ id_ecdsa.pem
 /affiliate-service/img/
 
 affiliate-service/.env
+
+# ヤマトB2クラウドの発行済データ等（実在顧客の氏名・住所・電話番号を含むため絶対にコミットしない）
+*発行済データ*.csv
+*.csv

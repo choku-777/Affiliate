@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Affiliate;
 use App\Models\Payout;
 use App\Models\Reward;
+use App\Models\SampleRequest;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -81,9 +83,28 @@ class DiscordNotifier
     /**
      * 埋め込みメッセージを送信する。
      */
-    private function send(string $title, int $color, array $fields, ?string $footer = null): void
+    /**
+     * サンプル商品の申し込みがあったとき。
+     * 送付先の詳細（番地・氏名）は流さず、都道府県までにとどめる（個人情報保護のため）。
+     */
+    public function sampleRequested(SampleRequest $sampleRequest): void
     {
-        $url = config('services.discord.webhook_url');
+        $url = Setting::current()->discord_sample_webhook_url;
+        if (!$url) {
+            return; // 未設定なら通知しない
+        }
+
+        $this->send('📦 サンプル申し込み', 0x9B59B6, [
+            ['name' => 'アンバサダー', 'value' => (string) $sampleRequest->affiliate?->name, 'inline' => true],
+            ['name' => '商品', 'value' => (string) $sampleRequest->product_name, 'inline' => true],
+            ['name' => '送付先', 'value' => (string) $sampleRequest->prefecture, 'inline' => true],
+        ], '詳しい送付先は管理画面でご確認ください', $url);
+    }
+
+    private function send(string $title, int $color, array $fields, ?string $footer = null, ?string $webhookUrl = null): void
+    {
+        // 個別に宛先が指定されていればそちらへ、なければ従来どおり全体設定の宛先へ送る
+        $url = $webhookUrl ?: config('services.discord.webhook_url');
         if (!$url) {
             return;
         }

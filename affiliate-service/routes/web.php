@@ -4,12 +4,15 @@ use App\Http\Controllers\Admin\AffiliateController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PayoutController;
+use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\RewardController;
+use App\Http\Controllers\Admin\SampleRequestController as AdminSampleRequestController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\AffiliateAuthController;
 use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\MyPageController;
+use App\Http\Controllers\SampleRequestController;
 use App\Http\Controllers\RegistrationController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,6 +35,10 @@ Route::prefix('affiliate')->name('affiliate.')->group(function () {
 
     Route::middleware('affiliate')->group(function () {
         Route::get('mypage', [MyPageController::class, 'show'])->name('mypage');
+
+        // サンプル商品の申し込み（1人1回）
+        Route::get('sample', [SampleRequestController::class, 'create'])->name('sample.create');
+        Route::post('sample', [SampleRequestController::class, 'store'])->name('sample.store');
         Route::post('logout', [AffiliateAuthController::class, 'logout'])->name('logout');
     });
 });
@@ -57,6 +64,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('affiliates/{affiliate}/sample-unsent', [AffiliateController::class, 'unmarkSampleSent'])->name('affiliates.sample.unmark');
         Route::post('affiliates/{affiliate}/notes', [AffiliateController::class, 'storeNote'])->name('affiliates.notes.store');
         Route::delete('affiliates/{affiliate}/notes/{note}', [AffiliateController::class, 'destroyNote'])->name('affiliates.notes.destroy');
+
+        // お知らせ（運用担当・管理者とも編集可）
+        Route::get('announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
+        Route::get('announcements/create', [AnnouncementController::class, 'create'])->name('announcements.create');
+        Route::post('announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
+        Route::get('announcements/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('announcements.edit');
+        Route::put('announcements/{announcement}', [AnnouncementController::class, 'update'])->name('announcements.update');
+        Route::delete('announcements/{announcement}', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
+
+        // サンプル発送
+        Route::get('sample-requests', [AdminSampleRequestController::class, 'index'])->name('sample-requests.index');
+        Route::get('sample-requests/csv', [AdminSampleRequestController::class, 'downloadCsv'])->name('sample-requests.csv');
+        Route::post('sample-requests/import', [AdminSampleRequestController::class, 'import'])->name('sample-requests.import');
+        Route::post('sample-requests/{sampleRequest}/tracking', [AdminSampleRequestController::class, 'storeTracking'])->name('sample-requests.tracking');
+        Route::post('sample-requests/{sampleRequest}/ship', [AdminSampleRequestController::class, 'ship'])->name('sample-requests.ship');
+        Route::post('sample-requests/{sampleRequest}/cancel', [AdminSampleRequestController::class, 'cancel'])->name('sample-requests.cancel');
 
         Route::get('rewards', [RewardController::class, 'index'])->name('rewards.index');
         Route::post('rewards/{reward}/cancel', [RewardController::class, 'cancel'])->name('rewards.cancel');

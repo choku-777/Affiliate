@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Affiliate;
+use App\Models\Announcement;
 use App\Models\Reward;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -34,6 +36,9 @@ class MyPageController extends Controller
             'totals' => $totals,
             'statusLabels' => Reward::$statusLabels,
             'payouts' => $payouts,
+            'announcements' => Announcement::published()->get(),
+            'setting' => Setting::current(),
+            'sampleRequest' => $affiliate->activeSampleRequest(),
         ]);
     }
 }

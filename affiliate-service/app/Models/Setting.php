@@ -14,6 +14,11 @@ class Setting extends Model
         'confirm_after_days',
         'min_payout_amount',
         'cookie_lifetime_days',
+        'sample_product_name',
+        'sample_product_url',
+        'sample_invoice_item_name',
+        'sample_request_enabled',
+        'discord_sample_webhook_url',
     ];
 
     protected $casts = [
@@ -21,6 +26,7 @@ class Setting extends Model
         'confirm_after_days' => 'integer',
         'min_payout_amount' => 'integer',
         'cookie_lifetime_days' => 'integer',
+        'sample_request_enabled' => 'boolean',
     ];
 
     /**
@@ -33,6 +39,10 @@ class Setting extends Model
             'confirm_after_days' => 30,
             'min_payout_amount' => 5000,
             'cookie_lifetime_days' => 30,
+            'sample_product_name' => '初回限定トライアル',
+            'sample_product_url' => 'https://umashippo.jp/user_data/trial',
+            'sample_invoice_item_name' => 'ペットフードトライアルセット',
+            'sample_request_enabled' => true,
         ]);
     }
 }

@@ -38,6 +38,42 @@
         <input type="number" name="cookie_lifetime_days" value="{{ old('cookie_lifetime_days', $setting->cookie_lifetime_days) }}" class="form-control">
     </div>
 
+    <h2 class="h6 text-muted border-bottom pb-2 mb-3 mt-4">サンプル発送</h2>
+
+    <div class="mb-3 form-check">
+        <input type="checkbox" name="sample_request_enabled" value="1" id="sample_request_enabled" class="form-check-input"
+               {{ old('sample_request_enabled', $setting->sample_request_enabled) ? 'checked' : '' }}>
+        <label class="form-check-label" for="sample_request_enabled">
+            サンプルの申し込みを受け付ける
+        </label>
+        <div class="form-text">在庫切れのときはチェックを外すと、マイページから申し込めなくなります。</div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">サンプル商品名（マイページ表示用）</label>
+        <input type="text" name="sample_product_name" value="{{ old('sample_product_name', $setting->sample_product_name) }}" class="form-control">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">サンプル商品ページのURL</label>
+        <input type="url" name="sample_product_url" value="{{ old('sample_product_url', $setting->sample_product_url) }}" class="form-control">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">送り状の品名</label>
+        <input type="text" name="sample_invoice_item_name" value="{{ old('sample_invoice_item_name', $setting->sample_invoice_item_name) }}" class="form-control">
+        <div class="form-text">ヤマトの送り状に印字される品名です。</div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">サンプル申し込み通知用 Discord Webhook URL</label>
+        <input type="url" name="discord_sample_webhook_url" value="{{ old('discord_sample_webhook_url', $setting->discord_sample_webhook_url) }}" class="form-control" placeholder="https://discord.com/api/webhooks/...">
+        <div class="form-text">
+            サンプルの申し込みがあったときに通知するDiscordチャンネルのURLです。空にすると通知しません。<br>
+            このURLを知っている人は誰でもそのチャンネルに書き込めるため、取り扱いにご注意ください。
+        </div>
+    </div>
+
     <div><button class="btn btn-primary">保存</button></div>
 </form>
 @endsection

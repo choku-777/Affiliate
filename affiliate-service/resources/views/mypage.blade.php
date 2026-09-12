@@ -4,6 +4,21 @@
 @section('content')
 <h1 class="h4 mb-3">{{ $affiliate->name }} 様のマイページ</h1>
 
+@if ($announcements->isNotEmpty())
+    <div class="card mb-3">
+        <div class="card-header">📢 お知らせ</div>
+        <div class="list-group list-group-flush">
+            @foreach ($announcements as $announcement)
+                <div class="list-group-item">
+                    <div class="fw-bold">{{ $announcement->title }}</div>
+                    <div class="small mt-1">{!! $announcement->bodyHtml() !!}</div>
+                    <div class="text-muted small mt-2">{{ $announcement->updated_at->format('Y年n月j日') }}</div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+@endif
+
 <div class="mb-3">
     <a href="{{ route('inquiry.create') }}" class="btn btn-outline-primary btn-sm">お問い合わせ</a>
 </div>
@@ -20,6 +35,49 @@
     </div>
 @else
     <div class="alert alert-info">現在のステータス：{{ $affiliate->statusLabel() }}（承認後にURLが有効になります）</div>
+@endif
+
+@if ($affiliate->isApproved())
+    @include('partials.ambassador-benefits')
+
+    <div class="card mb-3">
+        <div class="card-header">📦 サンプル商品のお申し込み</div>
+        <div class="card-body">
+            @if ($sampleRequest)
+                @if ($sampleRequest->status === \App\Models\SampleRequest::STATUS_SHIPPED)
+                    <div class="alert alert-success mb-2">
+                        発送済みです（{{ optional($sampleRequest->shipped_at)->format('Y年n月j日') }}）
+                    </div>
+                    @if ($sampleRequest->tracking_number)
+                        <div class="small">
+                            伝票番号：{{ $sampleRequest->formattedTrackingNumber() }}<br>
+                            <a href="{{ $sampleRequest->trackingUrl() }}" target="_blank" rel="noopener">配送状況を確認する</a>
+                        </div>
+                    @endif
+                @else
+                    <div class="alert alert-info mb-0">
+                        お申し込みを受け付けました。発送までもうしばらくお待ちください。
+                    </div>
+                @endif
+            @elseif (! $setting->sample_request_enabled)
+                <div class="alert alert-secondary mb-0">
+                    現在、サンプルのお申し込みを停止しています。再開までお待ちください。
+                </div>
+            @else
+                <p class="mb-2">
+                    <strong>{{ $setting->sample_product_name }}</strong> を、お一人さま1回に限りお試しいただけます。
+                    @if ($setting->sample_product_url)
+                        <br><a href="{{ $setting->sample_product_url }}" target="_blank" rel="noopener">商品の詳細を見る</a>
+                    @endif
+                </p>
+                <a href="{{ route('affiliate.sample.create') }}" class="btn btn-primary">サンプルを申し込む</a>
+                <div class="small text-muted mt-3">
+                    ※サンプルのご提供は<strong>ペットフードのみ</strong>とさせていただいております。<br>
+                    馬刺しセットは配送方法を検討中のため、現在お申し込みいただけません。
+                </div>
+            @endif
+        </div>
+    </div>
 @endif
 
 <div class="row text-center mb-3 g-2">

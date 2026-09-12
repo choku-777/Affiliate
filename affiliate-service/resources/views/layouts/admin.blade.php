@@ -20,6 +20,8 @@
                     <a class="nav-link" href="{{ route('admin.affiliates.index') }}">アンバサダー</a>
                     <a class="nav-link" href="{{ route('admin.rewards.index') }}">成果・報酬</a>
                     <a class="nav-link" href="{{ route('admin.payouts.index') }}">支払い</a>
+                    <a class="nav-link" href="{{ route('admin.sample-requests.index') }}">サンプル発送</a>
+                    <a class="nav-link" href="{{ route('admin.announcements.index') }}">お知らせ</a>
                     @if (session('admin_role') === 'manager')
                         <a class="nav-link" href="{{ route('admin.settings.edit') }}">設定</a>
                     @endif
@@ -37,7 +39,7 @@
             </div>
         </div>
     </nav>
-    <main class="container-fluid p-4">
+    <main class="container-xxl p-4">
         @foreach (['success' => 'success', 'warning' => 'warning', 'error' => 'danger'] as $key => $cls)
             @if (session($key))
                 <div class="alert alert-{{ $cls }}">{{ session($key) }}</div>
