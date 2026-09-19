@@ -79,7 +79,8 @@
             <button class="btn btn-primary">承認する</button>
         </form>
     @endif
-    @if ($affiliate->status !== \App\Models\Affiliate::STATUS_REJECTED)
+    {{-- 却下は承認前の申請に使う。承認済みの人を止めるときは「停止」を使う --}}
+    @if (!in_array($affiliate->status, [\App\Models\Affiliate::STATUS_REJECTED, \App\Models\Affiliate::STATUS_APPROVED], true))
         <form method="post" action="{{ route('admin.affiliates.reject', $affiliate) }}" onsubmit="return confirm('却下しますか？');">
             @csrf
             <button class="btn btn-outline-danger">却下する</button>

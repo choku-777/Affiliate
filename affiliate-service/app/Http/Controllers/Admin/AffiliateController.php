@@ -68,6 +68,11 @@ class AffiliateController extends Controller
 
     public function reject(Affiliate $affiliate)
     {
+        // 却下は承認前の申請向け。承認済みの人は「停止」で扱う
+        if ($affiliate->isApproved()) {
+            return back()->with('error', '承認済みのアンバサダーは「停止」をご利用ください。');
+        }
+
         $affiliate->update(['status' => Affiliate::STATUS_REJECTED]);
 
         return back()->with('success', '却下しました。');
