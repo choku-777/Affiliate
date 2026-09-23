@@ -44,6 +44,9 @@ class SampleRequest extends Model
         'requested_at',
         'csv_downloaded_at',
         'shipped_at',
+        'delivered_at',
+        'delivered_source',
+        'delivery_checked_at',
         'shipped_mail_sent_at',
         'shipped_by',
         'sns_consent_at',
@@ -57,6 +60,8 @@ class SampleRequest extends Model
         'requested_at' => 'datetime',
         'csv_downloaded_at' => 'datetime',
         'shipped_at' => 'datetime',
+        'delivered_at' => 'datetime',
+        'delivery_checked_at' => 'datetime',
         'shipped_mail_sent_at' => 'datetime',
         'sns_consent_at' => 'datetime',
         'reminder_arrival_at' => 'datetime',
@@ -89,11 +94,24 @@ class SampleRequest extends Model
     }
 
     /**
-     * SNS投稿の期限（発送日＋設定日数）。未発送なら null。
+     * SNS投稿の期限（お届け日＋設定日数）。まだ届いていない（到着日が未確定）なら null。
      */
     public function snsDeadline(int $days): ?Carbon
     {
-        return $this->shipped_at ? $this->shipped_at->copy()->addDays($days)->endOfDay() : null;
+        return $this->delivered_at ? $this->delivered_at->copy()->addDays($days)->endOfDay() : null;
+    }
+
+    /**
+     * 到着日の取得元の表示名。
+     */
+    public function deliveredSourceLabel(): ?string
+    {
+        return match ($this->delivered_source) {
+            'yamato' => 'ヤマト追跡',
+            'self' => '本人の報告',
+            'estimate' => '推定',
+            default => null,
+        };
     }
 
     /**

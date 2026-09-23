@@ -99,7 +99,7 @@
     <div class="form-text mb-3">公式アカウントは空のままでも大丈夫です。入力すると「投稿のお願い」にメンション先として表示されます。</div>
 
     <div class="mb-3">
-        <label class="form-label">投稿期限（発送から何日以内）</label>
+        <label class="form-label">投稿期限（お届けから何日以内）</label>
         <input type="number" name="sns_post_deadline_days" value="{{ old('sns_post_deadline_days', $setting->sns_post_deadline_days) }}" class="form-control" style="max-width: 160px;" min="1" max="90">
         <div class="form-text">この日数を過ぎても申告がない人は、サンプル発送画面で「期限切れ」と表示されます。</div>
     </div>
@@ -111,7 +111,7 @@
     </div>
     <div class="row">
         <div class="col-sm-6 mb-3">
-            <label class="form-label">到着確認リマインド（発送から何日後）</label>
+            <label class="form-label">1通目のリマインド（お届けから何日後）</label>
             <input type="number" name="sns_reminder_after_days" value="{{ old('sns_reminder_after_days', $setting->sns_reminder_after_days) }}" class="form-control" style="max-width: 160px;" min="1" max="60">
         </div>
         <div class="col-sm-6 mb-3">

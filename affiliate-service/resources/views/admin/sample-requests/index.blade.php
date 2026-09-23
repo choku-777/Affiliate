@@ -99,6 +99,11 @@
                             @if ($r->status === \App\Models\SampleRequest::STATUS_SHIPPED)
                                 <span class="badge bg-success">発送済</span>
                                 <div class="text-muted small mt-1">{{ optional($r->shipped_at)->format('Y-m-d') }}</div>
+                                @if ($r->delivered_at)
+                                    <div class="small text-success">到着 {{ $r->delivered_at->format('n/j') }}</div>
+                                @else
+                                    <div class="small text-info">配達中</div>
+                                @endif
                             @elseif ($r->status === \App\Models\SampleRequest::STATUS_CSV_EXPORTED)
                                 <span class="badge bg-info text-dark">CSV出力済</span>
                             @elseif ($r->status === \App\Models\SampleRequest::STATUS_CANCELLED)

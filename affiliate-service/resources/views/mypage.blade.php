@@ -66,7 +66,19 @@
                     $snsDeadline = $sampleRequest->snsDeadline((int) $setting->sns_post_deadline_days);
                 @endphp
                 <hr>
-                @include('partials.sns-post-rules', ['setting' => $setting, 'deadline' => $snsDeadline])
+                @if ($sampleRequest->status === \App\Models\SampleRequest::STATUS_SHIPPED)
+                    @if ($sampleRequest->delivered_at)
+                        <div class="small text-muted mb-2">お届け日：{{ $sampleRequest->delivered_at->format('Y年n月j日') }}</div>
+                    @else
+                        <form method="post" action="{{ route('affiliate.sample.received') }}" class="mb-2"
+                              onsubmit="return confirm('サンプルの受け取りを報告します。よろしいですか？');">
+                            @csrf
+                            <span class="small text-muted me-2">お届けまでもう少しお待ちください。</span>
+                            <button type="submit" class="btn btn-sm btn-outline-success">受け取りました</button>
+                        </form>
+                    @endif
+                @endif
+                @include('partials.sns-post-rules', ['setting' => $setting, 'deadline' => $snsDeadline, 'showRelativeDeadline' => true])
                 <div class="mt-3 d-flex flex-wrap gap-2 align-items-center">
                     <a href="{{ route('affiliate.sns-posts.index') }}" class="btn btn-outline-primary">投稿したURLを申告する</a>
                     @if ($snsLatest)

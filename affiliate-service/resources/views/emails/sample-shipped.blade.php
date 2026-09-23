@@ -38,11 +38,10 @@
     <p>お申し込みの際にご同意いただいたとおり、商品が届きましたら
        <strong>X・Instagram・TikTok のいずれか</strong>にご感想の投稿をお願いいたします。</p>
 
-    @if ($deadline)
-        <p style="background:#fff4e5; border-left:4px solid #e6a23c; padding:8px 12px; margin:12px 0;">
-            <strong>投稿期限：{{ $deadline->format('Y年n月j日') }}</strong>（発送から{{ $setting->sns_post_deadline_days }}日以内）
-        </p>
-    @endif
+    <p style="background:#fff4e5; border-left:4px solid #e6a23c; padding:8px 12px; margin:12px 0;">
+        <strong>投稿期限：お届けから{{ $setting->sns_post_deadline_days }}日以内</strong><br>
+        <span style="font-size:12px; color:#666;">お届け後、マイページに具体的な期限日が表示されます。</span>
+    </p>
 
     <p style="margin-bottom:4px;">▼ 投稿に入れていただくもの</p>
     <ul style="margin-top:0;">

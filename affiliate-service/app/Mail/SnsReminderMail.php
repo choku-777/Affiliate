@@ -14,7 +14,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * SNS投稿のリマインド／お願いメール。
- * type: arrival（到着確認）/ before（期限前）/ overdue（期限切れ）/ manual（手動催促）/ legacy（仕組み導入前の送付者へのお願い）
+ * type: arrival（お届け後の使用感の確認）/ before（期限前）/ overdue（期限切れ）/ manual（手動催促）/ legacy（仕組み導入前の送付者へのお願い）
  */
 class SnsReminderMail extends Mailable
 {
@@ -43,7 +43,7 @@ class SnsReminderMail extends Mailable
         $deadline = $this->deadline?->format('n月j日');
 
         $subject = match ($this->type) {
-            self::TYPE_ARRIVAL => 'サンプルは届きましたか？／ご感想投稿のお願い',
+            self::TYPE_ARRIVAL => 'サンプルはいかがでしたか？／ご感想投稿のお願い',
             self::TYPE_BEFORE => 'SNS投稿の期限が近づいています'.($deadline ? "（{$deadline}まで）" : ''),
             self::TYPE_OVERDUE => 'SNS投稿の期限を過ぎています',
             self::TYPE_LEGACY => 'サンプルのご感想をお聞かせください',

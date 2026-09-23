@@ -47,7 +47,7 @@ class SettingController extends Controller
             'sns_account_instagram' => 'Instagramの公式アカウント',
             'sns_account_tiktok' => 'TikTokの公式アカウント',
             'sns_post_deadline_days' => '投稿期限（日数）',
-            'sns_reminder_after_days' => '到着確認リマインド（発送から何日後）',
+            'sns_reminder_after_days' => '1通目のリマインド（お届けから何日後）',
             'sns_reminder_before_days' => '期限前リマインド（期限の何日前）',
         ]);
 

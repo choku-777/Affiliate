@@ -72,6 +72,8 @@ class SnsTracker
                 'sampleRequest' => $request,
                 'legacy' => $legacy,
                 'shippedAt' => $request?->shipped_at ?? $affiliate->sample_sent_at,
+                'deliveredAt' => $request?->delivered_at,
+                'inTransit' => $request && !$request->delivered_at,
                 'deadline' => $deadline,
                 'daysLeft' => $deadline ? (int) now()->startOfDay()->diffInDays($deadline->copy()->startOfDay(), false) : null,
                 'latestPost' => $latest,

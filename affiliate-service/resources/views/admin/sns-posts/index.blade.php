@@ -32,7 +32,7 @@
             サンプルを受け取った方ごとの、SNS投稿の状況です。
     @endswitch
     <div class="text-muted mt-1">
-        自動リマインド：{{ $setting->sns_reminder_enabled ? 'ON' : 'OFF' }}（発送{{ $setting->sns_reminder_after_days }}日後／期限{{ $setting->sns_reminder_before_days }}日前／期限の翌日、毎朝10時）
+        自動リマインド：{{ $setting->sns_reminder_enabled ? 'ON' : 'OFF' }}（お届け{{ $setting->sns_reminder_after_days }}日後／期限{{ $setting->sns_reminder_before_days }}日前／期限の翌日、毎朝10時）。期限はお届けから{{ $setting->sns_post_deadline_days }}日。お届け日は毎朝9時にヤマトの追跡から取得します。
     </div>
 </div>
 
@@ -51,6 +51,7 @@
                 <tr>
                     <th>アンバサダー</th>
                     <th>発送日</th>
+                    <th>お届け日</th>
                     <th>期限</th>
                     <th>状態</th>
                     <th>最新の申告</th>
@@ -70,6 +71,16 @@
                     <tr>
                         <td class="text-nowrap"><a href="{{ route('admin.affiliates.show', $a) }}">{{ $a->name }}</a></td>
                         <td class="text-nowrap small">{{ optional($row->shippedAt)->format('Y-m-d') ?? '—' }}</td>
+                        <td class="text-nowrap small">
+                            @if ($row->deliveredAt)
+                                {{ $row->deliveredAt->format('Y-m-d') }}
+                                @if ($req?->delivered_source === 'estimate')<div><span class="badge bg-light text-dark border">推定</span></div>@endif
+                            @elseif ($row->inTransit)
+                                <span class="badge bg-info text-dark">配達中</span>
+                            @else
+                                <span class="text-muted">—</span>
+                            @endif
+                        </td>
                         <td class="text-nowrap small">
                             @if ($row->deadline)
                                 <div>{{ $row->deadline->format('Y-m-d') }}</div>
@@ -108,7 +119,7 @@
                         </td>
                         <td class="small text-nowrap">
                             @if ($req)
-                                {{ $req->reminder_arrival_at ? '✅' : '・' }}到着
+                                {{ $req->reminder_arrival_at ? '✅' : '・' }}使用感
                                 {{ $req->reminder_before_at ? '✅' : '・' }}期限前
                                 {{ $req->reminder_overdue_at ? '✅' : '・' }}超過
                                 @if ($req->reminder_manual_at)<div class="text-muted">手動 {{ $req->reminder_manual_at->format('n/j') }}</div>@endif
@@ -165,7 +176,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="8" class="text-muted">該当する方はいません。</td></tr>
+                    <tr><td colspan="9" class="text-muted">該当する方はいません。</td></tr>
                 @endforelse
             </tbody>
         </table>

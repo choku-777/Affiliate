@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Mail;
 /**
  * SNS投稿の自動リマインド（日次）。
  * 発送済み・投稿に同意済み・有効な申告がない申込に、今の段階のメールを1通だけ送る。
- * 段階: 発送から○日後（到着確認）→ 期限の○日前 → 期限の翌日（最後）。同じ段階は二度送らない。
+ * 段階: お届けから○日後（使用感の確認）→ 期限の○日前 → 期限の翌日（最後）。同じ段階は二度送らない。
+ * 到着日が未確定（配達中）の申込は対象外（到着日は affiliate:check-deliveries で記録する）。
  * 初回実行時に過去の段階をまとめて送らないよう、「今いる段階」だけを判定する。
  */
 class SendSnsReminders extends Command
@@ -41,7 +42,7 @@ class SendSnsReminders extends Command
         $targets = SampleRequest::with(['affiliate', 'snsPosts'])
             ->where('status', SampleRequest::STATUS_SHIPPED)
             ->whereNotNull('sns_consent_at')
-            ->whereNotNull('shipped_at')
+            ->whereNotNull('delivered_at')
             ->get();
 
         foreach ($targets as $request) {
@@ -57,7 +58,7 @@ class SendSnsReminders extends Command
             [$type, $column] = match (true) {
                 $now->greaterThan($deadline) => [SnsReminderMail::TYPE_OVERDUE, 'reminder_overdue_at'],
                 $now->greaterThanOrEqualTo($deadline->copy()->startOfDay()->subDays($beforeDays)) => [SnsReminderMail::TYPE_BEFORE, 'reminder_before_at'],
-                $now->greaterThanOrEqualTo($request->shipped_at->copy()->startOfDay()->addDays($afterDays)) => [SnsReminderMail::TYPE_ARRIVAL, 'reminder_arrival_at'],
+                $now->greaterThanOrEqualTo($request->delivered_at->copy()->startOfDay()->addDays($afterDays)) => [SnsReminderMail::TYPE_ARRIVAL, 'reminder_arrival_at'],
                 default => [null, null],
             };
             if (!$type || $request->{$column}) {

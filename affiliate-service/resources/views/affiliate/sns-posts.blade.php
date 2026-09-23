@@ -5,7 +5,7 @@
 <h1 class="h4 mb-3">SNS投稿の申告</h1>
 
 <div class="mb-3">
-    @include('partials.sns-post-rules', ['setting' => $setting, 'deadline' => $deadline])
+    @include('partials.sns-post-rules', ['setting' => $setting, 'deadline' => $deadline, 'showRelativeDeadline' => (bool) $sampleRequest])
 </div>
 
 <div class="card mb-4">

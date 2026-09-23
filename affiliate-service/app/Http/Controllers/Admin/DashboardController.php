@@ -52,7 +52,7 @@ class DashboardController extends Controller
         $shipped = SampleRequest::with('snsPosts')->where('status', SampleRequest::STATUS_SHIPPED)->get();
         $snsPosted = $shipped->filter(fn ($r) => $r->hasActiveSnsPost())->count();
         $snsOverdue = $shipped->reject(fn ($r) => $r->hasActiveSnsPost())
-            ->filter(fn ($r) => $r->shipped_at && now()->greaterThan($r->snsDeadline($snsDays)))->count();
+            ->filter(fn ($r) => ($d = $r->snsDeadline($snsDays)) && now()->greaterThan($d))->count();
 
         $thisKey = $now->format('Y-m');
         $lastKey = $now->copy()->subMonthsNoOverflow()->format('Y-m');

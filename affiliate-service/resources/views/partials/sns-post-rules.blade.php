@@ -31,5 +31,7 @@
     </div>
     @if (!empty($deadline))
         <div class="mt-2 fw-bold text-danger">投稿期限：{{ $deadline->format('Y年n月j日') }} まで</div>
+    @elseif (!empty($showRelativeDeadline))
+        <div class="mt-2 fw-bold text-danger">投稿期限：お届けから{{ $setting->sns_post_deadline_days }}日以内</div>
     @endif
 </div>

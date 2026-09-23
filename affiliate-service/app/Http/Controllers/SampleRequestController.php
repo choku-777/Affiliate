@@ -90,6 +90,26 @@ class SampleRequestController extends Controller
     }
 
     /**
+     * 本人による「受け取りました」の報告。到着日が未確定のときだけ記録する（ヤマト追跡より先に届いた場合の補助）。
+     */
+    public function received(Request $request): RedirectResponse
+    {
+        $affiliate = $this->currentAffiliate($request);
+        $sampleRequest = $affiliate?->activeSampleRequest();
+
+        if (!$sampleRequest || $sampleRequest->status !== SampleRequest::STATUS_SHIPPED) {
+            return redirect()->route('affiliate.mypage');
+        }
+
+        if (!$sampleRequest->delivered_at) {
+            $sampleRequest->update(['delivered_at' => now(), 'delivered_source' => 'self']);
+        }
+
+        return redirect()->route('affiliate.mypage')
+            ->with('success', '受け取りのご報告ありがとうございます。ぜひSNSでご感想をお聞かせください。');
+    }
+
+    /**
      * 受付停止中・申し込み済みの場合はマイページへ戻す。
      */
     private function guard(?Affiliate $affiliate, Setting $setting): ?RedirectResponse

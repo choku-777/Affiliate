@@ -42,6 +42,7 @@ Route::prefix('affiliate')->name('affiliate.')->group(function () {
         // サンプル商品の申し込み（1人1回）
         Route::get('sample', [SampleRequestController::class, 'create'])->name('sample.create');
         Route::post('sample', [SampleRequestController::class, 'store'])->name('sample.store');
+        Route::post('sample/received', [SampleRequestController::class, 'received'])->name('sample.received');
 
         // SNS投稿URLの申告（サンプル申込者のみ）
         Route::get('sns-posts', [SnsPostController::class, 'index'])->name('sns-posts.index');
