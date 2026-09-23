@@ -41,8 +41,9 @@ Laravel製の管理アプリ ＋ EC-CUBE計測プラグインの2本立て。**�
 - SSH: `ssh -i ~/.ssh/afferissh.key -p 10022 xs812447@sv16737.xserver.jp`
 - 本体 `~/tairiku-tsusho.co.jp/laravel/`、公開 `~/tairiku-tsusho.co.jp/public_html/affiliate/`（index.php は `../../laravel/` を参照）
 - DB: MariaDB、`xs812447_afferi`@localhost（パスワードに記号を含むため .env はダブルクオート）
-- 更新手順: ローカル編集 → rsync（`--exclude=.env`）→ `php8.3 artisan migrate --force` → `config/route/view:cache` 再生成
-- ローカルMacに php/composer が無いため、動作確認は本番で行う（＝変更は慎重に）
+- 更新手順: ローカル編集 → 本番の対象ファイルとDBをバックアップ → rsync（`-avzR`・`--exclude=.env`・**`--delete` は使わない**）→ `~/bin/php artisan migrate --force`（DB変更時のみ）→ `view:clear` / `route:clear` / `config:clear`
+- 本番は route / config キャッシュを使っていない（`web.php` がそのまま読まれる）。キャッシュ化する場合はクロージャのルートが無いことを確認してから
+- ローカルMacでは `php -l` による構文チェックはできるが、vendor が無いため Laravel は動かない。画面・処理の動作確認は本番で行う（＝変更は慎重に）
 
 ## マルチサイト
 | site_code | サイト | サーバ | 料率 |
@@ -65,5 +66,5 @@ Laravel製の管理アプリ ＋ EC-CUBE計測プラグインの2本立て。**�
 - 管理画面: Google OAuth（`/admin/login`）。テストモードのため、Google Cloud Console（プロジェクト `tairiku-Affiliate`）のテストユーザーに登録された人だけログイン可
 - 認証・権限まわりの変更は高リスク扱い（グローバル CLAUDE.md の High-Risk 手順に従う）
 
-## 注意（未確定）
-- トップLPは調整中で**未公開**。`web.php` は landing 化済みだが route:cache は旧設定のまま。勝手に公開しない
+## トップページ（LP）
+- アンバサダー募集LP（`resources/views/landing.blade.php`）は**公開済み**。画像は `public/images/landing/` に置き、本番では `public_html/affiliate/images/landing/` にもコピーする
