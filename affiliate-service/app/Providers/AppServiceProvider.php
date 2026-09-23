@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
@@ -23,6 +24,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // 画面はBootstrap 5で組んでいるため、ページ送りもBootstrap用の表示にする
+        // （既定のTailwind用だと矢印のSVGにサイズ指定が効かず、巨大に表示される）
+        Paginator::useBootstrapFive();
+
         $this->warnIfTimezoneMisconfigured();
     }
 

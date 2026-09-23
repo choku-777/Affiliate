@@ -71,8 +71,8 @@
             <thead>
                 <tr>
                     <th style="width: 92px;">申込日</th>
-                    <th style="width: 170px;">アンバサダー</th>
-                    <th>送付先</th>
+                    <th style="width: 170px; min-width: 150px;">アンバサダー</th>
+                    <th style="min-width: 260px;">送付先</th>
                     <th style="width: 96px;">状態</th>
                     <th style="width: 96px;">投稿</th>
                     <th style="width: 136px;">伝票番号</th>

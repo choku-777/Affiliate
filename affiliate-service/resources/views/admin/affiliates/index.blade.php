@@ -28,19 +28,19 @@
 
 <div class="card">
     <div class="table-responsive">
-    <table class="table mb-0">
+    <table class="table mb-0 align-middle">
         <thead>
-            <tr><th>ID</th><th>氏名</th><th>メール</th><th>コード</th><th>ステータス</th><th>サンプル</th><th>申請日</th><th></th></tr>
+            <tr class="text-nowrap"><th>ID</th><th>氏名</th><th>メール</th><th>コード</th><th>ステータス</th><th>サンプル</th><th>申請日</th><th></th></tr>
         </thead>
         <tbody>
             @forelse ($affiliates as $affiliate)
                 <tr>
-                    <td>{{ $affiliate->id }}</td>
-                    <td>{{ $affiliate->name }}</td>
-                    <td>{{ $affiliate->email }}</td>
-                    <td><code>{{ $affiliate->affiliate_code }}</code></td>
-                    <td>{{ $affiliate->statusLabel() }}</td>
-                    <td>
+                    <td class="text-nowrap">{{ $affiliate->id }}</td>
+                    <td class="text-nowrap">{{ $affiliate->name }}</td>
+                    <td style="word-break: break-all; min-width: 180px;">{{ $affiliate->email }}</td>
+                    <td class="text-nowrap"><code>{{ $affiliate->affiliate_code }}</code></td>
+                    <td class="text-nowrap">{{ $affiliate->statusLabel() }}</td>
+                    <td class="text-nowrap">
                         @if ($affiliate->hasSampleSent())
                             <span class="badge bg-success">送付済</span>
                             <span class="text-muted small d-block">{{ $affiliate->sample_sent_at->format('Y-m-d') }}</span>
@@ -48,8 +48,8 @@
                             <span class="badge bg-secondary">未送付</span>
                         @endif
                     </td>
-                    <td>{{ $affiliate->created_at->format('Y-m-d') }}</td>
-                    <td><a href="{{ route('admin.affiliates.show', $affiliate) }}" class="btn btn-sm btn-outline-primary">詳細</a></td>
+                    <td class="text-nowrap">{{ $affiliate->created_at->format('Y-m-d') }}</td>
+                    <td class="text-nowrap"><a href="{{ route('admin.affiliates.show', $affiliate) }}" class="btn btn-sm btn-outline-primary">詳細</a></td>
                 </tr>
             @empty
                 <tr><td colspan="8" class="text-muted">該当なし</td></tr>

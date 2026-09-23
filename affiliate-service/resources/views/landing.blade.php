@@ -213,7 +213,7 @@
           <div style="padding:clamp(22px,3vw,30px);">
             <div style="font-size:11px;letter-spacing:0.2em;color:#a3843f;font-weight:600;margin-bottom:10px;">BENEFIT 02</div>
             <div style="font-family:'Shippori Mincho',serif;font-weight:600;font-size:clamp(1.15rem,2vw,1.35rem);line-height:1.45;margin-bottom:12px;">商品を、無料でお試し。</div>
-            <p style="font-size:13.5px;line-height:1.9;color:#6f685c;margin:0 0 12px;">「うましっぽ」の初回限定トライアル（ペットフード）を、お一人さま1回、無料でお届けします。実際に試したからこそ書ける感想が、紹介の説得力になります。</p>
+            <p style="font-size:13.5px;line-height:1.9;color:#6f685c;margin:0 0 12px;">「うましっぽ」の初回限定トライアル（ペットフード）を、お一人さま1回、無料でお届けします。商品代金・送料とも0円です。実際に試したからこそ書ける感想が、紹介の説得力になります。</p>
             <p style="font-size:11.5px;line-height:1.7;color:#9a9284;margin:0;">※SNSでのご感想投稿（#PR付き）をお願いしています。ネコポスでポストにお届けします。</p>
           </div>
         </div>

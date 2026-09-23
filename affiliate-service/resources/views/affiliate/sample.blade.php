@@ -1,14 +1,22 @@
 @extends('layouts.app')
-@section('title', 'サンプルのお申し込み')
+@section('title', '無料サンプルのお申し込み')
 
 @section('content')
-<h1 class="h4 mb-3">サンプル商品のお申し込み</h1>
+<h1 class="h4 mb-3">無料サンプルのお申し込み</h1>
 
 <div class="card mb-3">
     <div class="card-body">
+        <div class="mb-2">
+            <span class="badge bg-danger">無料プレゼント</span>
+            <span class="badge bg-secondary">送料も無料</span>
+        </div>
         <div class="fw-bold">{{ $setting->sample_product_name }}</div>
+        <div class="mt-1"><strong>お支払いは発生しません（商品代金・送料とも0円）。</strong></div>
         @if ($setting->sample_product_url)
-            <a href="{{ $setting->sample_product_url }}" target="_blank" rel="noopener" class="small">商品の詳細を見る</a>
+            <div class="small mt-2">
+                <a href="{{ $setting->sample_product_url }}" target="_blank" rel="noopener">どんな商品か見てみる（販売ページ）</a><br>
+                <span class="text-muted">※リンク先は通常の販売ページです。このページ下の「この内容で無料サンプルを申し込む」ボタンからお申し込みいただくと、無料でお届けします。</span>
+            </div>
         @endif
         <div class="small text-muted mt-2">
             ※サンプルのご提供は<strong>ペットフードのみ</strong>とさせていただいております。<br>
@@ -104,7 +112,7 @@
     </div>
 
     <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-primary">この内容で申し込む</button>
+        <button type="submit" class="btn btn-primary">この内容で無料サンプルを申し込む</button>
         <a href="{{ route('affiliate.mypage') }}" class="btn btn-outline-secondary">戻る</a>
     </div>
 </form>

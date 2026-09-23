@@ -41,7 +41,7 @@
     @include('partials.ambassador-benefits')
 
     <div class="card mb-3">
-        <div class="card-header">📦 サンプル商品のお申し込み</div>
+        <div class="card-header">🎁 サンプル商品を無料でお届け</div>
         <div class="card-body">
             @if ($sampleRequest)
                 @if ($sampleRequest->status === \App\Models\SampleRequest::STATUS_SHIPPED)
@@ -89,13 +89,22 @@
                     現在、サンプルのお申し込みを停止しています。再開までお待ちください。
                 </div>
             @else
+                <div class="mb-2">
+                    <span class="badge bg-danger">無料プレゼント</span>
+                    <span class="badge bg-secondary">送料も無料</span>
+                </div>
                 <p class="mb-2">
-                    <strong>{{ $setting->sample_product_name }}</strong> を、お一人さま1回に限りお試しいただけます。
-                    @if ($setting->sample_product_url)
-                        <br><a href="{{ $setting->sample_product_url }}" target="_blank" rel="noopener">商品の詳細を見る</a>
-                    @endif
+                    うましっぽの <strong>{{ $setting->sample_product_name }}</strong> を、
+                    アンバサダーさま限定で<strong>無償</strong>でお送りします（お一人さま1回まで）。<br>
+                    <strong>お支払いは一切発生しません（商品代金・送料とも0円）。</strong>
                 </p>
-                <a href="{{ route('affiliate.sample.create') }}" class="btn btn-primary">サンプルを申し込む</a>
+                @if ($setting->sample_product_url)
+                    <p class="small mb-2">
+                        <a href="{{ $setting->sample_product_url }}" target="_blank" rel="noopener">どんな商品か見てみる（販売ページ）</a><br>
+                        <span class="text-muted">※リンク先は通常の販売ページです。下の「無料サンプルを申し込む」ボタンからお申し込みいただくと、無料でお届けします。</span>
+                    </p>
+                @endif
+                <a href="{{ route('affiliate.sample.create') }}" class="btn btn-primary">無料サンプルを申し込む</a>
                 <div class="small text-muted mt-3">
                     ※サンプルのご提供は<strong>ペットフードのみ</strong>とさせていただいております。<br>
                     馬刺しセットは配送方法を検討中のため、現在お申し込みいただけません。
