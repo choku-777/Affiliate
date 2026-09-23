@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Setting;
 use App\Models\SnsPost;
+use App\Services\SnsTracker;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -14,20 +16,26 @@ use Illuminate\View\View;
  */
 class SnsPostController extends Controller
 {
-    public function index(Request $request): View
+    /**
+     * サンプル受取者ごとのSNS投稿の状況（申告待ち〜掲載までを1画面で）。
+     */
+    public function index(Request $request, SnsTracker $tracker): View
     {
-        $status = (string) $request->query('status', SnsPost::STATUS_PENDING);
-
-        $query = SnsPost::with('affiliate')->orderByDesc('id');
-        if ($status !== 'all' && array_key_exists($status, SnsPost::$statusLabels)) {
-            $query->where('status', $status);
+        $tab = (string) $request->query('tab', 'action');
+        if (!array_key_exists($tab, SnsTracker::TABS)) {
+            $tab = 'action';
         }
 
+        $rows = $tracker->rows();
+        $setting = Setting::current();
+
         return view('admin.sns-posts.index', [
-            'posts' => $query->paginate(50)->withQueryString(),
-            'status' => $status,
-            'statusLabels' => SnsPost::$statusLabels,
-            'counts' => SnsPost::selectRaw('status, COUNT(*) AS c')->groupBy('status')->pluck('c', 'status'),
+            'tab' => $tab,
+            'tabs' => SnsTracker::TABS,
+            'counts' => $tracker->counts($rows),
+            'rows' => $tracker->filter($rows, $tab),
+            'setting' => $setting,
+            'legacyUnsent' => $rows->where('stage', 'legacy')->filter(fn ($r) => !$r->affiliate->sns_request_mail_sent_at)->count(),
         ]);
     }
 

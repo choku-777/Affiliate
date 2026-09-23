@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\View\View;
 
 /**
  * SNS投稿のフォロー。発送済みで申告がない人を期限の近い順に並べ、
@@ -22,29 +21,12 @@ use Illuminate\View\View;
  */
 class SnsFollowController extends Controller
 {
-    public function index(): View
+    /**
+     * 旧「投稿フォロー」画面。SNS投稿画面に統合したため、申告待ちタブへ移動する。
+     */
+    public function index(): RedirectResponse
     {
-        $setting = Setting::current();
-        $days = (int) $setting->sns_post_deadline_days;
-
-        // 新方式：発送済みの申込
-        $shipped = SampleRequest::with(['affiliate', 'snsPosts'])
-            ->where('status', SampleRequest::STATUS_SHIPPED)
-            ->get();
-
-        $pending = $shipped->reject(fn ($r) => $r->hasActiveSnsPost())
-            ->sortBy(fn ($r) => $r->snsDeadline($days)?->timestamp ?? PHP_INT_MAX)
-            ->values();
-
-        return view('admin.sns-follow.index', [
-            'setting' => $setting,
-            'days' => $days,
-            'pending' => $pending,
-            'shippedCount' => $shipped->count(),
-            'postedCount' => $shipped->filter(fn ($r) => $r->hasActiveSnsPost())->count(),
-            'overdueCount' => $pending->filter(fn ($r) => now()->greaterThan($r->snsDeadline($days)))->count(),
-            'legacy' => $this->legacyAffiliates(),
-        ]);
+        return redirect()->route('admin.sns-posts.index', ['tab' => 'waiting']);
     }
 
     /**

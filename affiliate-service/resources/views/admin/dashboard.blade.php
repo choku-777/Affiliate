@@ -42,7 +42,7 @@
             <span class="me-3">申告あり <strong>{{ $snsPosted }}</strong>（{{ $snsShipped ? round($snsPosted / $snsShipped * 100) : 0 }}%）</span>
             <span class="{{ $snsOverdue ? 'text-danger' : '' }}">期限切れ <strong>{{ $snsOverdue }}</strong></span>
         </div>
-        <a href="{{ route('admin.sns-follow.index') }}" class="btn btn-sm btn-outline-primary">投稿フォローを開く</a>
+        <a href="{{ route('admin.sns-posts.index', ['tab' => 'action']) }}" class="btn btn-sm btn-outline-primary">SNS投稿を開く</a>
     </div>
 </div>
 

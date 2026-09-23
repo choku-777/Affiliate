@@ -4,7 +4,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h4 mb-0">SNS投稿の確認</h1>
-    <a href="{{ route('admin.sns-posts.index') }}" class="btn btn-outline-secondary btn-sm">一覧へ戻る</a>
+    <a href="{{ route('admin.sns-posts.index', ['tab' => 'action']) }}" class="btn btn-outline-secondary btn-sm">一覧へ戻る</a>
 </div>
 
 <div class="row g-3">
