@@ -8,6 +8,7 @@ use App\Models\Affiliate;
 use App\Models\SampleRequest;
 use App\Models\Setting;
 use App\Models\SnsPost;
+use App\Services\DiscordNotifier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -89,7 +90,7 @@ class SnsFollowController extends Controller
 
         $adminName = $request->session()->get('admin_name') ?: ($request->session()->get('admin_email') ?: '管理者');
 
-        SnsPost::create([
+        $post = SnsPost::create([
             'affiliate_id' => $data['affiliate_id'],
             'sample_request_id' => $data['sample_request_id'] ?? null,
             'platform' => $result['platform'],
@@ -99,6 +100,12 @@ class SnsFollowController extends Controller
             'status' => SnsPost::STATUS_PENDING,
             'note' => "管理画面から代理登録（{$adminName}）",
         ]);
+
+        try {
+            app(DiscordNotifier::class)->snsPostSubmitted($post->load('affiliate'), true);
+        } catch (\Throwable $e) {
+            // 通知失敗で登録を失敗させない（DiscordNotifier内でログ済み）
+        }
 
         return back()->with('success', '投稿を登録しました。「SNS投稿」画面で #PR を確認してください。');
     }

@@ -103,23 +103,22 @@ class DiscordNotifier
     }
 
     /**
-     * SNS投稿の申告があったとき（サンプル用のWebhookへ）。
+     * SNS投稿が登録されたとき（本人の申告・管理側の代理登録とも）。
+     * 通知先はアンバサダー登録通知と同じ全体のWebhook。投稿URLを本文にも入れ、Discord上で開けるようにする。
      */
-    public function snsPostSubmitted(SnsPost $post): void
+    public function snsPostSubmitted(SnsPost $post, bool $byAdmin = false): void
     {
-        $url = Setting::current()->discord_sample_webhook_url;
-        if (!$url) {
-            return;
-        }
+        $name = (string) $post->affiliate?->name;
 
-        $this->send('📣 SNS投稿の申告', 0x1ABC9C, [
-            ['name' => 'アンバサダー', 'value' => (string) $post->affiliate?->name, 'inline' => true],
+        $this->send('📣 SNS投稿が登録されました', 0x1ABC9C, [
+            ['name' => 'アンバサダー', 'value' => $name, 'inline' => true],
             ['name' => 'SNS', 'value' => $post->platformLabel(), 'inline' => true],
-            ['name' => 'URL', 'value' => $post->normalized_url, 'inline' => false],
-        ], '管理画面「SNS投稿」で #PR を確認のうえ承認してください', $url);
+            ['name' => '登録方法', 'value' => $byAdmin ? '管理画面から代理登録' : '本人が申告', 'inline' => true],
+            ['name' => '投稿URL', 'value' => $post->normalized_url, 'inline' => false],
+        ], '管理画面「SNS投稿」で #PR を確認してください', null, "{$name} さんのSNS投稿が登録されました\n{$post->normalized_url}");
     }
 
-    private function send(string $title, int $color, array $fields, ?string $footer = null, ?string $webhookUrl = null): void
+    private function send(string $title, int $color, array $fields, ?string $footer = null, ?string $webhookUrl = null, ?string $content = null): void
     {
         // 個別に宛先が指定されていればそちらへ、なければ従来どおり全体設定の宛先へ送る
         $url = $webhookUrl ?: config('services.discord.webhook_url');
@@ -138,7 +137,7 @@ class DiscordNotifier
         }
 
         try {
-            Http::timeout(5)->post($url, ['embeds' => [$embed]]);
+            Http::timeout(5)->post($url, array_filter(['content' => $content, 'embeds' => [$embed]]));
         } catch (\Throwable $e) {
             Log::warning('Discord通知の送信に失敗しました: '.$e->getMessage());
         }
