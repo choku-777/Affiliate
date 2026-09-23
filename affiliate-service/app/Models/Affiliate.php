@@ -140,7 +140,8 @@ class Affiliate extends Model
      */
     public function snsProfileUrl(): ?string
     {
-        $account = trim((string) $this->sns_account);
+        // 全角の「＠」や空白で登録されている場合があるため揃えてから判定する
+        $account = trim(str_replace(['＠', '　'], ['@', ''], (string) $this->sns_account));
         if ($account === '') {
             return null;
         }
