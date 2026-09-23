@@ -23,10 +23,11 @@ class SnsPostController extends Controller
             return redirect()->route('affiliate.login');
         }
 
+        // 新方式の申込がある人、または仕組み導入前にサンプルを受け取った人が対象
         $sampleRequest = $affiliate->activeSampleRequest();
-        if (!$sampleRequest) {
+        if (!$sampleRequest && !$affiliate->hasSampleSent()) {
             return redirect()->route('affiliate.mypage')
-                ->with('error', '投稿の申告は、サンプルをお申し込みいただいた方が対象です。');
+                ->with('error', '投稿の申告は、サンプルをお受け取りいただいた方が対象です。');
         }
 
         $setting = Setting::current();
@@ -35,7 +36,7 @@ class SnsPostController extends Controller
             'affiliate' => $affiliate,
             'sampleRequest' => $sampleRequest,
             'setting' => $setting,
-            'deadline' => $sampleRequest->snsDeadline((int) $setting->sns_post_deadline_days),
+            'deadline' => $sampleRequest?->snsDeadline((int) $setting->sns_post_deadline_days),
             'posts' => $affiliate->snsPosts()->get(),
         ]);
     }
@@ -47,10 +48,11 @@ class SnsPostController extends Controller
             return redirect()->route('affiliate.login');
         }
 
+        // 新方式の申込がある人、または仕組み導入前にサンプルを受け取った人が対象
         $sampleRequest = $affiliate->activeSampleRequest();
-        if (!$sampleRequest) {
+        if (!$sampleRequest && !$affiliate->hasSampleSent()) {
             return redirect()->route('affiliate.mypage')
-                ->with('error', '投稿の申告は、サンプルをお申し込みいただいた方が対象です。');
+                ->with('error', '投稿の申告は、サンプルをお受け取りいただいた方が対象です。');
         }
 
         $data = $request->validate([
@@ -63,32 +65,14 @@ class SnsPostController extends Controller
             'note' => 'ひとこと',
         ]);
 
-        $url = trim($data['url']);
-
-        // TikTokアプリの「リンクをコピー」は短縮URLのため、本来の投稿URLに解決する
-        if (SnsPost::isTiktokShortUrl($url)) {
-            $resolved = SnsPost::resolveRedirect($url);
-            if (!$resolved) {
-                return back()->withInput()
-                    ->with('error', 'TikTokのリンクを確認できませんでした。動画ページのURL（tiktok.com/@…/video/…）を貼ってください。');
-            }
-            $url = $resolved;
-        }
-
-        $parsed = SnsPost::parseUrl($url);
-        if (!$parsed) {
-            return back()->withInput()
-                ->with('error', 'X・Instagram・TikTok の投稿URLのみ受け付けています。投稿ページのURLをそのまま貼ってください。');
-        }
-
-        if (SnsPost::where('normalized_url', $parsed['normalized_url'])->exists()) {
-            return back()->withInput()
-                ->with('error', 'この投稿はすでに申告されています。');
+        $parsed = SnsPost::analyze($data['url']);
+        if (is_string($parsed)) {
+            return back()->withInput()->with('error', $parsed);
         }
 
         $post = SnsPost::create([
             'affiliate_id' => $affiliate->id,
-            'sample_request_id' => $sampleRequest->id,
+            'sample_request_id' => $sampleRequest?->id,
             'platform' => $parsed['platform'],
             'post_url' => $data['url'],
             'normalized_url' => $parsed['normalized_url'],

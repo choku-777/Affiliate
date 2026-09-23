@@ -47,6 +47,10 @@ class SampleRequest extends Model
         'shipped_mail_sent_at',
         'shipped_by',
         'sns_consent_at',
+        'reminder_arrival_at',
+        'reminder_before_at',
+        'reminder_overdue_at',
+        'reminder_manual_at',
     ];
 
     protected $casts = [
@@ -55,6 +59,10 @@ class SampleRequest extends Model
         'shipped_at' => 'datetime',
         'shipped_mail_sent_at' => 'datetime',
         'sns_consent_at' => 'datetime',
+        'reminder_arrival_at' => 'datetime',
+        'reminder_before_at' => 'datetime',
+        'reminder_overdue_at' => 'datetime',
+        'reminder_manual_at' => 'datetime',
     ];
 
     public function affiliate(): BelongsTo
@@ -68,6 +76,16 @@ class SampleRequest extends Model
     public function snsPosts(): HasMany
     {
         return $this->hasMany(SnsPost::class)->latest('id');
+    }
+
+    /**
+     * 有効な申告（確認中・確認済み・掲載中）があるか。却下・非表示だけなら「まだ」とみなす。
+     */
+    public function hasActiveSnsPost(): bool
+    {
+        return $this->snsPosts->contains(fn ($p) => in_array($p->status, [
+            SnsPost::STATUS_PENDING, SnsPost::STATUS_CHECKED, SnsPost::STATUS_APPROVED,
+        ], true));
     }
 
     /**

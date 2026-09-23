@@ -84,6 +84,16 @@
                         </span>
                     @endif
                 </div>
+            @elseif ($affiliate->hasSampleSent())
+                {{-- 仕組み導入前にサンプルを受け取った方：再申込はできないが、投稿の申告はできる --}}
+                <div class="alert alert-success mb-2">
+                    サンプルはお届け済みです（{{ $affiliate->sample_sent_at->format('Y年n月j日') }}）
+                </div>
+                <p class="small mb-2">よろしければ、SNSでご感想をお聞かせください。投稿したら、下のボタンからURLをお送りください。</p>
+                @include('partials.sns-post-rules', ['setting' => $setting, 'deadline' => null])
+                <div class="mt-3">
+                    <a href="{{ route('affiliate.sns-posts.index') }}" class="btn btn-outline-primary">投稿したURLを申告する</a>
+                </div>
             @elseif (! $setting->sample_request_enabled)
                 <div class="alert alert-secondary mb-0">
                     現在、サンプルのお申し込みを停止しています。再開までお待ちください。

@@ -35,6 +35,8 @@ class SettingController extends Controller
             'sns_account_instagram' => ['nullable', 'string', 'max:64'],
             'sns_account_tiktok' => ['nullable', 'string', 'max:64'],
             'sns_post_deadline_days' => ['required', 'integer', 'min:1', 'max:90'],
+            'sns_reminder_after_days' => ['required', 'integer', 'min:1', 'max:60'],
+            'sns_reminder_before_days' => ['required', 'integer', 'min:1', 'max:30'],
         ], [], [
             'sample_product_name' => 'サンプル商品名',
             'sample_product_url' => 'サンプル商品ページURL',
@@ -45,6 +47,8 @@ class SettingController extends Controller
             'sns_account_instagram' => 'Instagramの公式アカウント',
             'sns_account_tiktok' => 'TikTokの公式アカウント',
             'sns_post_deadline_days' => '投稿期限（日数）',
+            'sns_reminder_after_days' => '到着確認リマインド（発送から何日後）',
+            'sns_reminder_before_days' => '期限前リマインド（期限の何日前）',
         ]);
 
         // 共通設定
@@ -63,6 +67,9 @@ class SettingController extends Controller
             'sns_account_instagram' => $data['sns_account_instagram'] ?? null,
             'sns_account_tiktok' => $data['sns_account_tiktok'] ?? null,
             'sns_post_deadline_days' => $data['sns_post_deadline_days'],
+            'sns_reminder_enabled' => $request->boolean('sns_reminder_enabled'),
+            'sns_reminder_after_days' => $data['sns_reminder_after_days'],
+            'sns_reminder_before_days' => $data['sns_reminder_before_days'],
         ]);
 
         // サイトごとの料率

@@ -187,6 +187,34 @@ class SnsPost extends Model
     }
 
     /**
+     * 貼られたURLを解析する。TikTokの短縮URLは本来のURLに解決する。
+     * 成功: ['platform','normalized_url','post_id'] / 失敗: エラーメッセージ（文字列）
+     */
+    public static function analyze(string $url): array|string
+    {
+        $url = trim($url);
+
+        if (self::isTiktokShortUrl($url)) {
+            $resolved = self::resolveRedirect($url);
+            if (!$resolved) {
+                return 'TikTokのリンクを確認できませんでした。動画ページのURL（tiktok.com/@…/video/…）を貼ってください。';
+            }
+            $url = $resolved;
+        }
+
+        $parsed = self::parseUrl($url);
+        if (!$parsed) {
+            return 'X・Instagram・TikTok の投稿URLのみ受け付けています。投稿ページのURLをそのまま貼ってください。';
+        }
+
+        if (self::where('normalized_url', $parsed['normalized_url'])->exists()) {
+            return 'この投稿はすでに登録されています。';
+        }
+
+        return $parsed;
+    }
+
+    /**
      * 公式の埋め込みコード（各SNSのスクリプトは別途読み込む）。
      */
     public function embedHtml(): string

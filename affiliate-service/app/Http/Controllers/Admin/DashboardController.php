@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Affiliate;
 use App\Models\Reward;
+use App\Models\SampleRequest;
+use App\Models\Setting;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -45,6 +47,13 @@ class DashboardController extends Controller
             $regSeries[] = (int) ($regByMonth[$key] ?? 0);
         }
 
+        // SNS投稿の状況（新方式で発送した分）
+        $snsDays = (int) Setting::current()->sns_post_deadline_days;
+        $shipped = SampleRequest::with('snsPosts')->where('status', SampleRequest::STATUS_SHIPPED)->get();
+        $snsPosted = $shipped->filter(fn ($r) => $r->hasActiveSnsPost())->count();
+        $snsOverdue = $shipped->reject(fn ($r) => $r->hasActiveSnsPost())
+            ->filter(fn ($r) => $r->shipped_at && now()->greaterThan($r->snsDeadline($snsDays)))->count();
+
         $thisKey = $now->format('Y-m');
         $lastKey = $now->copy()->subMonthsNoOverflow()->format('Y-m');
 
@@ -60,6 +69,9 @@ class DashboardController extends Controller
             'chartLabels' => $labels,
             'chartSales' => $salesSeries,
             'chartReg' => $regSeries,
+            'snsShipped' => $shipped->count(),
+            'snsPosted' => $snsPosted,
+            'snsOverdue' => $snsOverdue,
         ]);
     }
 }

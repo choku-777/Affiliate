@@ -24,6 +24,9 @@ class Setting extends Model
         'sns_account_instagram',
         'sns_account_tiktok',
         'sns_post_deadline_days',
+        'sns_reminder_enabled',
+        'sns_reminder_after_days',
+        'sns_reminder_before_days',
     ];
 
     protected $casts = [
@@ -33,6 +36,9 @@ class Setting extends Model
         'cookie_lifetime_days' => 'integer',
         'sample_request_enabled' => 'boolean',
         'sns_post_deadline_days' => 'integer',
+        'sns_reminder_enabled' => 'boolean',
+        'sns_reminder_after_days' => 'integer',
+        'sns_reminder_before_days' => 'integer',
     ];
 
     /**

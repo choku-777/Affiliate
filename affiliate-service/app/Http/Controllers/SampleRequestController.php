@@ -103,7 +103,8 @@ class SampleRequestController extends Controller
                 ->with('error', '現在、サンプルのお申し込みを停止しています。');
         }
 
-        if ($affiliate->activeSampleRequest()) {
+        // 仕組み導入前にサンプルを受け取った人も「1人1回」の対象に含める
+        if ($affiliate->activeSampleRequest() || $affiliate->hasSampleSent()) {
             return redirect()->route('affiliate.mypage')
                 ->with('error', 'サンプルのお申し込みは、お一人さま1回までとさせていただいております。');
         }

@@ -34,6 +34,18 @@
     </div>
 </div>
 
+<div class="card card-body mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div>
+            <div class="small text-muted mb-1">サンプルのSNS投稿</div>
+            <span class="me-3">発送済み <strong>{{ $snsShipped }}</strong></span>
+            <span class="me-3">申告あり <strong>{{ $snsPosted }}</strong>（{{ $snsShipped ? round($snsPosted / $snsShipped * 100) : 0 }}%）</span>
+            <span class="{{ $snsOverdue ? 'text-danger' : '' }}">期限切れ <strong>{{ $snsOverdue }}</strong></span>
+        </div>
+        <a href="{{ route('admin.sns-follow.index') }}" class="btn btn-sm btn-outline-primary">投稿フォローを開く</a>
+    </div>
+</div>
+
 <div class="row mb-4 g-3">
     <div class="col-lg-6">
         <div class="card card-body">

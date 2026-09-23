@@ -104,6 +104,23 @@
         <div class="form-text">この日数を過ぎても申告がない人は、サンプル発送画面で「期限切れ」と表示されます。</div>
     </div>
 
+    <div class="mb-3 form-check">
+        <input type="checkbox" name="sns_reminder_enabled" value="1" id="sns_reminder_enabled" class="form-check-input"
+               {{ old('sns_reminder_enabled', $setting->sns_reminder_enabled) ? 'checked' : '' }}>
+        <label class="form-check-label" for="sns_reminder_enabled">申告がない人へリマインドメールを自動で送る（毎朝10時）</label>
+    </div>
+    <div class="row">
+        <div class="col-sm-6 mb-3">
+            <label class="form-label">到着確認リマインド（発送から何日後）</label>
+            <input type="number" name="sns_reminder_after_days" value="{{ old('sns_reminder_after_days', $setting->sns_reminder_after_days) }}" class="form-control" style="max-width: 160px;" min="1" max="60">
+        </div>
+        <div class="col-sm-6 mb-3">
+            <label class="form-label">期限前リマインド（期限の何日前）</label>
+            <input type="number" name="sns_reminder_before_days" value="{{ old('sns_reminder_before_days', $setting->sns_reminder_before_days) }}" class="form-control" style="max-width: 160px;" min="1" max="30">
+        </div>
+    </div>
+    <div class="form-text mb-3">期限切れのリマインドは、期限の翌日に1回だけ送ります。</div>
+
     <div><button class="btn btn-primary">保存</button></div>
 </form>
 @endsection

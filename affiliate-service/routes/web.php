@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\RewardController;
 use App\Http\Controllers\Admin\SampleRequestController as AdminSampleRequestController;
 use App\Http\Controllers\Admin\SnsPostController as AdminSnsPostController;
+use App\Http\Controllers\Admin\SnsFollowController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\AffiliateAuthController;
 use App\Http\Controllers\InquiryController;
@@ -86,6 +87,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('sample-requests/{sampleRequest}/tracking', [AdminSampleRequestController::class, 'storeTracking'])->name('sample-requests.tracking');
         Route::post('sample-requests/{sampleRequest}/ship', [AdminSampleRequestController::class, 'ship'])->name('sample-requests.ship');
         Route::post('sample-requests/{sampleRequest}/cancel', [AdminSampleRequestController::class, 'cancel'])->name('sample-requests.cancel');
+
+        // SNS投稿のフォロー（申告待ちの一覧・催促・代理登録）
+        Route::get('sns-follow', [SnsFollowController::class, 'index'])->name('sns-follow.index');
+        Route::post('sns-follow/register', [SnsFollowController::class, 'register'])->name('sns-follow.register');
+        Route::post('sns-follow/legacy-all', [SnsFollowController::class, 'remindLegacyAll'])->name('sns-follow.remind-legacy-all');
+        Route::post('sns-follow/legacy/{affiliate}', [SnsFollowController::class, 'remindLegacy'])->name('sns-follow.remind-legacy');
+        Route::post('sns-follow/{sampleRequest}/remind', [SnsFollowController::class, 'remind'])->name('sns-follow.remind');
 
         // SNS投稿の確認・承認
         Route::get('sns-posts', [AdminSnsPostController::class, 'index'])->name('sns-posts.index');

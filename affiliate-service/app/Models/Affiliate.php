@@ -135,6 +135,33 @@ class Affiliate extends Model
     }
 
     /**
+     * 登録時の「主に使うSNS」とアカウント名から、プロフィールページのURLを作る。
+     * 対応外のSNSやアカウント未入力なら null。
+     */
+    public function snsProfileUrl(): ?string
+    {
+        $account = trim((string) $this->sns_account);
+        if ($account === '') {
+            return null;
+        }
+        if (preg_match('#^https?://#i', $account)) {
+            return $account;
+        }
+        $name = ltrim($account, '@');
+        if ($name === '' || !preg_match('/^[A-Za-z0-9._]+$/', $name)) {
+            return null;
+        }
+
+        return match (true) {
+            str_contains((string) $this->sns, 'Instagram') => "https://www.instagram.com/{$name}/",
+            str_contains((string) $this->sns, 'X') => "https://x.com/{$name}",
+            str_contains((string) $this->sns, 'TikTok') => "https://www.tiktok.com/@{$name}",
+            str_contains((string) $this->sns, 'YouTube') => "https://www.youtube.com/@{$name}",
+            default => null,
+        };
+    }
+
+    /**
      * 有効なサンプル申し込み（取消以外）。1人1回のため最新の1件だけを見る。
      * これが存在する間は再申し込みできない。
      */
