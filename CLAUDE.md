@@ -27,6 +27,16 @@ Laravel製の管理アプリ ＋ EC-CUBE計測プラグインの2本立て。**�
 ### ローカルEC-CUBEの送信先を本番に向けない
 - プラグインの `AFFILIATE_API_URL` が本番Laravelを指していると、**ローカルのテスト注文が本番成果に混入する**
 
+## Git（このプロジェクトではコミット・pushを自動で行う）
+グローバル設定の「明示的に指示されるまで commit / push しない」は、**このプロジェクトに限り適用しない**（2026-09-24 チョクさん指示）。
+
+- 変更を**本番に反映し、動作確認まで終えた区切り**で、確認を取らずにコミットし `claude/happy-cannon-up94x8` へ push する
+- 作業途中（未反映・未確認・エラーが残っている状態）ではコミットしない
+- `git add` は**ファイルを個別指定**する（`-A` / `.` は使わない）。`.env`・`*.csv`（B2の発行済データ＝個人情報）・`*.pem` を絶対に含めない
+- push は `GIT_SSH_COMMAND="ssh -i ~/.ssh/github_affiliate -o IdentitiesOnly=yes" git push origin claude/happy-cannon-up94x8`
+- コミットメッセージは日本語。完了報告にはコミットIDと「push済み」を書く
+- 取り消しが必要になっても `git push --force` や履歴の書き換えはしない（打ち消しのコミットで戻す）
+
 ## デプロイ（Xserver）
 - SSH: `ssh -i ~/.ssh/afferissh.key -p 10022 xs812447@sv16737.xserver.jp`
 - 本体 `~/tairiku-tsusho.co.jp/laravel/`、公開 `~/tairiku-tsusho.co.jp/public_html/affiliate/`（index.php は `../../laravel/` を参照）
