@@ -53,6 +53,7 @@ class Affiliate extends Model
         'approved_at',
         'sample_sent_at',
         'sample_sent_by',
+        'sns_request_mail_sent_at', // 導入前の方へのSNS投稿お願いメールの送信日時（二重送信防止）
     ];
 
     protected $hidden = [
@@ -63,6 +64,7 @@ class Affiliate extends Model
         'commission_rate' => 'decimal:2',
         'approved_at' => 'datetime',
         'sample_sent_at' => 'datetime',
+        'sns_request_mail_sent_at' => 'datetime',
         'birth_date' => 'date',
         'password' => 'hashed',
     ];
