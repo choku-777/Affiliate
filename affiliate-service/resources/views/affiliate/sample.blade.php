@@ -105,9 +105,9 @@
         </label>
     </div>
     <div class="form-check mb-4">
-        <input type="checkbox" name="sns_quote_agree" value="1" id="sns_quote_agree" class="form-check-input" {{ old('sns_quote_agree') ? 'checked' : '' }} required>
-        <label class="form-check-label" for="sns_quote_agree">
-            投稿を「うましっぽ」公式サイト・公式SNSで紹介することに同意します <span class="text-danger">*</span>
+        <input type="checkbox" name="sns_media_agree" value="1" id="sns_media_agree" class="form-check-input" {{ old('sns_media_agree') ? 'checked' : '' }} required>
+        <label class="form-check-label" for="sns_media_agree">
+            投稿（画像・動画を含む）を「うましっぽ」公式サイト・公式SNSで紹介・掲載することに同意します <span class="text-danger">*</span>
         </label>
     </div>
 

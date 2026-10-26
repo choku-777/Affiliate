@@ -61,12 +61,43 @@ class SnsPost extends Model
         'approved_by',
         'reject_reason',
         'sort_order',
+        'site_id',
+        'product_id',
+        'product_name',
+        'dog_breed',
+        'dog_age',
+        'dog_size',
+        'dog_stage',
+        'thumbnail_path',
+        'thumbnail_fetched_at',
     ];
 
     protected $casts = [
         'pr_checked_at' => 'datetime',
         'approved_at' => 'datetime',
         'sort_order' => 'integer',
+        'product_id' => 'integer',
+        'thumbnail_fetched_at' => 'datetime',
+    ];
+
+    /**
+     * アンバサダーが掲載に同意しているサイト（同意文が「うましっぽ」での掲載のため）。
+     * ほかのサイトに広げる場合は、掲載先を明示した同意を取り直してから追加する。
+     */
+    public const CONSENTED_SITE_CODES = ['umashippo'];
+
+    /** 公式サイト掲載用：犬の体格 */
+    public static array $dogSizeLabels = [
+        'small' => '小型犬',
+        'medium' => '中型犬',
+        'large' => '大型犬',
+    ];
+
+    /** 公式サイト掲載用：犬の年代 */
+    public static array $dogStageLabels = [
+        'puppy' => '子犬',
+        'adult' => '成犬',
+        'senior' => 'シニア',
     ];
 
     public function affiliate(): BelongsTo
@@ -79,6 +110,83 @@ class SnsPost extends Model
         return $this->belongsTo(SampleRequest::class);
     }
 
+    public function site(): BelongsTo
+    {
+        return $this->belongsTo(Site::class);
+    }
+
+    /**
+     * 掲載先サイト（入力欄の初期値用）。未設定なら既定サイト（うましっぽ）を候補にする。
+     * 公式サイトへの掲載判定には使わない（掲載には掲載先の明示的な保存が必要）。
+     */
+    public function effectiveSite(): ?Site
+    {
+        return $this->site ?? Site::default();
+    }
+
+    /**
+     * 公式サイトへの掲載に足りない項目（表示用の名前）。空なら掲載できる。
+     * サムネイルは承認時に自動取得するため、ここでは見ない。犬の情報は任意なので見ない。
+     */
+    public function missingListingFields(): array
+    {
+        $missing = [];
+        if (!$this->product_id) {
+            $missing[] = '商品';
+        }
+        // 犬の情報（犬種・年齢・体格・年代）は任意。入っていればサイトに表示する
+
+        return $missing;
+    }
+
+    public function hasThumbnail(): bool
+    {
+        return $this->thumbnail_path !== null
+            && \App\Services\SnsThumbnailFetcher::isOwnPath($this->thumbnail_path)
+            && is_file(storage_path('app/'.$this->thumbnail_path));
+    }
+
+    /**
+     * 公式サイトに実際に表示される状態か（掲載中・アンバサダーの掲載同意あり・掲載先あり・掲載用の情報が揃っている・サムネイルあり）。
+     */
+    public function isListable(): bool
+    {
+        return $this->status === self::STATUS_APPROVED
+            && $this->isPrChecked()
+            && $this->affiliate?->hasMediaConsent() === true
+            && in_array($this->site?->code, self::CONSENTED_SITE_CODES, true)
+            && $this->missingListingFields() === []
+            && $this->hasThumbnail();
+    }
+
+    public function dogSizeLabel(): ?string
+    {
+        return self::$dogSizeLabels[$this->dog_size] ?? null;
+    }
+
+    public function dogStageLabel(): ?string
+    {
+        return self::$dogStageLabels[$this->dog_stage] ?? null;
+    }
+
+    /**
+     * 公式サイトに出せる投稿（掲載中・アンバサダーの掲載同意あり・掲載先が明示されている・掲載情報が揃っている・サムネイルあり）を、指定サイト向けに。
+     * 掲載先が未設定の投稿は、どのサイトにも出さない（商品IDはサイトごとに意味が違うため推測しない）。
+     */
+    public function scopeListedOn(Builder $query, Site $site): Builder
+    {
+        if (!in_array($site->code, self::CONSENTED_SITE_CODES, true)) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->published()
+            ->where('site_id', $site->id)
+            ->whereNotNull('pr_checked_at')
+            ->whereHas('affiliate', fn (Builder $q) => $q->whereNotNull('media_consent_at'))
+            ->whereNotNull('product_id')
+            ->whereNotNull('thumbnail_path');
+    }
+
     /**
      * 掲載中の投稿を表示順（同順なら承認が新しい順）で。
      */
@@ -86,7 +194,8 @@ class SnsPost extends Model
     {
         return $query->where('status', self::STATUS_APPROVED)
             ->orderBy('sort_order')
-            ->orderByDesc('approved_at');
+            ->orderByDesc('approved_at')
+            ->orderByDesc('id'); // 同順位の並びを確定させる（分割取得で重複・取りこぼしが起きないように）
     }
 
     public function platformLabel(): string

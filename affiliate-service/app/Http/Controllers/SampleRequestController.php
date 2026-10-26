@@ -8,6 +8,7 @@ use App\Models\Setting;
 use App\Services\DiscordNotifier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 /**
@@ -50,12 +51,13 @@ class SampleRequestController extends Controller
             'phone' => ['required', 'string', 'max:20', 'regex:/\A[0-9\-]+\z/'],
             'note' => ['nullable', 'string', 'max:1000'],
             'sns_post_agree' => ['accepted'],
-            'sns_quote_agree' => ['accepted'],
+            // 画像・動画の掲載まで含む新しい同意（旧フォームの sns_quote_agree では通さない＝同意し直してもらう）
+            'sns_media_agree' => ['accepted'],
         ], [
             'postal_code.regex' => '郵便番号は数字7桁で入力してください。',
             'phone.regex' => '電話番号は数字とハイフンで入力してください。',
             'sns_post_agree.accepted' => 'SNSへの投稿に同意してください。',
-            'sns_quote_agree.accepted' => '公式サイトでの紹介に同意してください。',
+            'sns_media_agree.accepted' => '投稿（画像・動画を含む）の公式サイトでの紹介・掲載に同意してください。',
         ], [
             'recipient_name' => 'お名前',
             'postal_code' => '郵便番号',
@@ -68,17 +70,23 @@ class SampleRequestController extends Controller
         ]);
 
         // 同意のチェック自体は保存せず、同意した日時を記録する
-        unset($data['sns_post_agree'], $data['sns_quote_agree']);
+        unset($data['sns_post_agree'], $data['sns_media_agree']);
 
-        $sampleRequest = SampleRequest::create($data + [
-            'sns_consent_at' => now(),
-            'affiliate_id' => $affiliate->id,
-            'product_name' => $setting->sample_product_name,
-            'status' => SampleRequest::STATUS_REQUESTED,
-            'requested_at' => now(),
-        ]);
+        // 申し込みと「画像・動画の掲載への同意」はまとめて保存する（片方だけ残らないように）
+        $sampleRequest = DB::transaction(function () use ($data, $affiliate, $setting) {
+            $sampleRequest = SampleRequest::create($data + [
+                'sns_consent_at' => now(),
+                'affiliate_id' => $affiliate->id,
+                'product_name' => $setting->sample_product_name,
+                'status' => SampleRequest::STATUS_REQUESTED,
+                'requested_at' => now(),
+            ]);
+            $affiliate->recordMediaConsent();
 
-        // 通知の失敗で申し込み自体を失敗させない
+            return $sampleRequest;
+        });
+
+        // 通知は保存が確定してから。通知の失敗で申し込み自体を失敗させない
         try {
             app(DiscordNotifier::class)->sampleRequested($sampleRequest->load('affiliate'));
         } catch (\Throwable $e) {

@@ -16,6 +16,7 @@ use App\Http\Controllers\LandingController;
 use App\Http\Controllers\MyPageController;
 use App\Http\Controllers\SampleRequestController;
 use App\Http\Controllers\SnsPostController;
+use App\Http\Controllers\SnsThumbnailController;
 use App\Http\Controllers\RegistrationController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,9 @@ Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/register', [RegistrationController::class, 'create'])->name('register.create');
 Route::post('/register', [RegistrationController::class, 'store'])->name('register.store');
 Route::get('/register/thanks', [RegistrationController::class, 'thanks'])->name('register.thanks');
+
+// 公開：公式サイトに表示するアンバサダー投稿のサムネイル（掲載中のみ）
+Route::get('/media/sns-thumbs/{snsPost}', [SnsThumbnailController::class, 'show'])->name('sns-thumbs.show');
 
 // 公開：お問い合わせ（未ログインでも可。ログイン中は名前・メールを自動入力）
 Route::get('/inquiry', [InquiryController::class, 'create'])->name('inquiry.create');
@@ -47,6 +51,9 @@ Route::prefix('affiliate')->name('affiliate.')->group(function () {
         // SNS投稿URLの申告（サンプル申込者のみ）
         Route::get('sns-posts', [SnsPostController::class, 'index'])->name('sns-posts.index');
         Route::post('sns-posts', [SnsPostController::class, 'store'])->name('sns-posts.store');
+
+        // 投稿の画像・動画を公式サイトに掲載することへの同意
+        Route::post('media-consent', [MyPageController::class, 'consentMedia'])->name('media-consent');
         Route::post('logout', [AffiliateAuthController::class, 'logout'])->name('logout');
     });
 });
@@ -105,6 +112,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('sns-posts/{snsPost}/reject', [AdminSnsPostController::class, 'reject'])->name('sns-posts.reject');
         Route::post('sns-posts/{snsPost}/hide', [AdminSnsPostController::class, 'hide'])->name('sns-posts.hide');
         Route::post('sns-posts/{snsPost}/sort', [AdminSnsPostController::class, 'sort'])->name('sns-posts.sort');
+        Route::post('sns-posts/{snsPost}/listing', [AdminSnsPostController::class, 'listing'])->name('sns-posts.listing');
+        Route::post('sns-posts/{snsPost}/media-consent', [AdminSnsPostController::class, 'consentByProxy'])->name('sns-posts.media-consent');
+        Route::post('sns-posts/{snsPost}/thumbnail/fetch', [AdminSnsPostController::class, 'fetchThumbnail'])->name('sns-posts.thumbnail.fetch');
+        Route::post('sns-posts/{snsPost}/thumbnail/upload', [AdminSnsPostController::class, 'uploadThumbnail'])->name('sns-posts.thumbnail.upload');
+        Route::get('sns-posts/{snsPost}/thumbnail', [AdminSnsPostController::class, 'thumbnail'])->name('sns-posts.thumbnail');
 
         Route::get('rewards', [RewardController::class, 'index'])->name('rewards.index');
         Route::post('rewards/{reward}/cancel', [RewardController::class, 'cancel'])->name('rewards.cancel');

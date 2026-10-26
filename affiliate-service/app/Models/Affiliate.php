@@ -54,6 +54,8 @@ class Affiliate extends Model
         'sample_sent_at',
         'sample_sent_by',
         'sns_request_mail_sent_at', // 導入前の方へのSNS投稿お願いメールの送信日時（二重送信防止）
+        'media_consent_at',         // 投稿の画像・動画を公式サイトに掲載することへの同意日時
+        'media_consent_version',    // 同意した文言の版
     ];
 
     protected $hidden = [
@@ -65,6 +67,7 @@ class Affiliate extends Model
         'approved_at' => 'datetime',
         'sample_sent_at' => 'datetime',
         'sns_request_mail_sent_at' => 'datetime',
+        'media_consent_at' => 'datetime',
         'birth_date' => 'date',
         'password' => 'hashed',
     ];
@@ -103,6 +106,43 @@ class Affiliate extends Model
     /**
      * SNS投稿の申告。新しい順。
      */
+    /**
+     * 投稿の画像・動画を公式サイトに掲載することに同意しているか。
+     */
+    public function hasMediaConsent(): bool
+    {
+        return $this->media_consent_at !== null;
+    }
+
+    /** 画像・動画の掲載への同意文の版。文言を変えたら更新する */
+    const MEDIA_CONSENT_VERSION = '2026-10-26';
+
+    /** 管理者が代理で記録した同意の印（版の後ろに付ける） */
+    const MEDIA_CONSENT_PROXY_SUFFIX = '/proxy';
+
+    /**
+     * 画像・動画の掲載への同意を記録する（同意済みなら最初の同意日時を保つ）。
+     * 管理者が代理で記録した場合は $byProxy = true（版に /proxy を付けて本人の操作と区別する）。
+     */
+    public function recordMediaConsent(bool $byProxy = false): void
+    {
+        if ($this->hasMediaConsent()) {
+            return;
+        }
+        $this->update([
+            'media_consent_at' => now(),
+            'media_consent_version' => self::MEDIA_CONSENT_VERSION.($byProxy ? self::MEDIA_CONSENT_PROXY_SUFFIX : ''),
+        ]);
+    }
+
+    /**
+     * 同意が管理者による代理記録か。
+     */
+    public function isMediaConsentByProxy(): bool
+    {
+        return str_ends_with((string) $this->media_consent_version, self::MEDIA_CONSENT_PROXY_SUFFIX);
+    }
+
     public function snsPosts(): HasMany
     {
         return $this->hasMany(SnsPost::class)->latest('id');

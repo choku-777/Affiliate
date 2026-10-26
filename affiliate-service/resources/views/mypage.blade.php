@@ -40,6 +40,33 @@
 @if ($affiliate->isApproved())
     @include('partials.ambassador-benefits')
 
+    {{-- 投稿済みで、画像・動画の公式サイト掲載への同意がまだの方へのお願い --}}
+    @if (!$affiliate->hasMediaConsent() && $affiliate->snsPosts()->exists())
+        <div class="card mb-3 border-primary">
+            <div class="card-header">公式サイトへの掲載についてのお願い</div>
+            <div class="card-body">
+                <p class="small mb-2">いただいたSNS投稿を、「うましっぽ」公式サイトでご紹介したいと考えています。掲載にあたり、次の内容へのご同意をお願いします。</p>
+                <ul class="small mb-3">
+                    <li>投稿の画像（動画の表紙画像）を当社のサーバーに保存し、公式サイトに表示します</li>
+                    <li>動画はInstagram・TikTokの公式の埋め込み機能で表示します</li>
+                    <li>あわせて表示するのは、わんちゃんの犬種・年齢と、お使いいただいた商品名です。ご登録のお名前・ご住所・連絡先は表示しません</li>
+                    <li>SNSのアカウント名や、画像・動画に写っているものは、元の投稿のまま表示されます</li>
+                    <li>掲載をやめたい場合は、お問い合わせからご連絡いただければ取り下げます</li>
+                </ul>
+                <form method="post" action="{{ route('affiliate.media-consent') }}">
+                    @csrf
+                    <div class="form-check mb-2">
+                        <input type="checkbox" name="agree" value="1" id="media_consent_agree" class="form-check-input" required>
+                        <label class="form-check-label small" for="media_consent_agree">
+                            投稿（画像・動画を含む）を「うましっぽ」公式サイト・公式SNSで紹介・掲載することに同意します
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm">同意する</button>
+                </form>
+            </div>
+        </div>
+    @endif
+
     <div class="card mb-3">
         <div class="card-header">🎁 サンプル商品を無料でお届け</div>
         <div class="card-body">
