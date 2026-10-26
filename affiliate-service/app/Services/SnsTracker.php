@@ -21,9 +21,10 @@ class SnsTracker
     const TABS = [
         'action' => '要対応',
         'waiting' => '申告待ち',
-        'done' => '確認済み・掲載中',
+        'checked' => '確認済み',
         'rejected' => '却下・非表示',
         'legacy' => '導入前の方',
+        'published' => '掲載中',
         'all' => 'すべて',
     ];
 
@@ -91,7 +92,8 @@ class SnsTracker
         $filtered = match ($tab) {
             'action' => $rows->whereIn('stage', ['pending', 'overdue']),
             'waiting' => $rows->whereIn('stage', ['unposted', 'overdue']),
-            'done' => $rows->whereIn('stage', ['checked', 'approved']),
+            'checked' => $rows->where('stage', 'checked'),
+            'published' => $rows->where('stage', 'approved'),
             'rejected' => $rows->where('stage', 'rejected'),
             'legacy' => $rows->where('stage', 'legacy'),
             default => $rows,
