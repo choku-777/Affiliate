@@ -8,6 +8,7 @@ use App\Models\SnsPost;
 use App\Models\Site;
 use App\Services\SnsThumbnailFetcher;
 use App\Services\SnsTracker;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -205,10 +206,10 @@ class SnsPostController extends Controller
     /**
      * 自動取得に失敗したときの保険。手元の画像をサムネイルとして登録する。
      */
-    public function uploadThumbnail(Request $request, SnsPost $snsPost, SnsThumbnailFetcher $fetcher): RedirectResponse
+    public function uploadThumbnail(Request $request, SnsPost $snsPost, SnsThumbnailFetcher $fetcher): RedirectResponse|JsonResponse
     {
         if (!$snsPost->affiliate?->hasMediaConsent()) {
-            return back()->with('error', '画像・動画の掲載への同意をもらうまで、サムネイルは保存できません。');
+            return $this->thumbnailResult($request, false, '画像・動画の掲載への同意をもらうまで、サムネイルは保存できません。');
         }
 
         $request->validate([
@@ -221,10 +222,26 @@ class SnsPostController extends Controller
             $stored = false;
         }
         if (!$stored) {
-            return back()->with('error', '画像を保存できませんでした。JPEG・PNG・WebP の画像を選んでください。');
+            return $this->thumbnailResult($request, false, '画像を保存できませんでした。JPEG・PNG・WebP の画像を選んでください。');
         }
 
-        return back()->with('success', 'サムネイルを登録しました。');
+        return $this->thumbnailResult($request, true, 'サムネイルを登録しました。');
+    }
+
+    /**
+     * サムネイル登録の結果を返す。画面の切り抜き機能（fetch で送信）からは JSON で返し、
+     * 再読み込み後の画面にもメッセージが出るよう同じ内容をセッションに残す。
+     */
+    private function thumbnailResult(Request $request, bool $ok, string $message): RedirectResponse|JsonResponse
+    {
+        $key = $ok ? 'success' : 'error';
+        if ($request->expectsJson()) {
+            $request->session()->flash($key, $message);
+
+            return response()->json(['ok' => $ok, 'message' => $message], $ok ? 200 : 422);
+        }
+
+        return back()->with($key, $message);
     }
 
     /**

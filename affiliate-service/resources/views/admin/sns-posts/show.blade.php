@@ -170,15 +170,33 @@
                             @csrf
                             <button type="submit" class="btn btn-sm btn-outline-primary">{{ $post->hasThumbnail() ? '取り直す' : '今すぐ取得する' }}</button>
                         </form>
-                        <form method="post" action="{{ route('admin.sns-posts.thumbnail.upload', $post) }}" enctype="multipart/form-data">
-                            @csrf
-                            <label class="form-label mb-1" for="thumbnail">自動で取れないときだけ：画像をアップロード（JPEG・PNG・WebP）</label>
-                            <div class="input-group input-group-sm">
-                                <input type="file" name="thumbnail" id="thumbnail" class="form-control" accept="image/jpeg,image/png,image/webp" required>
-                                <button type="submit" class="btn btn-outline-secondary">登録</button>
-                            </div>
-                        </form>
+                        {{-- わんちゃんが端に写っている等のときに、範囲を選んで切り抜く（縦長 9:16） --}}
+                        <label class="form-label mb-1" for="crop-file">画像を選んで切り抜く（スクリーンショットなど／JPEG・PNG・WebP）</label>
+                        <input type="file" id="crop-file" class="form-control form-control-sm" accept="image/jpeg,image/png,image/webp">
+                        @if ($post->hasThumbnail())
+                            <button type="button" id="crop-current" class="btn btn-sm btn-outline-secondary mt-2">今のサムネイルを切り抜き直す</button>
+                        @endif
+                        <noscript>
+                            <form method="post" action="{{ route('admin.sns-posts.thumbnail.upload', $post) }}" enctype="multipart/form-data" class="mt-2">
+                                @csrf
+                                <div class="input-group input-group-sm">
+                                    <input type="file" name="thumbnail" class="form-control" accept="image/jpeg,image/png,image/webp" required>
+                                    <button type="submit" class="btn btn-outline-secondary">そのまま登録</button>
+                                </div>
+                            </form>
+                        </noscript>
                     </div>
+                </div>
+                <div id="crop-area" class="mt-3" hidden>
+                    <div style="height: 480px; background: #f1f3f5; border-radius: 6px; overflow: hidden;">
+                        <img id="crop-image" alt="切り抜く画像" style="display: block; max-width: 100%;">
+                    </div>
+                    <div class="small text-muted mt-2">枠の中をドラッグして位置を、四隅をつまんで大きさを調整してください（縦長 9:16 に固定）。</div>
+                    <div class="d-flex gap-2 mt-2">
+                        <button type="button" id="crop-submit" class="btn btn-sm btn-primary">この範囲で登録</button>
+                        <button type="button" id="crop-cancel" class="btn btn-sm btn-outline-secondary">やめる</button>
+                    </div>
+                    <div id="crop-error" class="text-danger small mt-2" hidden></div>
                 </div>
             </div>
         </div>
@@ -260,6 +278,123 @@
 @endsection
 
 @section('scripts')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+<script>
+// サムネイルの切り抜き。選んだ範囲をブラウザで切り出して、既存のアップロード処理に送る
+// （サーバー側で中身の確認・縮小・付帯情報の削除が行われる）
+(function () {
+    var fileInput = document.getElementById('crop-file');
+    if (!fileInput || typeof Cropper === 'undefined') {
+        return;
+    }
+    var area = document.getElementById('crop-area');
+    var image = document.getElementById('crop-image');
+    var submitButton = document.getElementById('crop-submit');
+    var errorBox = document.getElementById('crop-error');
+    var currentButton = document.getElementById('crop-current');
+    var uploadUrl = @json(route('admin.sns-posts.thumbnail.upload', $post));
+    var currentUrl = @json(route('admin.sns-posts.thumbnail', $post));
+    var token = @json(csrf_token());
+    var cropper = null;
+    var objectUrl = null;
+
+    function showError(message) {
+        errorBox.textContent = message;
+        errorBox.hidden = false;
+    }
+
+    function open(src) {
+        errorBox.hidden = true;
+        area.hidden = false;
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+        image.onload = function () {
+            cropper = new Cropper(image, {
+                aspectRatio: 9 / 16,
+                viewMode: 1,
+                autoCropArea: 0.9,
+                zoomable: false,
+                movable: false,
+                background: false
+            });
+        };
+        image.src = src;
+        area.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    fileInput.addEventListener('change', function () {
+        var file = fileInput.files && fileInput.files[0];
+        if (!file) {
+            return;
+        }
+        if (file.size > 20 * 1024 * 1024) {
+            showError('画像が大きすぎます（20MBまで）。');
+            return;
+        }
+        if (objectUrl) {
+            URL.revokeObjectURL(objectUrl);
+        }
+        objectUrl = URL.createObjectURL(file);
+        open(objectUrl);
+    });
+
+    if (currentButton) {
+        currentButton.addEventListener('click', function () {
+            open(currentUrl + '?t=' + Date.now());
+        });
+    }
+
+    document.getElementById('crop-cancel').addEventListener('click', function () {
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+        area.hidden = true;
+        fileInput.value = '';
+    });
+
+    submitButton.addEventListener('click', function () {
+        if (!cropper) {
+            return;
+        }
+        var canvas = cropper.getCroppedCanvas({ maxWidth: 1080, maxHeight: 1920, imageSmoothingQuality: 'high' });
+        if (!canvas) {
+            showError('切り抜けませんでした。もう一度範囲を選んでください。');
+            return;
+        }
+        submitButton.disabled = true;
+        canvas.toBlob(function (blob) {
+            var form = new FormData();
+            form.append('_token', token);
+            form.append('thumbnail', blob, 'thumbnail.jpg');
+            fetch(uploadUrl, {
+                method: 'POST',
+                body: form,
+                credentials: 'same-origin',
+                headers: { 'Accept': 'application/json' }
+            }).then(function (response) {
+                return response.json().catch(function () { return {}; }).then(function (data) {
+                    if (response.ok && data.ok) {
+                        window.location.reload();
+                        return;
+                    }
+                    var message = data.message
+                        || (data.errors && Object.values(data.errors)[0] && Object.values(data.errors)[0][0])
+                        || '登録できませんでした。';
+                    showError(message);
+                    submitButton.disabled = false;
+                });
+            }).catch(function () {
+                showError('通信に失敗しました。もう一度お試しください。');
+                submitButton.disabled = false;
+            });
+        }, 'image/jpeg', 0.92);
+    });
+})();
+</script>
 <script async src="{{ \App\Models\SnsPost::$embedScripts[$post->platform] ?? '' }}"
         onerror="document.getElementById('embed-fallback').hidden = false;"></script>
 <script>
