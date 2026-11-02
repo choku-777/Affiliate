@@ -20,6 +20,7 @@
         @case('action')
             <strong>今日やること</strong>はこのタブだけ見ればOKです。
             「確認中」は投稿を開いて <strong>#PR を確認</strong>、「期限切れ」はプロフィールを見て投稿を探すか催促してください。
+            期限を{{ \App\Services\SnsTracker::ACTION_OVERDUE_LIMIT_DAYS }}日より多く過ぎた方はここには出ません（「申告待ち」タブに残ります）。
             @break
         @case('waiting')
             投稿の申告がまだの方です（期限の近い順）。SNSのアカウント名を押すとプロフィールが開きます。

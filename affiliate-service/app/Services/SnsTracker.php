@@ -18,6 +18,9 @@ use Illuminate\Support\Collection;
  */
 class SnsTracker
 {
+    /** 期限をこの日数より多く過ぎた方は「要対応」から外す（申告待ちタブには残る） */
+    const ACTION_OVERDUE_LIMIT_DAYS = 20;
+
     const TABS = [
         'action' => '要対応',
         'waiting' => '申告待ち',
@@ -90,7 +93,8 @@ class SnsTracker
     public function filter(Collection $rows, string $tab): Collection
     {
         $filtered = match ($tab) {
-            'action' => $rows->whereIn('stage', ['pending', 'overdue']),
+            'action' => $rows->filter(fn ($r) => $r->stage === 'pending'
+                || ($r->stage === 'overdue' && -$r->daysLeft <= self::ACTION_OVERDUE_LIMIT_DAYS)),
             'waiting' => $rows->whereIn('stage', ['unposted', 'overdue']),
             'checked' => $rows->where('stage', 'checked'),
             'published' => $rows->where('stage', 'approved'),
