@@ -173,6 +173,9 @@
                         {{-- わんちゃんが端に写っている等のときに、範囲を選んで切り抜く（縦長 9:16） --}}
                         <label class="form-label mb-1" for="crop-file">画像を選んで切り抜く（スクリーンショットなど／JPEG・PNG・WebP）</label>
                         <input type="file" id="crop-file" class="form-control form-control-sm" accept="image/jpeg,image/png,image/webp">
+                        {{-- コピーした画像を貼り付けて切り抜く（9:16の枠が自動で中央に置かれる） --}}
+                        <button type="button" id="crop-paste" class="btn btn-sm btn-outline-secondary mt-2">クリップボードから貼り付け</button>
+                        <div class="text-muted mt-1">画像をコピーして、この画面で ⌘+V（Windows は Ctrl+V）でも貼り付けられます。</div>
                         @if ($post->hasThumbnail())
                             <button type="button" id="crop-current" class="btn btn-sm btn-outline-secondary mt-2">今のサムネイルを切り抜き直す</button>
                         @endif
@@ -344,6 +347,61 @@
     if (currentButton) {
         currentButton.addEventListener('click', function () {
             open(currentUrl + '?t=' + Date.now());
+        });
+    }
+
+    // クリップボードの画像を切り抜き画面に入れる（縦横比は 9:16 の枠で自動的に整う）
+    function openBlob(blob) {
+        if (!blob || !/^image\/(jpeg|png|webp)$/.test(blob.type)) {
+            showError('貼り付けられるのは JPEG・PNG・WebP の画像です。');
+            area.hidden = false;
+            return;
+        }
+        if (blob.size > 20 * 1024 * 1024) {
+            showError('画像が大きすぎます（20MBまで）。');
+            area.hidden = false;
+            return;
+        }
+        if (objectUrl) {
+            URL.revokeObjectURL(objectUrl);
+        }
+        objectUrl = URL.createObjectURL(blob);
+        open(objectUrl);
+    }
+
+    // ⌘+V / Ctrl+V：画像が入っているときだけ受け取る（文字の貼り付けは邪魔しない）
+    document.addEventListener('paste', function (event) {
+        var items = (event.clipboardData && event.clipboardData.items) || [];
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].kind === 'file' && items[i].type.indexOf('image/') === 0) {
+                event.preventDefault();
+                openBlob(items[i].getAsFile());
+                return;
+            }
+        }
+    });
+
+    var pasteButton = document.getElementById('crop-paste');
+    if (pasteButton) {
+        pasteButton.addEventListener('click', function () {
+            if (!navigator.clipboard || !navigator.clipboard.read) {
+                showError('このブラウザではボタンから読み込めません。⌘+V（Ctrl+V）で貼り付けてください。');
+                area.hidden = false;
+                return;
+            }
+            navigator.clipboard.read().then(function (clipItems) {
+                for (var i = 0; i < clipItems.length; i++) {
+                    var type = clipItems[i].types.find(function (t) { return t.indexOf('image/') === 0; });
+                    if (type) {
+                        return clipItems[i].getType(type).then(openBlob);
+                    }
+                }
+                showError('クリップボードに画像がありません。画像をコピーしてからお試しください。');
+                area.hidden = false;
+            }).catch(function () {
+                showError('クリップボードを読めませんでした。ブラウザの許可を確認するか、⌘+V（Ctrl+V）で貼り付けてください。');
+                area.hidden = false;
+            });
         });
     }
 
