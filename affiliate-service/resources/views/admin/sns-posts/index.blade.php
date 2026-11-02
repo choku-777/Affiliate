@@ -20,11 +20,15 @@
         @case('action')
             <strong>今日やること</strong>はこのタブだけ見ればOKです。
             「確認中」は投稿を開いて <strong>#PR を確認</strong>、「期限切れ」はプロフィールを見て投稿を探すか催促してください。
-            期限を{{ \App\Services\SnsTracker::ACTION_OVERDUE_LIMIT_DAYS }}日より多く過ぎた方はここには出ません（「申告待ち」タブに残ります）。
+            期限を{{ \App\Services\SnsTracker::LONG_OVERDUE_DAYS }}日より多く過ぎた方はここには出ません（「長期未申告」タブに移ります）。
             @break
         @case('waiting')
             投稿の申告がまだの方です（期限の近い順）。SNSのアカウント名を押すとプロフィールが開きます。
             投稿を見つけたら、URLを「代理登録」に貼ってください。
+            @break
+        @case('long_overdue')
+            投稿期限を{{ \App\Services\SnsTracker::LONG_OVERDUE_DAYS }}日より多く過ぎても、投稿の登録がない方です。自動リマインドは送り終えています。
+            投稿を見つけたら「代理登録」、必要なら手動で催促メールを送れます。登録されると自動で「確認中」に移ります。
             @break
         @case('legacy')
             仕組みを作る前にサンプルを送った方です（投稿は任意のお願い）。お願いメールは1人1回です。
@@ -85,7 +89,7 @@
                         <td class="text-nowrap small">
                             @if ($row->deadline)
                                 <div>{{ $row->deadline->format('Y-m-d') }}</div>
-                                @if (in_array($row->stage, ['unposted', 'overdue'], true))
+                                @if (in_array($row->stage, ['unposted', 'overdue', 'long_overdue'], true))
                                     @if ($row->daysLeft < 0)
                                         <span class="badge bg-danger">{{ -$row->daysLeft }}日超過</span>
                                     @elseif ($row->daysLeft <= 3)
@@ -105,6 +109,7 @@
                                 @case('approved') <span class="badge bg-success">掲載中</span> @break
                                 @case('rejected') <span class="badge bg-secondary">却下・非表示</span> @break
                                 @case('overdue') <span class="badge bg-danger">期限切れ</span> @break
+                                @case('long_overdue') <span class="badge bg-secondary">長期未申告</span> @break
                                 @case('legacy') <span class="badge bg-light text-dark border">導入前</span> @break
                                 @default <span class="badge bg-warning text-dark">未申告</span>
                             @endswitch

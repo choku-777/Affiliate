@@ -14,12 +14,12 @@ use Illuminate\Support\Collection;
  *
  * stage（段階）:
  *   pending=確認中（#PR確認待ち） / checked=確認済み / approved=掲載中 / rejected=却下・非表示
- *   unposted=未申告 / overdue=期限切れ / legacy=導入前の方（未申告・期限なし）
+ *   unposted=未申告 / overdue=期限切れ（20日以内）/ long_overdue=長期未申告（20日超過）/ legacy=導入前の方（未申告・期限なし）
  */
 class SnsTracker
 {
-    /** 期限をこの日数より多く過ぎた方は「要対応」から外す（申告待ちタブには残る） */
-    const ACTION_OVERDUE_LIMIT_DAYS = 20;
+    /** 期限をこの日数より多く過ぎて未申告の方は「長期未申告」として、要対応・申告待ちから分ける */
+    const LONG_OVERDUE_DAYS = 20;
 
     const TABS = [
         'action' => '要対応',
@@ -27,6 +27,7 @@ class SnsTracker
         'checked' => '確認済み',
         'rejected' => '却下・非表示',
         'legacy' => '導入前の方',
+        'long_overdue' => '長期未申告',
         'published' => '掲載中',
         'all' => 'すべて',
     ];
@@ -67,6 +68,7 @@ class SnsTracker
                 $active?->status === SnsPost::STATUS_APPROVED => 'approved',
                 $latest !== null => 'rejected',
                 $legacy => 'legacy',
+                $deadline && now()->startOfDay()->diffInDays($deadline->copy()->startOfDay(), false) < -self::LONG_OVERDUE_DAYS => 'long_overdue',
                 $deadline && now()->greaterThan($deadline) => 'overdue',
                 default => 'unposted',
             };
@@ -93,11 +95,11 @@ class SnsTracker
     public function filter(Collection $rows, string $tab): Collection
     {
         $filtered = match ($tab) {
-            'action' => $rows->filter(fn ($r) => $r->stage === 'pending'
-                || ($r->stage === 'overdue' && -$r->daysLeft <= self::ACTION_OVERDUE_LIMIT_DAYS)),
+            'action' => $rows->whereIn('stage', ['pending', 'overdue']),
             'waiting' => $rows->whereIn('stage', ['unposted', 'overdue']),
             'checked' => $rows->where('stage', 'checked'),
             'published' => $rows->where('stage', 'approved'),
+            'long_overdue' => $rows->where('stage', 'long_overdue'),
             'rejected' => $rows->where('stage', 'rejected'),
             'legacy' => $rows->where('stage', 'legacy'),
             default => $rows,
