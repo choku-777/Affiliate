@@ -26,6 +26,21 @@
                 <label class="form-label">ひとこと <span class="text-muted small">(任意)</span></label>
                 <input type="text" name="note" value="{{ old('note') }}" class="form-control" maxlength="500">
             </div>
+            @unless ($affiliate->hasMediaConsent())
+                <div class="border rounded p-3 mb-3 bg-light">
+                    <div class="small fw-bold mb-2">公式サイトへの掲載についてのお願い</div>
+                    <p class="small mb-2">いただいた投稿を、「うましっぽ」公式サイトでご紹介したいと考えています。掲載にあたり、次の内容へのご同意をお願いします。</p>
+                    @include('partials.media-consent-terms')
+                    <div class="form-check">
+                        <input type="checkbox" name="media_agree" value="1" id="media_agree" class="form-check-input" {{ old('media_agree') ? 'checked' : '' }}>
+                        <label class="form-check-label small" for="media_agree">
+                            投稿（画像・動画を含む）を「うましっぽ」公式サイト・公式SNSで紹介・掲載することに同意します
+                        </label>
+                    </div>
+                    <div class="small text-muted mt-1">※同意されない場合も、投稿の申告はそのまま行えます。</div>
+                </div>
+            @endunless
+
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary">この投稿を申告する</button>
                 <a href="{{ route('affiliate.mypage') }}" class="btn btn-outline-secondary">マイページへ戻る</a>

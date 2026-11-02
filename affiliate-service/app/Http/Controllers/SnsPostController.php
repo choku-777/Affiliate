@@ -8,6 +8,7 @@ use App\Models\SnsPost;
 use App\Services\DiscordNotifier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 /**
@@ -70,16 +71,25 @@ class SnsPostController extends Controller
             return back()->withInput()->with('error', $parsed);
         }
 
-        $post = SnsPost::create([
-            'affiliate_id' => $affiliate->id,
-            'sample_request_id' => $sampleRequest?->id,
-            'platform' => $parsed['platform'],
-            'post_url' => $data['url'],
-            'normalized_url' => $parsed['normalized_url'],
-            'post_id' => $parsed['post_id'],
-            'status' => SnsPost::STATUS_PENDING,
-            'note' => $data['note'] ?? null,
-        ]);
+        // 申告と「画像・動画の掲載への同意」（未同意の方がチェックした場合のみ）をまとめて保存する
+        $agreeMedia = $request->boolean('media_agree');
+        $post = DB::transaction(function () use ($affiliate, $sampleRequest, $parsed, $data, $agreeMedia) {
+            $post = SnsPost::create([
+                'affiliate_id' => $affiliate->id,
+                'sample_request_id' => $sampleRequest?->id,
+                'platform' => $parsed['platform'],
+                'post_url' => $data['url'],
+                'normalized_url' => $parsed['normalized_url'],
+                'post_id' => $parsed['post_id'],
+                'status' => SnsPost::STATUS_PENDING,
+                'note' => $data['note'] ?? null,
+            ]);
+            if ($agreeMedia) {
+                $affiliate->recordMediaConsent();
+            }
+
+            return $post;
+        });
 
         try {
             app(DiscordNotifier::class)->snsPostSubmitted($post->load('affiliate'));
